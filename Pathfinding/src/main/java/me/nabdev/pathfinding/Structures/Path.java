@@ -17,7 +17,7 @@ public class Path extends ArrayList<Vertex> {
     public Vertex start;
     public Vertex target;
 
-    public Vertex unsnappedTarget = null;
+    private Vertex unsnappedTarget = null;
 
     public Path(Vertex start, Vertex target){
         super();
@@ -25,14 +25,29 @@ public class Path extends ArrayList<Vertex> {
         this.target = target;
     }
 
-    public void pursuitPrepare(){
+    public void setUnsnappedTarget(Vertex unsnappedTarget){
+        this.unsnappedTarget = unsnappedTarget;
+    }
+
+    public Vertex end(){
+        return this.size() > 0 ? this.get(this.size() - 1) : this.start;
+    }
+
+    public void processPath(){
         createFullPath();
         bezierSmoothing();
+        addFinalSegment();
         injectPoints();
         updateFromSegments();
     }
 
-    public void bezierSmoothing(){
+    private void addFinalSegment(){
+        if(unsnappedTarget == null) return;
+        PathSegment seg = new PathSegment(target, unsnappedTarget);
+        segments.add(seg);
+    }
+
+    private void bezierSmoothing(){
         // this does not include the start and endpoint, so in the case where the shortest path is a straight line it would be empty.
         if(this.size() < 1){
             segments.add(new PathSegment(start, target));
@@ -68,7 +83,7 @@ public class Path extends ArrayList<Vertex> {
         segments.add(new PathSegment(segments.get(segments.size() - 1).end(), target));
     }
 
-    public void updateFromSegments(){
+    private void updateFromSegments(){
         this.clear();
         for(PathSegment seg : segments){
             for(int i = 0; i < seg.points.size(); i++){
@@ -79,17 +94,14 @@ public class Path extends ArrayList<Vertex> {
         if(this.size() > 0) this.remove(this.size() - 1);
     }
 
-    public Vertex end(){
-        return this.size() > 0 ? this.get(this.size() - 1) : this.start;
-    }
-    public void createFullPath(){
+    private void createFullPath(){
         fullPath.clear();
         fullPath.add(start);
         fullPath.addAll(this);
         fullPath.add(target);
     }
 
-    public void injectPoints(){
+    private void injectPoints(){
         ArrayList<Vertex> newPoints = new ArrayList<Vertex>();
         // Create an ArrayList of Edges from the path
         for(int x = 0; x < segments.size(); x++){

@@ -113,7 +113,7 @@ public class Pathfinder
      * @throws ImpossiblePathException If no path can be found
      */
     public Path generatePath(Vertex start, Vertex target) throws ImpossiblePathException {
-        return generatePathInner(start, target, PathfindSnapMode.SNAP, new ArrayList<Vertex>());
+        return generatePathInner(start, target, PathfindSnapMode.SNAP_ALL, new ArrayList<Vertex>());
     }
 
         /**
@@ -134,18 +134,26 @@ public class Pathfinder
     private Path generatePathInner(Vertex start, Vertex target, PathfindSnapMode snapMode, ArrayList<Vertex> dynamicVerticies) throws ImpossiblePathException {
         // Snapping is done because the center of the robot can be inside of the inflated obstacle edges
         // In the case where this happened the start needs to be snapped outside otherwise a* will fail
-        start = snap(start, false);
-        System.out.println("Snapped start: " + start.print());
         Vertex unsnappedTarget = target;
-        if(snapMode == PathfindSnapMode.SNAP || snapMode == PathfindSnapMode.SNAP_THEN_POINT || snapToScoringNodes){
-            target = snap(unsnappedTarget, snapToScoringNodes);
-            System.out.println("Snapped target (iter 1): " + target.print());
-            if(snapToScoringNodes){
-                unsnappedTarget = target;
-                target = snap(unsnappedTarget, false);
-                System.out.println("Snapped target (iter 2): " + target.print());
-            }
+        if(snapMode == PathfindSnapMode.SNAP_ALL || snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_START){
+            start = snap(start);
         }
+
+        if(snapMode == PathfindSnapMode.SNAP_ALL || snapMode == PathfindSnapMode.SNAP_TARGET){
+            target = snap(target);
+        } else if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE){
+            target = snap(target);
+        }
+        
+        // if(snapMode == PathfindSnapMode.SNAP || snapMode == PathfindSnapMode.SNAP_THEN_POINT || snapToScoringNodes){
+        //     target = snap(unsnappedTarget, snapToScoringNodes);
+        //     System.out.println("Snapped target (iter 1): " + target.print());
+        //     if(snapToScoringNodes){
+        //         unsnappedTarget = target;
+        //         target = snap(unsnappedTarget, false);
+        //         System.out.println("Snapped target (iter 2): " + target.print());
+        //     }
+        // }
 
         // Time the pathfinding
         long startTime = System.nanoTime();
@@ -162,8 +170,10 @@ public class Pathfinder
         if(path == null){
             throw new ImpossiblePathException("No possible solutions");
         }
-        path.pursuitPrepare();
-        path.unsnappedTarget = unsnappedTarget;
+        if(snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE){
+            path.setUnsnappedTarget(unsnappedTarget);
+        }
+        path.processPath();
         long endTime = System.nanoTime();
         System.out.println("Path generation time: " + (endTime - startTime)/1000000 + "ms");
 
@@ -175,7 +185,7 @@ public class Pathfinder
      * @param point Point to snap
      * @return
      */
-    private Vertex snap(Vertex point, boolean snapToScoringNodes){
+    private Vertex snap(Vertex point){
         ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point);
         if(targetObs.size() == 0) return point;
         Vertex tempNearestVertex = point;
