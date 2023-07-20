@@ -1,0 +1,79 @@
+{
+  "NTProvider": {
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Scheduler": "Scheduler"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "Obstacle0": {
+          "arrows": false,
+          "style": "Line (Closed)"
+        },
+        "Obstacle1": {
+          "arrows": false,
+          "style": "Line (Closed)"
+        },
+        "Obstacle2": {
+          "arrows": false,
+          "style": "Line (Closed)"
+        },
+        "Obstacle3": {
+          "arrows": false,
+          "style": "Line (Closed)"
+        },
+        "Obstacle4": {
+          "arrows": false,
+          "style": "Line (Closed)"
+        },
+        "Obstacle5": {
+          "arrows": false,
+          "style": "Line (Closed)"
+        },
+        "Obstacle6": {
+          "arrows": false,
+          "style": "Line (Closed)"
+        },
+        "Obstacle7": {
+          "arrows": false,
+          "style": "Line (Closed)"
+        },
+        "Obstacle8": {
+          "arrows": false,
+          "style": "Line (Closed)"
+        },
+        "Obstacle9": {
+          "arrows": false,
+          "style": "Line (Closed)"
+        },
+        "Path": {
+          "arrows": false,
+          "color": [
+            0.25491467118263245,
+            0.8088235259056091,
+            0.05550751835107803,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "height": 8.0,
+        "image": "/home/nicholas/coding/robotics/2023/field23.png",
+        "width": 16.5,
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
+    "transitory": {
+      "SmartDashboard": {
+        "open": true
+      }
+    }
+  }
+}

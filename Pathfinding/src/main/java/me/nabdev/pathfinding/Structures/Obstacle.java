@@ -2,6 +2,8 @@ package me.nabdev.pathfinding.Structures;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 public class Obstacle {
     private ArrayList<Vertex> verticies;
 
@@ -9,7 +11,7 @@ public class Obstacle {
 
     private Vector[] vectors = new Vector[4];
     
-    public boolean isScoringVertex = false;
+    public boolean isScoringNode = false;
     public Obstacle(ArrayList<Vertex> verticies, Edge[] edges){
         this.edges = edges;
         this.verticies = verticies;
@@ -20,7 +22,7 @@ public class Obstacle {
     }
 
     public void setScoringVertex(boolean isScoringVertex){
-        this.isScoringVertex = isScoringVertex;
+        this.isScoringNode = isScoringVertex;
     }
 
     public boolean isInside(Vertex pos){
@@ -42,15 +44,7 @@ public class Obstacle {
         return true;
     }
 
-    public Vertex calculateNearestPoint(Vertex v, boolean snapToScoringVertexs, boolean isRed){
-        if(snapToScoringVertexs){
-            Edge edge = edges[isRed ? 2 : 0];
-            Vertex vertexOne = verticies.get(edge.vertexOne);
-            Vector vect = v.createVector(vertexOne);
-            Vector edgeVector = verticies.get(edge.vertexTwo).createVector(vertexOne);
-            double dot = vect.dotProduct(edgeVector.normalize());
-            return vertexOne.moveByVector(edgeVector.normalize().scale(dot));
-        }
+    public Vertex calculateNearestPoint(Vertex v){
         double[] distances = new double[4];
         Vertex[] closestPoints = new Vertex[4];
         for(int i = 0; i < 4; i++){
@@ -71,10 +65,17 @@ public class Obstacle {
         
         return closestPoints[lowest];
     }
-    public static ArrayList<Obstacle> isRobotInObstacle(ArrayList<Obstacle> obstacles, Vertex vertex, boolean isScoringVertexMode){
+    public ArrayList<Pose2d> asPose2dList(){
+        ArrayList<Pose2d> poses = new ArrayList<>();
+        for(Edge edge : edges){
+            poses.add(verticies.get(edge.vertexOne).asPose2d());
+        }
+        return poses;
+    }
+
+    public static ArrayList<Obstacle> isRobotInObstacle(ArrayList<Obstacle> obstacles, Vertex vertex){
         ArrayList<Obstacle> inside = new ArrayList<Obstacle>();
         for(Obstacle obs : obstacles){
-            if(isScoringVertexMode && !obs.isScoringVertex) continue;
             if(obs.isInside(vertex)){
                 inside.add(obs);
             }

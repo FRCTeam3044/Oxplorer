@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 group 'me.nabdev.pathfinding'
-version '0.1.0'
+version '0.1.4'
 
 java {
     withSourcesJar()
@@ -33,7 +33,7 @@ test {
 
 publishing {
     publications {
-        OxConfig(MavenPublication) {
+        Pathfinding(MavenPublication) {
             from components.java
         }
     }

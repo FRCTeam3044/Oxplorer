@@ -2,6 +2,7 @@ package me.nabdev.pathfinding.Structures;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Path extends ArrayList<Vertex> {
@@ -141,5 +142,13 @@ public class Path extends ArrayList<Vertex> {
             finalArr[i] = temp.get(i);
         }
         return finalArr;
+    }
+
+    public ArrayList<Pose2d> asPose2dList(){
+        ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
+        for(Vertex v : this){
+            poses.add(v.asPose2d());
+        }
+        return poses;
     }
 }

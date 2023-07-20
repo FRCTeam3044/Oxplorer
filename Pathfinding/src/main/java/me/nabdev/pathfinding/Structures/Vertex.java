@@ -37,6 +37,9 @@ public class Vertex {
         rotation = rot;
     }
 
+    public Pose2d asPose2d(){
+        return new Pose2d(x, y, rotation);
+    }
     public Vector createVector(Vertex starting){
         if(starting == null){
             System.out.println("Warning: Vector creation passed null starting point");

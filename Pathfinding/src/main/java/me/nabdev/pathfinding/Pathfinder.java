@@ -11,11 +11,18 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
+/**
+ * The main pathfinder class, and the only one you should need to interact with.
+ */
 public class Pathfinder
 {
-
+    // Every obstacle verticy (ORDER IS IMPORTANT)
     ArrayList<Vertex> obstacleVerticies = new ArrayList<> ();
+    // An edge table that has the indexes of connected verticies
     ArrayList<Edge> edges = new ArrayList<>();
+
     ArrayList<Obstacle> obstacles = new ArrayList<>();
 
     public Map map;
@@ -77,36 +84,68 @@ public class Pathfinder
         }
     }
 
+
     /**
-     * Generates a path from the starting Vertex to the target Vertex
+     * Snaps the start and target vertices to be outside of obstacles, calculates dynamic neighbors, and generates the best path using A-star algorithm.
      * 
-     * @param start The starting Vertex
-     * @param target The target Vertex
+     * @param start The starting vertex
+     * @param target The target vertex
      * @param snapMode The snap mode to use
+     * @param dynamicVerticies An ArrayList of dynamic vertices
      * 
-     * @return The shortest path from the starting Vertex to the target Vertex that does not intersect any obstacles
+     * @return The shortest path from the starting vertex to the target vertex that does not intersect any obstacles
      * 
      * @throws ImpossiblePathException If no path can be found
      */
-    public Path generatePath (Vertex start, Vertex target, PathfindSnapMode snapMode, boolean isRed, ArrayList<Vertex> dynamicVerticies) throws ImpossiblePathException
-    {
-        long snapStartTime = System.nanoTime();
-        // Snapping start and target to be outside of obstacles
-        start = snap(start, false, isRed);
+    public Path generatePath(Vertex start, Vertex target, PathfindSnapMode snapMode, ArrayList<Vertex> dynamicVerticies) throws ImpossiblePathException {
+        return generatePathInner(start, target, snapMode, dynamicVerticies);
+    }
+
+    /**
+     * Snaps the start and target vertices to be outside of obstacles, calculates dynamic neighbors, and generates the best path using A-star algorithm.
+     * 
+     * @param start The starting vertex
+     * @param target The target vertex
+     * @param snapMode The snap mode to use
+     * 
+     * @return The shortest path from the starting vertex to the target vertex that does not intersect any obstacles
+     * 
+     * @throws ImpossiblePathException If no path can be found
+     */
+    public Path generatePath(Vertex start, Vertex target) throws ImpossiblePathException {
+        return generatePathInner(start, target, PathfindSnapMode.SNAP, new ArrayList<Vertex>());
+    }
+
+        /**
+     * Snaps the start and target vertices to be outside of obstacles, calculates dynamic neighbors, and generates the best path using A-star algorithm.
+     * 
+     * @param start The starting vertex
+     * @param target The target vertex
+     * @param snapMode The snap mode to use
+     * 
+     * @return The shortest path from the starting vertex to the target vertex that does not intersect any obstacles
+     * 
+     * @throws ImpossiblePathException If no path can be found
+     */
+    public Path generatePath(Vertex start, Vertex target, PathfindSnapMode snapMode) throws ImpossiblePathException {
+        return generatePathInner(start, target, snapMode, new ArrayList<Vertex>());
+    }
+
+    private Path generatePathInner(Vertex start, Vertex target, PathfindSnapMode snapMode, ArrayList<Vertex> dynamicVerticies) throws ImpossiblePathException {
+        // Snapping is done because the center of the robot can be inside of the inflated obstacle edges
+        // In the case where this happened the start needs to be snapped outside otherwise a* will fail
+        start = snap(start, false);
         System.out.println("Snapped start: " + start.print());
-        boolean snapToScoringVertexs = (snapMode == PathfindSnapMode.SNAP_TO_SCORING_VertexS);
         Vertex unsnappedTarget = target;
-        if(snapMode == PathfindSnapMode.SNAP || snapMode == PathfindSnapMode.SNAP_THEN_POINT || snapToScoringVertexs){
-            target = snap(unsnappedTarget, snapToScoringVertexs, isRed);
+        if(snapMode == PathfindSnapMode.SNAP || snapMode == PathfindSnapMode.SNAP_THEN_POINT || snapToScoringNodes){
+            target = snap(unsnappedTarget, snapToScoringNodes);
             System.out.println("Snapped target (iter 1): " + target.print());
-            if(snapToScoringVertexs){
+            if(snapToScoringNodes){
                 unsnappedTarget = target;
-                target = snap(unsnappedTarget, false, isRed);
+                target = snap(unsnappedTarget, false);
                 System.out.println("Snapped target (iter 2): " + target.print());
             }
         }
-        long snapEndTime = System.nanoTime();
-        System.out.println("Snap time: " + (snapEndTime - snapStartTime) / 1000000.0 + "ms");
 
         // Time the pathfinding
         long startTime = System.nanoTime();
@@ -117,11 +156,6 @@ public class Pathfinder
         additionalVertexs.addAll(dynamicVerticies);
         map.calculateDynamicNeighbors(additionalVertexs, true);
 
-        // Debug code - Sends all the edges of path verticies via smartdashboard
-        // SmartDashboard.putNumber("Field/LineOfSightCount", map.neighbors.size());
-        // for(int i = 0; i < map.neighbors.size(); i++){
-        //     SmartDashboard.putNumberArray("Field/LineOfSight" + i, new double[]{map.pathVerticies.get(map.neighbors.get(i).vertexOne).x, map.pathVerticies.get(map.neighbors.get(i).vertexOne).y, map.pathVerticies.get(map.neighbors.get(i).vertexTwo).x, map.pathVerticies.get(map.neighbors.get(i).vertexTwo).y});
-        // }
         Astar astar = new Astar(map);
         // Solve for the best path using a-star. Chargepad handling is temporary and will be replaced with a cleaner solution.
         Path path = astar.run(start, target);
@@ -132,21 +166,65 @@ public class Pathfinder
         path.unsnappedTarget = unsnappedTarget;
         long endTime = System.nanoTime();
         System.out.println("Path generation time: " + (endTime - startTime)/1000000 + "ms");
-        
+
         return path;
     }
 
-    private Vertex snap(Vertex point, boolean snapToScoringVertexs, boolean isRed){
-        ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point, snapToScoringVertexs);
+    /**
+     * Snap a vertex to the nearest obstacle edge if it's inside of one
+     * @param point Point to snap
+     * @return
+     */
+    private Vertex snap(Vertex point, boolean snapToScoringNodes){
+        ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point);
         if(targetObs.size() == 0) return point;
         Vertex tempNearestVertex = point;
         for(Obstacle obs : targetObs){
-            tempNearestVertex = obs.calculateNearestPoint(tempNearestVertex, snapToScoringVertexs, isRed);
+            tempNearestVertex = obs.calculateNearestPoint(tempNearestVertex);
         }
         return tempNearestVertex;
     }
 
+    /**
+     * Determines how verticies will be snapped to the nearest obstacle edge if they are inside of an obstacle. 
+     * Snapping is useful in case the robot center is inside of the inflated obstacle verticies.
+     */
     public enum PathfindSnapMode {
-        NONE, SNAP, SNAP_THEN_POINT, SNAP_TO_SCORING_VertexS
+        /**
+         * No snapping. If a the start or target is inside of an obstacle, an ImpossiblePathException will be thrown.
+         */
+        NONE, 
+        /**
+         * Snap start and target verticies
+         */
+        SNAP_ALL, 
+        /**
+         * Snap start and target verticies. If the target is inside an obstacle, draw a straight line from the snapped target to the original target to drive there anyways
+         */
+        SNAP_ALL_THEN_LINE,
+        /**
+         * Snap start vertex
+         */
+        SNAP_START,
+        /**
+         * Snap target vertex
+         */
+        SNAP_TARGET,
+        /**
+         * If the target is inside an obstacle, snap it and draw a straight line from the snapped target to the original target to drive there anyways.
+         */
+        SNAP_TARGET_THEN_LINE
+
+    }
+    /**
+     * It's a bit messy, but it's used if you want to see all of the obstacles you mapped in the sim field.
+     * @return An arraylist containing an arraylist of pose2ds for each obstacle. Each pose2d represents one vertex of the obstacle.
+     */
+    public ArrayList<ArrayList<Pose2d>> visualizeField(){
+        ArrayList<ArrayList<Pose2d>> listList = new ArrayList<>();
+        for(int i = 0; i < obstacles.size(); i++){
+            listList.add(obstacles.get(i).asPose2dList());
+        }
+        return listList;
     }
 }
