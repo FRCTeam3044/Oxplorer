@@ -101,10 +101,10 @@ public class Robot extends TimedRobot {
             lastEnd = SmartDashboard.getNumberArray("End Vertex", lastEnd);
             try {
                 Path testPath = pathfinder.generatePath(new Vertex(lastStart[0], lastStart[1]), new Vertex(lastEnd[0], lastEnd[1]), 
-                    PathfindSnapMode.SNAP, DriverStation.getAlliance() == Alliance.Red, new ArrayList<Vertex>());
+                    PathfindSnapMode.SNAP_ALL_THEN_LINE);
                 ((SimDrive) m_robotContainer.drivetrain).field.getObject("Path").setPoses(testPath.asPose2dList());
             } catch (ImpossiblePathException e){
-                System.out.println("Valid path not found");
+                e.printStackTrace();
             }
         }
     }

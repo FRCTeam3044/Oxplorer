@@ -29,6 +29,7 @@ public class Pathfinder
 
     /**
      * Create a new pathfinder. Should only be done once, at the start of the program.
+     * @param clearance The clearance radius
      * @param field The field JSON object
      */
     public Pathfinder(double clearance, JSONObject field) {
@@ -106,7 +107,6 @@ public class Pathfinder
      * 
      * @param start The starting vertex
      * @param target The target vertex
-     * @param snapMode The snap mode to use
      * 
      * @return The shortest path from the starting vertex to the target vertex that does not intersect any obstacles
      * 
@@ -185,12 +185,19 @@ public class Pathfinder
      * @param point Point to snap
      * @return
      */
-    private Vertex snap(Vertex point){
+    private Vertex snap(Vertex point) throws ImpossiblePathException {
         ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point);
-        if(targetObs.size() == 0) return point;
         Vertex tempNearestVertex = point;
-        for(Obstacle obs : targetObs){
-            tempNearestVertex = obs.calculateNearestPoint(tempNearestVertex);
+        int i = 0;
+        while(targetObs.size() > 0){
+            if(i > 10){
+                throw new ImpossiblePathException("Failed to snap point " + point.print());
+            }
+            for(Obstacle obs : targetObs){
+                tempNearestVertex = obs.calculateNearestPoint(tempNearestVertex);
+            }
+            targetObs = Obstacle.isRobotInObstacle(obstacles, tempNearestVertex);
+            i++;
         }
         return tempNearestVertex;
     }

@@ -62,8 +62,11 @@ public class Obstacle {
                 lowest = i;
             }
         }
+        Vertex finalPoint = closestPoints[lowest];
+        Vector finalVector = finalPoint.createVector(v);
+        Vector normalizedFinalVector = finalVector.normalize().scale(0.01);
         
-        return closestPoints[lowest];
+        return v.moveByVector(finalVector.add(normalizedFinalVector));
     }
     public ArrayList<Pose2d> asPose2dList(){
         ArrayList<Pose2d> poses = new ArrayList<>();
