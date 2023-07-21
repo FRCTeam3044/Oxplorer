@@ -1,6 +1,7 @@
 package me.nabdev.pathfinding;
 
 
+import me.nabdev.pathfinding.FieldLoader.Field;
 import me.nabdev.pathfinding.Structures.Edge;
 import me.nabdev.pathfinding.Structures.ImpossiblePathException;
 import me.nabdev.pathfinding.Structures.Vertex;
@@ -29,10 +30,11 @@ public class Pathfinder
 
     /**
      * Create a new pathfinder. Should only be done once, at the start of the program.
-     * @param clearance The clearance radius
-     * @param field The field JSON object
+     * @param fieldType The field to load
      */
-    public Pathfinder(double clearance, JSONObject field) {
+    public Pathfinder(Field fieldType) {
+
+        JSONObject field = FieldLoader.loadField(fieldType);
         // This is essentially a vertex and edge table, with some extra information.
         // Verticies are stored as an array [x, y]
         JSONArray verticiesRaw = field.getJSONArray("verticies");
@@ -65,7 +67,7 @@ public class Pathfinder
         }
 
         // Create the map object
-        map = new Map(obstacleVerticies, edges, clearance);
+        map = new Map(obstacleVerticies, edges, PathfindingConfig.clearance);
 
         // Unfortunatley, a seconds iteration is required. This is because we need the path verticies to be created before we can create the obstacles.
         // If you can think of a better way to do this, please let me know.

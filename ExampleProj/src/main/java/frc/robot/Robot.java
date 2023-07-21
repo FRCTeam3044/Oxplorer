@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.PathfindingConstants;
 import frc.robot.subsystems.sim.SimDrive;
 import me.nabdev.pathfinding.Pathfinder;
+import me.nabdev.pathfinding.FieldLoader.Field;
 import me.nabdev.pathfinding.Pathfinder.PathfindSnapMode;
 import me.nabdev.pathfinding.Structures.ImpossiblePathException;
 import me.nabdev.pathfinding.Structures.Path;
@@ -58,18 +59,17 @@ public class Robot extends TimedRobot {
         // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
-        JSONTokener tokener;
-        try {
-            FileInputStream input = new FileInputStream(Filesystem.getDeployDirectory() + "/field.json");
-            tokener = new JSONTokener(input); 
-        } catch (FileNotFoundException e) {
-            System.out.println("Field data not found");
-            System.exit(1);
-            return;
-        }
+
         Field2d simField = ((SimDrive) m_robotContainer.drivetrain).field;
-        JSONObject field = new JSONObject(tokener);
-        pathfinder = new Pathfinder(PathfindingConstants.clearance, field);
+
+pathfinder = new Pathfinder(Field.CHARGED_UP_2023);
+
+try {
+    Path testPath = pathfinder.generatePath(new Vertex(1, 1), new Vertex(8, 4));
+} catch (ImpossiblePathException e){
+    e.printStackTrace();
+}
+
         ArrayList<ArrayList<Pose2d>> listList = pathfinder.visualizeField();
         for(int i = 0; i < listList.size(); i++){
             simField.getObject("Obstacle" + i).setPoses(listList.get(i));

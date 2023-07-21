@@ -4,13 +4,9 @@ import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import me.nabdev.pathfinding.PathfindingConfig;
 
 public class Path extends ArrayList<Vertex> {
-    public final static double minDist = 0.1;
-    public final static double pointSpacing = 0.12;
-    public final static double smoothSpacing = 0.08;
-    public final static double cornerDist = 0.6;
-
     private ArrayList<Vertex> fullPath = new ArrayList<Vertex>();
     private ArrayList<PathSegment> segments = new ArrayList<PathSegment>();
 
@@ -40,7 +36,8 @@ public class Path extends ArrayList<Vertex> {
         injectPoints();
         updateFromSegments();
     }
-
+    
+    // This probably needs to change in the future.
     private void addFinalSegment(){
         if(unsnappedTarget == null) return;
         PathSegment seg = new PathSegment(target, unsnappedTarget);
@@ -60,19 +57,14 @@ public class Path extends ArrayList<Vertex> {
             // fullPath takes into account the start and endpoint while this does not, so we can garuntee that i + 2 will never be out of bounds.
             Vertex next = fullPath.get(i + 2);
 
-            Vector prevVector = prev.createVector(p1).normalize().scale(cornerDist);
-            Vector nextVector = next.createVector(p1).normalize().scale(cornerDist);
+            Vector prevVector = prev.createVector(p1).normalize().scale(PathfindingConfig.cornerDist);
+            Vector nextVector = next.createVector(p1).normalize().scale(PathfindingConfig.cornerDist);
 
             Vertex p0 = p1.moveByVector(prevVector);
             Vertex p2 = p1.moveByVector(nextVector);
 
+            generateBezierCorner(curve, p0, p1, p2);
             
-            for(double t = 0; t < cornerDist; t += smoothSpacing){
-                Vertex q0 = p0.moveByVector(p1.createVector(p0).normalize().scale(t));
-                Vertex q1 = p1.moveByVector(p2.createVector(p1).normalize().scale(t));
-                Vertex pos = q0.moveByVector(q1.createVector(q0).normalize().scale(t));
-                curve.add(pos);
-            }
             if(i == 0){
                 segments.add(new PathSegment(start, curve.start()));
             } else {
@@ -81,6 +73,22 @@ public class Path extends ArrayList<Vertex> {
             segments.add(curve);
         }
         segments.add(new PathSegment(segments.get(segments.size() - 1).end(), target));
+    }
+
+    /**
+     * Generates a bezier curve between the three given points.
+     * @param curve The PathSegment to add the points to.
+     * @param p0 The first point.
+     * @param p1 The second point (the point that won't lie on the curve).
+     * @param p2 The third point.
+     */
+    private void generateBezierCorner(PathSegment curve, Vertex p0, Vertex p1, Vertex p2){
+        for(double t = 0; t < PathfindingConfig.cornerDist; t += PathfindingConfig.smoothSpacing){
+            Vertex q0 = p0.moveByVector(p1.createVector(p0).normalize().scale(t));
+            Vertex q1 = p1.moveByVector(p2.createVector(p1).normalize().scale(t));
+            Vertex pos = q0.moveByVector(q1.createVector(q0).normalize().scale(t));
+            curve.add(pos);
+        }
     }
 
     private void updateFromSegments(){
@@ -111,8 +119,8 @@ public class Path extends ArrayList<Vertex> {
             Vertex endPoint = seg.get(1);
             Vector vector = endPoint.createVector(startPoint);
             double mag = vector.magnitude();
-            double numPoints = Math.round(mag / pointSpacing);
-            vector = vector.normalize().scale(pointSpacing);
+            double numPoints = Math.round(mag / PathfindingConfig.pointSpacing);
+            vector = vector.normalize().scale(PathfindingConfig.pointSpacing);
             for (int i = 0; i<numPoints; i++){
                 newPoints.add(startPoint.moveByVector(vector.scale(i)));
             } 
