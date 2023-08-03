@@ -1,5 +1,5 @@
-# FRC Pathfinding
-This repo will be transferred to [FRCTeam3044](https://github.com/FRCTeam3044) when I am done working on it. I have activley been working on it these past couple weeks, but I broke a few things so I haven't committed here yet.
+# Pathfinding 3044.
+This repo will be transferred to [FRCTeam3044](https://github.com/FRCTeam3044) when I am done working on it. It's only here for convenience right now. I have activley been working on it these past couple weeks, but I broke a few things so I haven't committed here yet.
 
 ## Pathfinding
 The pathfinding folder contains the actual pathfinding code. The main pathfinder file is kinda broken right now, but most of the core structures, a-star, and map file are fine (but undocumented).
