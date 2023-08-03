@@ -9,7 +9,8 @@ Here's a basic example of usage (note that this probably will change in the futu
 ```java
 Pathfinder pathfinder = new Pathfinder(Field.CHARGED_UP_2023);
 
-try {  Path path = pathfinder.generatePath(new Vertex(1, 1), new Vertex(8, 4));
+try {  
+  Path path = pathfinder.generatePath(new Vertex(1, 1), new Vertex(8, 4));
 } catch (ImpossiblePathException e) {
   e.printStackTrace();
 } 
