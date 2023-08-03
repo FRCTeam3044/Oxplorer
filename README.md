@@ -1,4 +1,4 @@
-# Pathfinding 3044.
+# Pathfinding 3044
 This repo will be transferred to [FRCTeam3044](https://github.com/FRCTeam3044) when I am done working on it. It's only here for convenience right now. I have activley been working on it these past couple weeks, but I broke a few things so I haven't committed here yet.
 
 ## Pathfinding
