@@ -7,6 +7,276 @@
     },
     "windows": {
       "/SmartDashboard/Field": {
+        "Neighbor0": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor1": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor10": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor11": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor12": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor13": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor14": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor15": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor16": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor17": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor18": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor19": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor2": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor20": {
+          "arrows": false,
+          "color": [
+            0.0,
+            255.0,
+            0.0,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor21": {
+          "arrows": false,
+          "color": [
+            0.0,
+            255.0,
+            0.0,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor22": {
+          "arrows": false,
+          "color": [
+            0.0,
+            255.0,
+            0.0,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor23": {
+          "arrows": false,
+          "color": [
+            0.0,
+            255.0,
+            0.0,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor24": {
+          "arrows": false,
+          "color": [
+            0.0,
+            255.0,
+            0.0,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor25": {
+          "arrows": false,
+          "color": [
+            0.0,
+            255.0,
+            0.0,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor26": {
+          "arrows": false,
+          "color": [
+            0.0,
+            255.0,
+            0.0,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor3": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor4": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor5": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor6": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor7": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor8": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
+        "Neighbor9": {
+          "arrows": false,
+          "color": [
+            255.0,
+            0.0,
+            202.5000762939453,
+            255.0
+          ],
+          "style": "Line"
+        },
         "Obstacle0": {
           "arrows": false,
           "style": "Line (Closed)"
@@ -19,47 +289,20 @@
           "arrows": false,
           "style": "Line (Closed)"
         },
-        "Obstacle3": {
-          "arrows": false,
-          "style": "Line (Closed)"
-        },
-        "Obstacle4": {
-          "arrows": false,
-          "style": "Line (Closed)"
-        },
-        "Obstacle5": {
-          "arrows": false,
-          "style": "Line (Closed)"
-        },
-        "Obstacle6": {
-          "arrows": false,
-          "style": "Line (Closed)"
-        },
-        "Obstacle7": {
-          "arrows": false,
-          "style": "Line (Closed)"
-        },
-        "Obstacle8": {
-          "arrows": false,
-          "style": "Line (Closed)"
-        },
-        "Obstacle9": {
-          "arrows": false,
-          "style": "Line (Closed)"
-        },
-        "Path": {
+        "ObstaclesRaw": {
           "arrows": false,
           "color": [
-            0.25491467118263245,
-            0.8088235259056091,
-            0.05550751835107803,
+            0.0,
+            0.0,
+            255.0,
             255.0
           ],
           "style": "Line"
         },
-        "height": 8.0,
-        "image": "/home/nicholas/coding/robotics/2023/field23.png",
-        "width": 16.5,
+        "Path": {
+          "arrows": false,
+          "style": "Line"
+        },
         "window": {
           "visible": true
         }
@@ -67,9 +310,6 @@
     }
   },
   "NetworkTables": {
-    "Persistent Values": {
-      "open": false
-    },
     "transitory": {
       "SmartDashboard": {
         "open": true

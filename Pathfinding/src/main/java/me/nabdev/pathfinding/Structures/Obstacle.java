@@ -2,87 +2,134 @@ package me.nabdev.pathfinding.Structures;
 
 import java.util.ArrayList;
 
-import edu.wpi.first.math.geometry.Pose2d;
-
+/**
+ * Represents an obstacle on the map. An obstacle is a collection of vertices
+ * and edges.
+ */
 public class Obstacle {
-    private ArrayList<Vertex> verticies;
+    /**
+     * The edges that make up the obstacle. The edges contain indices of the
+     * vertices array.
+     * MUST BE IN CLOCKWISE ORDER! (This is important for the isInside method)
+     */
+    public ArrayList<Edge> edges;
+    /**
+     * The vertices that make up the obstacle.
+     * MUST BE IN CLOCKWISE ORDER! (This is important for the isInside method)
+     */
+    public ArrayList<Vertex> myVertices = new ArrayList<Vertex>();
 
-    public Edge[] edges;
+    // ALL VERTICES FOR THE ENTIRE MAP! NOT JUST THE OBSTACLE!
+    private ArrayList<Vertex> vertices;
+    // Vectors along the edges of the obstacle
+    private ArrayList<Vector> vectors = new ArrayList<Vector>();
 
-    private Vector[] vectors = new Vector[4];
-    
-    public boolean isScoringNode = false;
-    public Obstacle(ArrayList<Vertex> verticies, Edge[] edges){
+    /**
+     * Creates a new obstacle.
+     * 
+     * @param vertices All vertices on the map.
+     * @param edges    The edges that make up the obstacle.
+     */
+    public Obstacle(ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
         this.edges = edges;
-        this.verticies = verticies;
-        for(int i = 0; i < 4; i++){
-            Edge edge = edges[i];
-            vectors[i] = verticies.get(edge.vertexOne).createVector(verticies.get(edge.vertexTwo));
+        this.vertices = vertices;
+        for (Edge edge : edges) {
+            myVertices.add(vertices.get(edge.vertexOne));
         }
     }
 
-    public void setScoringVertex(boolean isScoringVertex){
-        this.isScoringNode = isScoringVertex;
+    /**
+     * Re-initializes the obstacle. This is used when the vertices are updated
+     * (usually via inflation)
+     * 
+     * @param vertices The new vertices.
+     */
+    public void initialize(ArrayList<Vertex> vertices) {
+        this.vertices = vertices;
+        myVertices.clear();
+        for (Edge edge : edges) {
+            vectors.add(vertices.get(edge.vertexOne).createVectorFrom(vertices.get(edge.vertexTwo)));
+            myVertices.add(vertices.get(edge.vertexOne));
+        }
     }
 
-    public boolean isInside(Vertex pos){
-        // Check if the given vertex lays inside of this obstacle using the dot product to check if the point is on the same side of all edges.
-        boolean positive = false;
-        boolean negative = false;
-        for(int i = 0; i < 4; i++){
-            Vector vector = vectors[i];
-            Vertex vertex = verticies.get(edges[i].vertexOne);
-            Vector pointVector = vertex.createVector(pos);
-            if(vector.dotProduct(pointVector) < 0){
-                if(positive) return false;
-                negative = true;
-            } else {
-                if(negative) return false;
-                positive = true;
+    /**
+     * Detect if a vertex is inside any obstacle in the list.
+     * 
+     * @param obstacles The list of obstacles to check.
+     * @param vertex    The vertex to check.
+     * @return The list of obstacles that the vertex is inside, empty if none.
+     */
+    public static ArrayList<Obstacle> isRobotInObstacle(ArrayList<Obstacle> obstacles, Vertex vertex) {
+        ArrayList<Obstacle> inside = new ArrayList<Obstacle>();
+        for (Obstacle obs : obstacles) {
+            if (obs.isInside(vertex)) {
+                inside.add(obs);
             }
         }
-        return true;
+        return inside;
     }
 
-    public Vertex calculateNearestPoint(Vertex v){
-        double[] distances = new double[4];
-        Vertex[] closestPoints = new Vertex[4];
-        for(int i = 0; i < 4; i++){
-            Edge edge = edges[i];
-            Vertex vertexOne = verticies.get(edge.vertexOne);
-            Vector vect = v.createVector(vertexOne);
-            Vector edgeVector = verticies.get(edge.vertexTwo).createVector(vertexOne);
+    /**
+     * Checks if the given vertex is inside the obstacle.
+     * 
+     * @param pos The vertex to check.
+     * @return True if the vertex is inside the obstacle, false otherwise.
+     */
+    public boolean isInside(Vertex pos) {
+        int windingNumber = 0;
+        int n = edges.size();
+
+        for (int i = 0; i < n; i++) {
+            Vertex v1 = vertices.get(edges.get(i).vertexOne);
+            Vertex v2 = vertices.get(edges.get(i).vertexTwo);
+
+            if (v1.y <= pos.y) {
+                if (v2.y > pos.y && isLeft(v1, v2, pos) > 0) {
+                    windingNumber++;
+                }
+            } else {
+                if (v2.y <= pos.y && isLeft(v1, v2, pos) < 0) {
+                    windingNumber--;
+                }
+            }
+        }
+
+        return windingNumber != 0;
+    }
+
+    private double isLeft(Vertex v1, Vertex v2, Vertex point) {
+        return ((v2.x - v1.x) * (point.y - v1.y)) - ((point.x - v1.x) * (v2.y - v1.y));
+    }
+
+    /**
+     * Calculates the nearest point on the obstacle to the given vertex.
+     * 
+     * @param v The vertex to calculate the nearest point to.
+     * @return The nearest point on the obstacle to the given vertex.
+     */
+    public Vertex calculateNearestPoint(Vertex v) {
+        double[] distances = new double[edges.size()];
+        Vertex[] closestPoints = new Vertex[edges.size()];
+        for (int i = 0; i < edges.size(); i++) {
+            Edge edge = edges.get(i);
+            Vertex vertexOne = vertices.get(edge.vertexOne);
+            Vector vect = v.createVectorFrom(vertexOne);
+            Vector edgeVector = vertices.get(edge.vertexTwo).createVectorFrom(vertexOne);
             double dot = vect.dotProduct(edgeVector.normalize());
             closestPoints[i] = vertexOne.moveByVector(edgeVector.normalize().scale(dot));
             distances[i] = v.distance(closestPoints[i]);
         }
         int lowest = 0;
-        for(int i = 1; i < 4; i++){
-            if(distances[i] < distances[lowest]){
+        for (int i = 1; i < edges.size(); i++) {
+            if (distances[i] < distances[lowest]) {
                 lowest = i;
             }
         }
         Vertex finalPoint = closestPoints[lowest];
-        Vector finalVector = finalPoint.createVector(v);
-        Vector normalizedFinalVector = finalVector.normalize().scale(0.01);
-        
-        return v.moveByVector(finalVector.add(normalizedFinalVector));
-    }
-    public ArrayList<Pose2d> asPose2dList(){
-        ArrayList<Pose2d> poses = new ArrayList<>();
-        for(Edge edge : edges){
-            poses.add(verticies.get(edge.vertexOne).asPose2d());
-        }
-        return poses;
-    }
+        Vector finalVector = finalPoint.createVectorFrom(v);
+        Vector normalizedFinalVector = finalVector.normalize().scale(0.001);
 
-    public static ArrayList<Obstacle> isRobotInObstacle(ArrayList<Obstacle> obstacles, Vertex vertex){
-        ArrayList<Obstacle> inside = new ArrayList<Obstacle>();
-        for(Obstacle obs : obstacles){
-            if(obs.isInside(vertex)){
-                inside.add(obs);
-            }
-        }
-        return inside;
+        return v.moveByVector(finalVector.add(normalizedFinalVector));
     }
 }

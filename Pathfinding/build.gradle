@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 group 'me.nabdev.pathfinding'
-version '0.1.20'
+version '0.2.0'
 
 java {
     withSourcesJar()
@@ -23,7 +23,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 
-    implementation 'edu.wpi.first.wpimath:wpimath-java:2023.+' // Needed for methods that convert Rotation2d and Pose2d to native pathfinding structures
+    implementation 'edu.wpi.first.wpimath:wpimath-java:2023.4.3' // Needed for methods that convert Rotation2d and Pose2d to native pathfinding structures
     implementation 'org.json:json:20230618'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0'
 }

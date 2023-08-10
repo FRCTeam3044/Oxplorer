@@ -4,33 +4,19 @@
 
 package frc.robot;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONObject;
-import org.json.JSONTokener;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Filesystem;
+import java.util.Arrays;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import frc.robot.Constants.PathfindingConstants;
 import frc.robot.subsystems.sim.SimDrive;
+import me.nabdev.pathfinding.Map;
 import me.nabdev.pathfinding.Pathfinder;
+import me.nabdev.pathfinding.PathfindingConfig;
 import me.nabdev.pathfinding.FieldLoader.Field;
 import me.nabdev.pathfinding.Pathfinder.PathfindSnapMode;
+import me.nabdev.pathfinding.Structures.Edge;
 import me.nabdev.pathfinding.Structures.ImpossiblePathException;
 import me.nabdev.pathfinding.Structures.Path;
 import me.nabdev.pathfinding.Structures.Vertex;
@@ -47,8 +33,8 @@ public class Robot extends TimedRobot {
     private RobotContainer m_robotContainer;
     private Pathfinder pathfinder;
 
-    private double[] lastStart = {3.5, 3};
-    private double[] lastEnd = {8, 4};
+    private double[] lastStart;
+    private double[] lastEnd;
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -60,22 +46,15 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
-        Field2d simField = ((SimDrive) m_robotContainer.drivetrain).field;
+        PathfindingConfig.clearance = 0.4;
+        pathfinder = new Pathfinder(Field.CHARGED_UP_2023);
 
-pathfinder = new Pathfinder(Field.CHARGED_UP_2023);
+        ArrayList<Edge> field = pathfinder.visualizeEdges();
+        DebugUtils.drawLines("Field Inflated", field, pathfinder.visualizeInflatedVertices());
+        DebugUtils.drawLines("Field", field, pathfinder.visualizeVertices());;
 
-try {
-    Path testPath = pathfinder.generatePath(new Vertex(1, 1), new Vertex(8, 4));
-} catch (ImpossiblePathException e){
-    e.printStackTrace();
-}
-
-        ArrayList<ArrayList<Pose2d>> listList = pathfinder.visualizeField();
-        for(int i = 0; i < listList.size(); i++){
-            simField.getObject("Obstacle" + i).setPoses(listList.get(i));
-        }
-        SmartDashboard.putNumberArray("Start Vertex", lastStart);
-        SmartDashboard.putNumberArray("End Vertex", lastEnd);
+        SmartDashboard.putNumberArray("Start Vertex", new double[]{3.5, 3});
+        SmartDashboard.putNumberArray("End Vertex", new double[]{8.25, 4});
     }
 
         
@@ -96,16 +75,18 @@ try {
         CommandScheduler.getInstance().run();
         SmartDashboard.putData(CommandScheduler.getInstance());
 
-        if(!SmartDashboard.getNumberArray("Start Vertex", lastStart).equals(lastStart) || !SmartDashboard.getNumberArray("End Vertex", lastEnd).equals(lastEnd)){
+        if(!Arrays.equals(SmartDashboard.getNumberArray("Start Vertex", lastStart), lastStart) || !Arrays.equals(SmartDashboard.getNumberArray("End Vertex", lastEnd), lastEnd)){
             lastStart = SmartDashboard.getNumberArray("Start Vertex", lastStart);
             lastEnd = SmartDashboard.getNumberArray("End Vertex", lastEnd);
             try {
-                Path testPath = pathfinder.generatePath(new Vertex(lastStart[0], lastStart[1]), new Vertex(lastEnd[0], lastEnd[1]), 
-                    PathfindSnapMode.SNAP_ALL_THEN_LINE);
+                Path testPath = pathfinder.generatePath(new Vertex(lastStart[0], lastStart[1]), new Vertex(lastEnd[0], lastEnd[1]), PathfindSnapMode.SNAP_ALL_THEN_LINE);
                 ((SimDrive) m_robotContainer.drivetrain).field.getObject("Path").setPoses(testPath.asPose2dList());
+                SmartDashboard.putNumberArray("Path", testPath.toDoubleArray());
             } catch (ImpossiblePathException e){
                 e.printStackTrace();
             }
+            ArrayList<Edge> neighbors = pathfinder.visualizeNeighbors();
+            DebugUtils.drawLines("Neighbors", neighbors, pathfinder.visualizePathVertices());
         }
     }
 

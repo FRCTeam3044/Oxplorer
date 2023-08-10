@@ -1,6 +1,5 @@
 package me.nabdev.pathfinding;
 
-
 import me.nabdev.pathfinding.FieldLoader.Field;
 import me.nabdev.pathfinding.Structures.Edge;
 import me.nabdev.pathfinding.Structures.ImpossiblePathException;
@@ -12,105 +11,132 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import edu.wpi.first.math.geometry.Pose2d;
-
 /**
  * The main pathfinder class, and the only one you should need to interact with.
  */
-public class Pathfinder
-{
-    // Every obstacle verticy (ORDER IS IMPORTANT)
-    ArrayList<Vertex> obstacleVerticies = new ArrayList<> ();
-    // An edge table that has the indexes of connected verticies
+public class Pathfinder {
+    /**
+     * The map this pathfinder will use
+     */
+    public final Map map;
+
+    /**
+     * Space between injected points on straightaways in the path (meters)
+     */
+    public final double pointSpacing;
+    /**
+     * Space between points on corners of the path (percent of the curve length)
+     */
+    public final double smoothSpacing;
+    /**
+     * How far back along the straightaway to dedicate to making corners
+     */
+    public final double cornerDist;
+    /**
+     * How far to inflate obstacles
+     */
+    public final double clearance;
+
+    // Every obstacle vertex (ORDER IS IMPORTANT)
+    ArrayList<Vertex> obstacleVertices = new ArrayList<>();
+    ArrayList<Vertex> uninflatedObstacleVertices = new ArrayList<>();
+    // An edge table that has the indexes of connected vertices
     ArrayList<Edge> edges = new ArrayList<>();
 
     ArrayList<Obstacle> obstacles = new ArrayList<>();
 
-    public Map map;
-
     /**
-     * Create a new pathfinder. Should only be done once, at the start of the program.
-     * @param fieldType The field to load
+     * Create a new pathfinder. Should only be done once, at the start of the
+     * program.
+     * 
+     * @param fieldType     The field to load
+     * @param pointSpacing  The distance between points on the path
+     * @param smoothSpacing The distance between points on the smoothed path
+     * @param cornerDist    The distance between points on the path when the robot
+     *                      is turning
+     * @param clearance     The clearance to use when inflating obstacles
      */
-    public Pathfinder(Field fieldType) {
-
+    public Pathfinder(Field fieldType, double pointSpacing, double smoothSpacing, double cornerDist, double clearance) {
+        this.pointSpacing = pointSpacing;
+        this.smoothSpacing = smoothSpacing;
+        this.cornerDist = cornerDist;
+        this.clearance = clearance;
         JSONObject field = FieldLoader.loadField(fieldType);
         // This is essentially a vertex and edge table, with some extra information.
-        // Verticies are stored as an array [x, y]
-        JSONArray verticiesRaw = field.getJSONArray("verticies");
+        // Vertices are stored as an array [x, y]
+        JSONArray verticesRaw = field.getJSONArray("vertices");
         /*
-         * Obstacles are stored as an array of 4 edges, each edge being an array of 2 verticies.
-         * The verticies are stored as the index of the vertex in the vertex array.
+         * Obstacles are stored as an array of edges, each edge being an array of 2
+         * vertices.
+         * The vertices are stored as the index of the vertex in the vertex array.
          * Example:
          * [
-         *    [0,1],
-         *    [1,2],
-         *    [2,3],
-         *    [3,0]
+         * [0,1],
+         * [1,2],
+         * [2,3],
+         * [3,0]
          * ]
-         * This is so that we can detect when the robot or target is inside an obstacle and snap it. 
-         * Obstacles MUST be convex, and the verticies MUST be in clockwise order.
+         * This is so that we can detect when the robot or target is inside an obstacle
+         * and snap it.
+         * Obstacles MUST be convex, and the vertices MUST be in clockwise order.
          */
         JSONArray obstaclesRaw = field.getJSONArray("obstacles");
 
         // Convert from JSONArray to arraylist to make math easier
-        for(int i=0; i<verticiesRaw.length(); i++){
-            JSONArray vertex = verticiesRaw.getJSONArray(i);
-            obstacleVerticies.add(new Vertex(vertex.getDouble(0),vertex.getDouble(1)));
+        for (int i = 0; i < verticesRaw.length(); i++) {
+            JSONArray vertex = verticesRaw.getJSONArray(i);
+            obstacleVertices.add(new Vertex(vertex.getDouble(0), vertex.getDouble(1)));
+            uninflatedObstacleVertices.add(new Vertex(vertex.getDouble(0), vertex.getDouble(1)));
         }
-        for(int i=0; i<obstaclesRaw.length(); i++){
+        for (int i = 0; i < obstaclesRaw.length(); i++) {
             JSONArray obstacle = obstaclesRaw.getJSONArray(i);
-            for(int x=0; x<4; x++){
+            ArrayList<Edge> curEdges = new ArrayList<Edge>();
+            for (int x = 0; x < obstacle.length(); x++) {
                 JSONArray edgeRaw = obstacle.getJSONArray(x);
-                edges.add(new Edge(edgeRaw.getInt(0),edgeRaw.getInt(1)));
+                edges.add(new Edge(edgeRaw.getInt(0), edgeRaw.getInt(1)));
+                curEdges.add(new Edge(edgeRaw.getInt(0), edgeRaw.getInt(1)));
             }
+            Obstacle newObs = new Obstacle(obstacleVertices, curEdges);
+            obstacles.add(newObs);
         }
 
         // Create the map object
-        map = new Map(obstacleVerticies, edges, PathfindingConfig.clearance);
+        map = new Map(obstacles, obstacleVertices, edges, clearance);
 
-        // Unfortunatley, a seconds iteration is required. This is because we need the path verticies to be created before we can create the obstacles.
-        // If you can think of a better way to do this, please let me know.
-        for(int i=0; i<obstaclesRaw.length(); i++){
-            JSONArray obstacle = obstaclesRaw.getJSONArray(i);
-            // Edges are expected to have four points, in clockwise order
-            // Technically this is not required, and may be changed for future field designs
-            Edge[] curEdges = new Edge[4];
-            for(int x=0; x<4; x++){
-                JSONArray edgeRaw = obstacle.getJSONArray(x);
-                curEdges[x] = new Edge(edgeRaw.getInt(0),edgeRaw.getInt(1));
-            }
-            Obstacle newObs = new Obstacle(map.pathVerticiesStatic, curEdges);
-            // TODO: This whole thing is a mess, needs to be completely redone
-            newObs.setScoringVertex((i == 1 || i == 5));
-            obstacles.add(newObs);
+        for (Obstacle obs : obstacles) {
+            obs.initialize(map.pathVerticesStatic);
         }
     }
 
-
     /**
-     * Snaps the start and target vertices to be outside of obstacles, calculates dynamic neighbors, and generates the best path using A-star algorithm.
+     * Snaps the start and target vertices to be outside of obstacles, calculates
+     * dynamic neighbors, and generates the best path using A-star algorithm.
      * 
-     * @param start The starting vertex
-     * @param target The target vertex
-     * @param snapMode The snap mode to use
-     * @param dynamicVerticies An ArrayList of dynamic vertices
+     * @param start           The starting vertex
+     * @param target          The target vertex
+     * @param snapMode        The snap mode to use
+     * @param dynamicVertices An ArrayList of dynamic vertices
      * 
-     * @return The shortest path from the starting vertex to the target vertex that does not intersect any obstacles
+     * @return The shortest path from the starting vertex to the target vertex that
+     *         does not intersect any obstacles
      * 
      * @throws ImpossiblePathException If no path can be found
      */
-    public Path generatePath(Vertex start, Vertex target, PathfindSnapMode snapMode, ArrayList<Vertex> dynamicVerticies) throws ImpossiblePathException {
-        return generatePathInner(start, target, snapMode, dynamicVerticies);
+    public Path generatePath(Vertex start, Vertex target, PathfindSnapMode snapMode, ArrayList<Vertex> dynamicVertices)
+            throws ImpossiblePathException {
+        return generatePathInner(start, target, snapMode, dynamicVertices);
     }
 
     /**
-     * Snaps the start and target vertices to be outside of obstacles, calculates dynamic neighbors, and generates the best path using A-star algorithm.
+     * Snaps the start and target vertices to be outside of obstacles, calculates
+     * dynamic neighbors, and generates the best path using A-star algorithm.
+     * Defaults to PathfindSnapMode.SNAP_ALL
      * 
-     * @param start The starting vertex
+     * @param start  The starting vertex
      * @param target The target vertex
      * 
-     * @return The shortest path from the starting vertex to the target vertex that does not intersect any obstacles
+     * @return The shortest path from the starting vertex to the target vertex that
+     *         does not intersect any obstacles
      * 
      * @throws ImpossiblePathException If no path can be found
      */
@@ -118,14 +144,16 @@ public class Pathfinder
         return generatePathInner(start, target, PathfindSnapMode.SNAP_ALL, new ArrayList<Vertex>());
     }
 
-        /**
-     * Snaps the start and target vertices to be outside of obstacles, calculates dynamic neighbors, and generates the best path using A-star algorithm.
+    /**
+     * Snaps the start and target vertices to be outside of obstacles, calculates
+     * dynamic neighbors, and generates the best path using A-star algorithm.
      * 
-     * @param start The starting vertex
-     * @param target The target vertex
+     * @param start    The starting vertex
+     * @param target   The target vertex
      * @param snapMode The snap mode to use
      * 
-     * @return The shortest path from the starting vertex to the target vertex that does not intersect any obstacles
+     * @return The shortest path from the starting vertex to the target vertex that
+     *         does not intersect any obstacles
      * 
      * @throws ImpossiblePathException If no path can be found
      */
@@ -133,28 +161,34 @@ public class Pathfinder
         return generatePathInner(start, target, snapMode, new ArrayList<Vertex>());
     }
 
-    private Path generatePathInner(Vertex start, Vertex target, PathfindSnapMode snapMode, ArrayList<Vertex> dynamicVerticies) throws ImpossiblePathException {
-        // Snapping is done because the center of the robot can be inside of the inflated obstacle edges
-        // In the case where this happened the start needs to be snapped outside otherwise a* will fail
+    private Path generatePathInner(Vertex start, Vertex target, PathfindSnapMode snapMode,
+            ArrayList<Vertex> dynamicVertices) throws ImpossiblePathException {
+        // Snapping is done because the center of the robot can be inside of the
+        // inflated obstacle edges
+        // In the case where this happened the start needs to be snapped outside
+        // otherwise a* will fail
         Vertex unsnappedTarget = target;
-        if(snapMode == PathfindSnapMode.SNAP_ALL || snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_START){
+        if (snapMode == PathfindSnapMode.SNAP_ALL || snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE
+                || snapMode == PathfindSnapMode.SNAP_START) {
             start = snap(start);
         }
 
-        if(snapMode == PathfindSnapMode.SNAP_ALL || snapMode == PathfindSnapMode.SNAP_TARGET){
+        if (snapMode == PathfindSnapMode.SNAP_ALL || snapMode == PathfindSnapMode.SNAP_TARGET) {
             target = snap(target);
-        } else if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE){
+        } else if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE
+                || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
             target = snap(target);
         }
-        
-        // if(snapMode == PathfindSnapMode.SNAP || snapMode == PathfindSnapMode.SNAP_THEN_POINT || snapToScoringNodes){
-        //     target = snap(unsnappedTarget, snapToScoringNodes);
-        //     System.out.println("Snapped target (iter 1): " + target.print());
-        //     if(snapToScoringNodes){
-        //         unsnappedTarget = target;
-        //         target = snap(unsnappedTarget, false);
-        //         System.out.println("Snapped target (iter 2): " + target.print());
-        //     }
+
+        // if(snapMode == PathfindSnapMode.SNAP || snapMode ==
+        // PathfindSnapMode.SNAP_THEN_POINT || snapToScoringNodes){
+        // target = snap(unsnappedTarget, snapToScoringNodes);
+        // System.out.println("Snapped target (iter 1): " + target);
+        // if(snapToScoringNodes){
+        // unsnappedTarget = target;
+        // target = snap(unsnappedTarget, false);
+        // System.out.println("Snapped target (iter 2): " + target);
+        // }
         // }
 
         // Time the pathfinding
@@ -163,27 +197,29 @@ public class Pathfinder
         ArrayList<Vertex> additionalVertexs = new ArrayList<>();
         additionalVertexs.add(start);
         additionalVertexs.add(target);
-        additionalVertexs.addAll(dynamicVerticies);
+        additionalVertexs.addAll(dynamicVertices);
         map.calculateDynamicNeighbors(additionalVertexs, true);
 
-        Astar astar = new Astar(map);
-        // Solve for the best path using a-star. Chargepad handling is temporary and will be replaced with a cleaner solution.
+        Astar astar = new Astar(map, this);
+        // Solve for the best path using a-star. Chargepad handling is temporary and
+        // will be replaced with a cleaner solution.
         Path path = astar.run(start, target);
-        if(path == null){
+        if (path == null) {
             throw new ImpossiblePathException("No possible solutions");
         }
-        if(snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE){
+        if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
             path.setUnsnappedTarget(unsnappedTarget);
         }
         path.processPath();
         long endTime = System.nanoTime();
-        System.out.println("Path generation time: " + (endTime - startTime)/1000000 + "ms");
+        System.out.println("Path generation time: " + (endTime - startTime) / 1000000 + "ms");
 
         return path;
     }
 
     /**
      * Snap a vertex to the nearest obstacle edge if it's inside of one
+     * 
      * @param point Point to snap
      * @return
      */
@@ -191,11 +227,11 @@ public class Pathfinder
         ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point);
         Vertex tempNearestVertex = point;
         int i = 0;
-        while(targetObs.size() > 0){
-            if(i > 10){
-                throw new ImpossiblePathException("Failed to snap point " + point.print());
+        while (targetObs.size() > 0) {
+            if (i > 10) {
+                throw new ImpossiblePathException("Failed to snap point " + point);
             }
-            for(Obstacle obs : targetObs){
+            for (Obstacle obs : targetObs) {
                 tempNearestVertex = obs.calculateNearestPoint(tempNearestVertex);
             }
             targetObs = Obstacle.isRobotInObstacle(obstacles, tempNearestVertex);
@@ -205,20 +241,25 @@ public class Pathfinder
     }
 
     /**
-     * Determines how verticies will be snapped to the nearest obstacle edge if they are inside of an obstacle. 
-     * Snapping is useful in case the robot center is inside of the inflated obstacle verticies.
+     * Determines how vertices will be snapped to the nearest obstacle edge if they
+     * are inside of an obstacle.
+     * Snapping is useful in case the robot center is inside of the inflated
+     * obstacle vertices.
      */
     public enum PathfindSnapMode {
         /**
-         * No snapping. If a the start or target is inside of an obstacle, an ImpossiblePathException will be thrown.
+         * No snapping. If a the start or target is inside of an obstacle, an
+         * ImpossiblePathException will be thrown.
          */
-        NONE, 
+        NONE,
         /**
-         * Snap start and target verticies
+         * Snap start and target vertices
          */
-        SNAP_ALL, 
+        SNAP_ALL,
         /**
-         * Snap start and target verticies. If the target is inside an obstacle, draw a straight line from the snapped target to the original target to drive there anyways
+         * Snap start and target vertices. If the target is inside an obstacle, draw a
+         * straight line from the snapped target to the original target to drive there
+         * anyways
          */
         SNAP_ALL_THEN_LINE,
         /**
@@ -230,20 +271,79 @@ public class Pathfinder
          */
         SNAP_TARGET,
         /**
-         * If the target is inside an obstacle, snap it and draw a straight line from the snapped target to the original target to drive there anyways.
+         * If the target is inside an obstacle, snap it and draw a straight line from
+         * the snapped target to the original target to drive there anyways.
          */
         SNAP_TARGET_THEN_LINE
 
     }
+
     /**
-     * It's a bit messy, but it's used if you want to see all of the obstacles you mapped in the sim field.
-     * @return An arraylist containing an arraylist of pose2ds for each obstacle. Each pose2d represents one vertex of the obstacle.
+     * Intended for use with our custom advantagescope fork for debugging the
+     * visibility graph.
+     * 
+     * @return An arraylist containing edges to represent all neighbors, showing the
+     *         visibility graph
      */
-    public ArrayList<ArrayList<Pose2d>> visualizeField(){
-        ArrayList<ArrayList<Pose2d>> listList = new ArrayList<>();
-        for(int i = 0; i < obstacles.size(); i++){
-            listList.add(obstacles.get(i).asPose2dList());
-        }
-        return listList;
+    public ArrayList<Edge> visualizeNeighbors() {
+        ArrayList<Edge> list = new ArrayList<>();
+        if (map.neighbors != null)
+            list.addAll(map.neighbors);
+        if (map.neighborsStatic != null)
+            list.addAll(map.neighborsStatic);
+        return list;
+    }
+
+    /**
+     * Intended for use with our custom advantagescope fork for debugging the
+     * visibility graph.
+     * 
+     * @return An arraylist containing vertices to represent all vertices in the
+     *         visibility graph. This is the same as visualizeVerticies, but
+     *         includes dynamic vertices like the start and end points.
+     */
+    public ArrayList<Vertex> visualizePathVertices() {
+        ArrayList<Vertex> list = new ArrayList<>();
+        if (map.pathVertices != null)
+            list.addAll(map.pathVertices);
+        return list;
+    }
+
+    /**
+     * Intended for use with our custom advantagescope fork for debugging new
+     * fields.
+     * 
+     * @return An arraylist containing edges to represent all defined field edges
+     */
+    public ArrayList<Edge> visualizeEdges() {
+        ArrayList<Edge> list = new ArrayList<>();
+        list.addAll(edges);
+        return list;
+    }
+
+    /**
+     * Intended for use with our custom advantagescope fork for debugging new
+     * fields.
+     * 
+     * @return An arraylist containing vertices to represent all defined, uninflated
+     *         obstacle vertices
+     */
+    public ArrayList<Vertex> visualizeVertices() {
+        ArrayList<Vertex> list = new ArrayList<>();
+        list.addAll(uninflatedObstacleVertices);
+        return list;
+    }
+
+    /**
+     * Intended for use with our custom advantagescope fork for debugging new
+     * fields.
+     * 
+     * @return An arraylist containing vertices to represent all uninflated obstacle
+     *         vertices
+     */
+    public ArrayList<Vertex> visualizeInflatedVertices() {
+        ArrayList<Vertex> list = new ArrayList<>();
+        list.addAll(map.pathVerticesStatic);
+        return list;
     }
 }

@@ -3,14 +3,28 @@ package me.nabdev.pathfinding;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+/**
+ * Loads a field from a JSON file
+ */
 public class FieldLoader {
+    /**
+     * The fields that can be loaded
+     */
     public enum Field {
-        CHARGED_UP_2023
+        /**
+         * The 2023 field (Charged Up)
+         */
+        CHARGED_UP_2023,
+        /**
+         * A debug field for testing
+         */
+        DEBUG_FIELD
     }
 
-    public static JSONObject loadField(Field field){
+    static JSONObject loadField(Field field) {
         JSONTokener tokener;
-        tokener = new JSONTokener(FieldLoader.class.getClassLoader().getResourceAsStream(field.name().toLowerCase() + ".json")); 
+        tokener = new JSONTokener(
+                FieldLoader.class.getClassLoader().getResourceAsStream(field.name().toLowerCase() + ".json"));
         return new JSONObject(tokener);
     }
 }
