@@ -4,10 +4,10 @@ This repo will be transferred to [FRCTeam3044](https://github.com/FRCTeam3044) w
 ## Pathfinding
 The pathfinding folder contains the actual pathfinding code. It's still being worked on, so things like obstacle inflation and line intersection have some issues I'm aware of. I'll try to fix it asap.
 
-Here's a basic example of usage (note that this probably will change in the future):
+Here's a basic example of usage:
 
 ```java
-Pathfinder pathfinder = new Pathfinder(Field.CHARGED_UP_2023);
+Pathfinder pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023).build();
 
 try {  
   Path path = pathfinder.generatePath(new Vertex(1, 1), new Vertex(8, 4));
