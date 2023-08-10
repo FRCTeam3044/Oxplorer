@@ -11,9 +11,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.sim.SimDrive;
-import me.nabdev.pathfinding.Map;
 import me.nabdev.pathfinding.Pathfinder;
-import me.nabdev.pathfinding.PathfindingConfig;
+import me.nabdev.pathfinding.PathfinderBuilder;
 import me.nabdev.pathfinding.FieldLoader.Field;
 import me.nabdev.pathfinding.Pathfinder.PathfindSnapMode;
 import me.nabdev.pathfinding.Structures.Edge;
@@ -46,8 +45,7 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
-        PathfindingConfig.clearance = 0.4;
-        pathfinder = new Pathfinder(Field.CHARGED_UP_2023);
+        pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023).build();
 
         ArrayList<Edge> field = pathfinder.visualizeEdges();
         DebugUtils.drawLines("Field Inflated", field, pathfinder.visualizeInflatedVertices());
