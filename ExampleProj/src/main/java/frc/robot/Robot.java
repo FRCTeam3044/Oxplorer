@@ -45,7 +45,9 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
-        pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023).build();
+        pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023)
+        .setClearance(0.5)
+        .build();
 
         ArrayList<Edge> field = pathfinder.visualizeEdges();
         DebugUtils.drawLines("Field Inflated", field, pathfinder.visualizeInflatedVertices());
@@ -53,9 +55,7 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putNumberArray("Start Vertex", new double[]{3.5, 3});
         SmartDashboard.putNumberArray("End Vertex", new double[]{8.25, 4});
-    }
-
-        
+    }   
 
     /**
      * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics

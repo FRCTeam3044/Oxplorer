@@ -92,12 +92,13 @@ public class Path extends ArrayList<Vertex> {
     }
 
     private void bezierSmoothing() {
-        // this does not include the start and endpoint, so in the case where the
+        // "this" does not include the start and endpoint, so in the case where the
         // shortest path is a straight line it would be empty.
         if (this.size() < 1) {
             segments.add(new PathSegment(start, target));
             return;
         }
+        // Iterate over every vertex other than the start and end.
         for (int i = 0; i < this.size(); i++) {
             Vertex p1 = this.get(i);
             PathSegment curve = new PathSegment();
@@ -106,14 +107,20 @@ public class Path extends ArrayList<Vertex> {
             // can garuntee that i + 2 will never be out of bounds.
             Vertex next = fullPath.get(i + 2);
 
+            // We are creating vectors from the current point to the previous and next
+            // points to find the other two control points for our quadratic bezier curve.
             Vector prevVector = prev.createVectorFrom(p1).normalize().scale(pathfinder.cornerDist);
             Vector nextVector = next.createVectorFrom(p1).normalize().scale(pathfinder.cornerDist);
 
+            // These are the two points that will be used as control points for the bezier
+            // curve.
             Vertex p0 = p1.moveByVector(prevVector);
             Vertex p2 = p1.moveByVector(nextVector);
 
+            // This is the actual bezier curve.
             generateBezierCorner(curve, p0, p1, p2);
 
+            // Just connecting the dots.
             if (i == 0) {
                 segments.add(new PathSegment(start, curve.start()));
             } else {
@@ -121,6 +128,7 @@ public class Path extends ArrayList<Vertex> {
             }
             segments.add(curve);
         }
+        // Finally, add a segment between the point before the target and the target.
         segments.add(new PathSegment(segments.get(segments.size() - 1).end(), target));
     }
 
@@ -133,6 +141,10 @@ public class Path extends ArrayList<Vertex> {
      * @param p2    The third point.
      */
     private void generateBezierCorner(PathSegment curve, Vertex p0, Vertex p1, Vertex p2) {
+        // Want to understand how this function works?
+        // I highly recomend checking out the visualization at
+        // https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves
+        // It's a lot easier to understand when you can see it.
         for (double t = 0; t < pathfinder.cornerDist; t += pathfinder.smoothSpacing) {
             Vertex q0 = p0.moveByVector(p1.createVectorFrom(p0).normalize().scale(t));
             Vertex q1 = p1.moveByVector(p2.createVectorFrom(p1).normalize().scale(t));
@@ -141,20 +153,23 @@ public class Path extends ArrayList<Vertex> {
         }
     }
 
+    // Just add all the points from the segments to the path in order.
     private void updateFromSegments() {
         this.clear();
         for (PathSegment seg : segments) {
             for (int i = 0; i < seg.points.size(); i++) {
-                if (!this.contains(seg.get(i)))
+                if (!this.contains(seg.get(i))) // Weeding out potential duplicates
                     this.add(seg.get(i));
             }
         }
+        // "this" shouldn't contain the start and endpoint, so we remove them here.
         if (this.size() > 0)
             this.remove(0);
         if (this.size() > 0)
             this.remove(this.size() - 1);
     }
 
+    // Create the full path including the start and endpoint.
     private void createFullPath() {
         fullPath.clear();
         fullPath.add(start);
@@ -162,10 +177,14 @@ public class Path extends ArrayList<Vertex> {
         fullPath.add(target);
     }
 
+    // Adding points in the middle of straight segments to allow for pure pursuit to
+    // work its magic.
+    // I might make this optional in the future, because we might not go with pure
+    // pursuit again.
     private void injectPoints() {
-        ArrayList<Vertex> newPoints = new ArrayList<Vertex>();
         // Create an ArrayList of Edges from the path
         for (int x = 0; x < segments.size(); x++) {
+            ArrayList<Vertex> newPoints = new ArrayList<Vertex>();
             PathSegment seg = segments.get(x);
             if (seg.corner)
                 continue;
