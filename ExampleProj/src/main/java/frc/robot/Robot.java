@@ -45,7 +45,7 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
-        pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023)
+        pathfinder = new PathfinderBuilder(Field.DEBUG_FIELD)
         .setClearance(0.5)
         .build();
 

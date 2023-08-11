@@ -152,38 +152,39 @@ public class Vector {
         return x * v2.y - y * v2.x;
     }
 
-    /*
-     * This code was my original attempt at calculating if two lines intersect. It
-     * is flawed in many ways, so I went with the approach of doesIntersect in
-     * Vertex.java
+    /**
+     * Whether or not the line segment from d1 to d2 intersects the line segment
+     * from c1 to c2
+     * 
+     * @param d1 The first vertex of the first line segment
+     * @param d2 The second vertex of the first line segment
+     * @param c1 The first vertex of the second line segment
+     * @param c2 The second vertex of the second line segment
+     * @return True if the line segments intersect, false otherwise
      */
-    // public static boolean dotIntersect(Vertex d1, Vertex d2, Vertex c1, Vertex
-    // c2){
-    // Vector Normald = d2.createVector(d1).calculateNormal();
-    // Vector Normalc = c2.createVector(c1).calculateNormal();
-    // Vector p1 = c1.createVector(d1);
-    // Vector p2 = c2.createVector(d2);
-    // double p1d = p1.dotProduct(Normald);
-    // double p2d = p2.dotProduct(Normald);
-    // double p1c = p1.dotProduct(Normalc);
-    // double p2c = p2.dotProduct(Normalc);
-    // // This is gross but I don't have time to think of a proper way to handle
-    // this.
-    // // This misses when the lines are on the same line, but only if that line is
-    // diagonal.
-    // if(p1d == 0 && p2d == 0 && p1c == 0 && p2c == 0){
-    // if(d1.x == d2.x){
-    // return (c1.x == d1.x && c1.y <= d2.y && c1.y >= d1.y) || (c2.x == d1.x &&
-    // c2.y <= d2.y && c2.y >= d1.y);
-    // } else {
-    // return (c1.y == d1.y && c1.x <= d2.x && c1.x >= d1.x) || (c2.y == d1.y &&
-    // c2.x <= d2.x && c2.x >= d1.x);
-    // }
-
-    // }
-    // if((p1d == 0 || p2d == 0) && (p1c == 0 || p2c == 0)) return true;
-    // return !(p1c < 0 == p2c < 0 || p1d < 0 == p2d < 0);
-    // }
+    public static boolean dotIntersect(Vertex d1, Vertex d2, Vertex c1, Vertex c2){
+        Vector Normald = d2.createVectorFrom(d1).calculateNormal();
+        Vector Normalc = c2.createVectorFrom(c1).calculateNormal();
+        Vector p1 = c1.createVectorFrom(d1);
+        Vector p2 = c2.createVectorFrom(d2);
+        double p1d = p1.dotProduct(Normald);
+        double p2d = p2.dotProduct(Normald);
+        double p1c = p1.dotProduct(Normalc);
+        double p2c = p2.dotProduct(Normalc);
+        // This is gross but I can't think of a proper
+        // This misses when the lines are on the same line, but only if that line is diagonal.
+        if(p1d == 0 && p2d == 0 && p1c == 0 && p2c == 0){
+            if(d1.x == d2.x){
+                return (c1.x == d1.x && c1.y <= d2.y && c1.y >= d1.y) || (c2.x == d1.x &&
+                c2.y <= d2.y && c2.y >= d1.y);
+            } else {
+                return (c1.y == d1.y && c1.x <= d2.x && c1.x >= d1.x) || (c2.y == d1.y &&
+                c2.x <= d2.x && c2.x >= d1.x);
+            }
+        }
+        if((p1d == 0 || p2d == 0) && (p1c == 0 || p2c == 0)) return true;
+        return !(p1c < 0 == p2c < 0 || p1d < 0 == p2d < 0);
+    }
 
     /**
      * Check if this vector has zero x and y components

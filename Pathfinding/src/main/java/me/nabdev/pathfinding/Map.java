@@ -198,7 +198,7 @@ public class Map {
             return;
         boolean intersect = false;
         for (int x = 0; x < obstacleEdges.size(); x++) {
-            if (Vertex.doesIntersect(pathVerticesArray.get(cur), pathVerticesArray.get(i),
+            if (Vector.dotIntersect(pathVerticesArray.get(cur), pathVerticesArray.get(i),
                     obstacleVertices.get(obstacleEdges.get(x).vertexOne),
                     obstacleVertices.get(obstacleEdges.get(x).vertexTwo))) {
                 intersect = true;

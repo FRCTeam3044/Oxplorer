@@ -109,8 +109,9 @@ public class Pathfinder {
     }
 
     /**
-     * Snaps the start and target vertices to be outside of obstacles, calculates
-     * dynamic neighbors, and generates the best path using A-star algorithm.
+     * Snaps the start and target vertices according to the snap mode, calculates
+     * visibility graph for dynamic elements, and generates the best path using
+     * A-star algorithm.
      * 
      * @param start           The starting vertex
      * @param target          The target vertex
@@ -128,8 +129,8 @@ public class Pathfinder {
     }
 
     /**
-     * Snaps the start and target vertices to be outside of obstacles, calculates
-     * dynamic neighbors, and generates the best path using A-star algorithm.
+     * Snaps the start and target vertices to be outside of obstacles and generates
+     * the best path using A-star algorithm.
      * Defaults to PathfindSnapMode.SNAP_ALL
      * 
      * @param start  The starting vertex
@@ -145,8 +146,8 @@ public class Pathfinder {
     }
 
     /**
-     * Snaps the start and target vertices to be outside of obstacles, calculates
-     * dynamic neighbors, and generates the best path using A-star algorithm.
+     * Snaps the start and target vertices according to the snap mode and generates
+     * the best path using A-star algorithm.
      * 
      * @param start    The starting vertex
      * @param target   The target vertex
@@ -161,6 +162,7 @@ public class Pathfinder {
         return generatePathInner(start, target, snapMode, new ArrayList<Vertex>());
     }
 
+    // Using an inner function because java handles optional parameters poorly
     private Path generatePathInner(Vertex start, Vertex target, PathfindSnapMode snapMode,
             ArrayList<Vertex> dynamicVertices) throws ImpossiblePathException {
         // Snapping is done because the center of the robot can be inside of the
@@ -180,18 +182,6 @@ public class Pathfinder {
             target = snap(target);
         }
 
-        // if(snapMode == PathfindSnapMode.SNAP || snapMode ==
-        // PathfindSnapMode.SNAP_THEN_POINT || snapToScoringNodes){
-        // target = snap(unsnappedTarget, snapToScoringNodes);
-        // System.out.println("Snapped target (iter 1): " + target);
-        // if(snapToScoringNodes){
-        // unsnappedTarget = target;
-        // target = snap(unsnappedTarget, false);
-        // System.out.println("Snapped target (iter 2): " + target);
-        // }
-        // }
-
-        // Time the pathfinding
         long startTime = System.nanoTime();
 
         ArrayList<Vertex> additionalVertexs = new ArrayList<>();
@@ -201,12 +191,9 @@ public class Pathfinder {
         map.calculateDynamicNeighbors(additionalVertexs, true);
 
         Astar astar = new Astar(map, this);
-        // Solve for the best path using a-star. Chargepad handling is temporary and
-        // will be replaced with a cleaner solution.
+        // This could throw ImpossiblePathException
         Path path = astar.run(start, target);
-        if (path == null) {
-            throw new ImpossiblePathException("No possible solutions");
-        }
+
         if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
             path.setUnsnappedTarget(unsnappedTarget);
         }

@@ -3,6 +3,7 @@ package me.nabdev.pathfinding;
 import java.util.ArrayList;
 
 import me.nabdev.pathfinding.Structures.Vertex;
+import me.nabdev.pathfinding.Structures.ImpossiblePathException;
 import me.nabdev.pathfinding.Structures.Path;
 
 /**
@@ -37,10 +38,10 @@ public class Astar {
      * 
      * @param start The starting point.
      * @param end   The target point.
-     * @return A Path object containing the path from the start to the target, or
-     *         null if no path was found.
+     * @return A Path object containing the path from the start to the target.
+     * @throws ImpossiblePathException If there is no possible path from the start
      */
-    public Path run(Vertex start, Vertex end) {
+    public Path run(Vertex start, Vertex end) throws ImpossiblePathException {
         while (!solved) {
             if (!started) {
                 toSearch.add(start);
@@ -50,8 +51,9 @@ public class Astar {
             try {
                 current = toSearch.get(0);
             } catch (IndexOutOfBoundsException exception) {
+                // If there are no more nodes to search, then there is no valid path.
                 solved = true;
-                return null;
+                throw new ImpossiblePathException("No possible path found.");
             }
             for (Vertex Vertex : toSearch) {
                 if (Vertex.F() < current.F())
@@ -71,12 +73,12 @@ public class Astar {
                     while (true) {
                         i++;
                         if (i > maxPathIterations) {
-                            System.out.println("Warning: Unable to connect target to start point - pathfinding bug.");
                             toSearch.clear();
                             processed.clear();
                             started = false;
                             solved = false;
-                            return null;
+                            throw new ImpossiblePathException(
+                                    "Failed to trace path after solving - this is most likely a bug.");
                         }
                         if (cur.connection != null) {
                             path.add(0, cur);
@@ -104,7 +106,7 @@ public class Astar {
             }
 
         }
-        return null;
+        throw new ImpossiblePathException("No possible path found.");
     }
 
 }
