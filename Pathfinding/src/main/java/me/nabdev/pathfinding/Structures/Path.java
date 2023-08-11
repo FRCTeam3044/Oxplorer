@@ -107,10 +107,37 @@ public class Path extends ArrayList<Vertex> {
             // can garuntee that i + 2 will never be out of bounds.
             Vertex next = fullPath.get(i + 2);
 
+            double cornerDist = pathfinder.cornerDist;
             // We are creating vectors from the current point to the previous and next
             // points to find the other two control points for our quadratic bezier curve.
-            Vector prevVector = prev.createVectorFrom(p1).normalize().scale(pathfinder.cornerDist);
-            Vector nextVector = next.createVectorFrom(p1).normalize().scale(pathfinder.cornerDist);
+            Vector prevVector = prev.createVectorFrom(p1);
+            double prevMag = prevVector.magnitude();
+            if(prevMag < pathfinder.cornerDist * 2){
+                if(i > 0){
+                    prevVector = prevVector.scale(pathfinder.cornerSplitPercent);
+                    cornerDist = prevMag * pathfinder.cornerSplitPercent;
+                } else {
+                    prevVector = prevVector.normalize().scale(Math.min(pathfinder.cornerDist, prevMag));
+                    cornerDist = Math.min(pathfinder.cornerDist, prevMag);
+                }
+            } else {
+                prevVector = prevVector.normalize().scale(pathfinder.cornerDist);
+            }
+                
+            Vector nextVector = next.createVectorFrom(p1);
+            double nextMag = nextVector.magnitude();
+            if(nextMag < pathfinder.cornerDist * 2){
+                if(i < this.size() - 1){
+                    nextVector = nextVector.scale(pathfinder.cornerSplitPercent);
+                    cornerDist += nextMag * pathfinder.cornerSplitPercent;
+                } else {
+                    nextVector = nextVector.normalize().scale(Math.min(pathfinder.cornerDist, nextMag));
+                    cornerDist += Math.min(pathfinder.cornerDist, nextMag);
+                }
+            } else {
+                nextVector = nextVector.normalize().scale(pathfinder.cornerDist);
+                cornerDist += pathfinder.cornerDist;
+            }
 
             // These are the two points that will be used as control points for the bezier
             // curve.
@@ -118,7 +145,7 @@ public class Path extends ArrayList<Vertex> {
             Vertex p2 = p1.moveByVector(nextVector);
 
             // This is the actual bezier curve.
-            generateBezierCorner(curve, p0, p1, p2);
+            generateBezierCorner(curve, cornerDist * 0.5, p0, p1, p2);
 
             // Just connecting the dots.
             if (i == 0) {
@@ -140,12 +167,12 @@ public class Path extends ArrayList<Vertex> {
      * @param p1    The second point (the point that won't lie on the curve).
      * @param p2    The third point.
      */
-    private void generateBezierCorner(PathSegment curve, Vertex p0, Vertex p1, Vertex p2) {
+    private void generateBezierCorner(PathSegment curve, double cornerDist, Vertex p0, Vertex p1, Vertex p2) {
         // Want to understand how this function works?
         // I highly recomend checking out the visualization at
         // https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves
         // It's a lot easier to understand when you can see it.
-        for (double t = 0; t < pathfinder.cornerDist; t += pathfinder.smoothSpacing) {
+        for (double t = 0; t < cornerDist; t += pathfinder.cornerPointSpacing) {
             Vertex q0 = p0.moveByVector(p1.createVectorFrom(p0).normalize().scale(t));
             Vertex q1 = p1.moveByVector(p2.createVectorFrom(p1).normalize().scale(t));
             Vertex pos = q0.moveByVector(q1.createVectorFrom(q0).normalize().scale(t));

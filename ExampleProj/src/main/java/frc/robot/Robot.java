@@ -46,15 +46,17 @@ public class Robot extends TimedRobot {
         m_robotContainer = new RobotContainer();
 
         pathfinder = new PathfinderBuilder(Field.DEBUG_FIELD)
-        .setClearance(0.5)
-        .build();
+            .setClearance(0.5)
+            .setCornerDist(5)
+            .setCornerSplitPercent(0.2)
+            .build();
 
         ArrayList<Edge> field = pathfinder.visualizeEdges();
         DebugUtils.drawLines("Field Inflated", field, pathfinder.visualizeInflatedVertices());
         DebugUtils.drawLines("Field", field, pathfinder.visualizeVertices());;
 
-        SmartDashboard.putNumberArray("Start Vertex", new double[]{3.5, 3});
-        SmartDashboard.putNumberArray("End Vertex", new double[]{8.25, 4});
+        SmartDashboard.putNumberArray("Start Vertex", new double[]{0, 0});
+        SmartDashboard.putNumberArray("End Vertex", new double[]{16.5, 8});
     }   
 
     /**

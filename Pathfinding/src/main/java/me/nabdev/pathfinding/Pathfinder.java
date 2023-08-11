@@ -27,7 +27,7 @@ public class Pathfinder {
     /**
      * Space between points on corners of the path (percent of the curve length)
      */
-    public final double smoothSpacing;
+    public final double cornerPointSpacing;
     /**
      * How far back along the straightaway to dedicate to making corners
      */
@@ -36,6 +36,13 @@ public class Pathfinder {
      * How far to inflate obstacles
      */
     public final double clearance;
+
+    /**
+     * How far each corner should move towards the
+     * other point if the distance is too short to allow both corners the full
+     * corner distance
+     */
+    public final double cornerSplitPercent;
 
     // Every obstacle vertex (ORDER IS IMPORTANT)
     ArrayList<Vertex> obstacleVertices = new ArrayList<>();
@@ -51,16 +58,17 @@ public class Pathfinder {
      * 
      * @param fieldType     The field to load
      * @param pointSpacing  The distance between points on the path
-     * @param smoothSpacing The distance between points on the smoothed path
+     * @param cornerPointSpacing The distance between points on the smoothed path
      * @param cornerDist    The distance between points on the path when the robot
      *                      is turning
      * @param clearance     The clearance to use when inflating obstacles
      */
-    public Pathfinder(Field fieldType, double pointSpacing, double smoothSpacing, double cornerDist, double clearance) {
+    public Pathfinder(Field fieldType, double pointSpacing, double cornerPointSpacing, double cornerDist, double clearance, double cornerSplitPercent) {
         this.pointSpacing = pointSpacing;
-        this.smoothSpacing = smoothSpacing;
+        this.cornerPointSpacing = cornerPointSpacing;
         this.cornerDist = cornerDist;
         this.clearance = clearance;
+        this.cornerSplitPercent = cornerSplitPercent;
         JSONObject field = FieldLoader.loadField(fieldType);
         // This is essentially a vertex and edge table, with some extra information.
         // Vertices are stored as an array [x, y]

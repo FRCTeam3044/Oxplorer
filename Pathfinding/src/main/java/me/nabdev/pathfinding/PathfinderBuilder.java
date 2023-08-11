@@ -7,10 +7,11 @@ import me.nabdev.pathfinding.FieldLoader.Field;
  */
 public class PathfinderBuilder {
     private Field field;
-    private double pointSpacing = 0.12;
-    private double smoothSpacing = 0.08;
+    private double pointSpacing = 0.15;
+    private double cornerPointSpacing = 0.08;
     private double cornerDist = 0.6;
     private double clearance = 0.6;
+    private double cornerSplitPercent = 0.45;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -25,7 +26,7 @@ public class PathfinderBuilder {
      * Sets the point spacing (space between injected points on straightaways when
      * generating paths)
      * 
-     * @param pointSpacing The point spacing, default 0.12 (meters)
+     * @param pointSpacing The point spacing, default 0.15 (meters)
      * @return The builder
      */
     public PathfinderBuilder setPointSpacing(double pointSpacing) {
@@ -34,15 +35,16 @@ public class PathfinderBuilder {
     }
 
     /**
-     * Sets the smooth spacing (space between points on curves when generating
+     * Sets the corner point spacing (space between points on curves when generating
      * paths)
      * 
-     * @param smoothSpacing The smooth spacing, default 0.08 (percent of the curve
-     *                      length)
+     * @param cornerPointSpacing The corner point spacing, default 0.08 (percent of the
+     *                           curve
+     *                           length)
      * @return The builder
      */
-    public PathfinderBuilder setSmoothSpacing(double smoothSpacing) {
-        this.smoothSpacing = smoothSpacing;
+    public PathfinderBuilder setCornerPointSpacing(double cornerPointSpacing) {
+        this.cornerPointSpacing = cornerPointSpacing;
         return this;
     }
 
@@ -71,11 +73,25 @@ public class PathfinderBuilder {
     }
 
     /**
+     * Sets the corner split percent (how far each corner should move towards the
+     * other point if the distance is too short to allow both corners the full
+     * corner distance)
+     * 
+     * @param cornerSplitPercent The corner split percent, default 0.45 (max 0.5)
+     * @return
+     */
+    public PathfinderBuilder setCornerSplitPercent(double cornerSplitPercent) {
+        if(cornerSplitPercent > 0.5) throw new IllegalArgumentException("Corner split percent must be less than 0.5");
+        this.cornerSplitPercent = cornerSplitPercent;
+        return this;
+    }
+
+    /**
      * Builds the {@link Pathfinder}
      * 
      * @return The {@link Pathfinder}
      */
     public Pathfinder build() {
-        return new Pathfinder(field, pointSpacing, smoothSpacing, cornerDist, clearance);
+        return new Pathfinder(field, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent);
     }
 }
