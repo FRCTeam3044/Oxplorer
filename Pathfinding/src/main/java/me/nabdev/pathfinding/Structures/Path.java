@@ -88,6 +88,7 @@ public class Path extends ArrayList<Vertex> {
 
     /**
      * Apply all processing to the path to prepare it for use.
+     * @param snapMode The snap mode to use.
      */
     public void processPath(PathfindSnapMode snapMode) {
         this.snapMode = snapMode;
