@@ -27,7 +27,7 @@ public class DebugUtils {
      * @param vertices The list of vertices to get the vertices from
      */
     public static void drawLine(String key, Edge e, ArrayList<Vertex> vertices){
-        drawLine(key, vertices.get(e.vertexOne), vertices.get(e.vertexTwo));
+        drawLine(key, vertices.get(e.getVertexOne()), vertices.get(e.getVertexTwo()));
     }
 
     /**
@@ -40,11 +40,11 @@ public class DebugUtils {
         double[] arr = new double[edges.size() * 6];
         for(int i = 0; i < edges.size(); i++){
             Edge e = edges.get(i);
-            arr[i * 6] = vertices.get(e.vertexOne).x;
-            arr[i * 6 + 1] = vertices.get(e.vertexOne).y;
+            arr[i * 6] = vertices.get(e.getVertexOne()).x;
+            arr[i * 6 + 1] = vertices.get(e.getVertexOne()).y;
             arr[i * 6 + 2] = 0;
-            arr[i * 6 + 3] = vertices.get(e.vertexTwo).x;
-            arr[i * 6 + 4] = vertices.get(e.vertexTwo).y;
+            arr[i * 6 + 3] = vertices.get(e.getVertexTwo()).x;
+            arr[i * 6 + 4] = vertices.get(e.getVertexTwo()).y;
             arr[i * 6 + 5] = 0;
         }
         SmartDashboard.putNumberArray(key, arr);
