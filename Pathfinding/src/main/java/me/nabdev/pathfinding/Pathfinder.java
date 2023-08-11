@@ -64,7 +64,7 @@ public class Pathfinder {
      * @param clearance          The clearance to use when inflating obstacles
      * @param cornerSplitPercent How far back along the straightaway to dedicate to
      *                           a corner when the straightaway is too small to fit
-     *                           both corners (percentage, should be < 0.5)
+     *                           both corners (percentage, should be less than 0.5)
      */
     public Pathfinder(Field fieldType, double pointSpacing, double cornerPointSpacing, double cornerDist,
             double clearance, double cornerSplitPercent) {
