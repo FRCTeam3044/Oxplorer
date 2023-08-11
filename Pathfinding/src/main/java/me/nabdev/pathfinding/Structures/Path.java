@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import me.nabdev.pathfinding.Pathfinder;
+import me.nabdev.pathfinding.Pathfinder.PathfindSnapMode;
 
 /**
  * A Path is a list of Vertices that represent a path from a start point to a
@@ -64,6 +65,13 @@ public class Path extends ArrayList<Vertex> {
     }
 
     /**
+     * Get the unsnapped target vertex.
+     * @return The unsnapped target vertex
+     */
+    public Vertex getUnsnappedTarget() {
+        return unsnappedTarget;
+    }
+    /**
      * Get the last vertex in the path (not including the target vertex)
      * 
      * @return The last vertex in the path.
@@ -75,20 +83,21 @@ public class Path extends ArrayList<Vertex> {
     /**
      * Apply all processing to the path to prepare it for use.
      */
-    public void processPath() {
+    public void processPath(PathfindSnapMode snapMode) {
         createFullPath();
         bezierSmoothing();
-        addFinalSegment();
+        addFinalSegment(snapMode);
         injectPoints();
         updateFromSegments();
     }
 
     // This probably needs to change in the future.
-    private void addFinalSegment() {
-        if (unsnappedTarget == null)
-            return;
-        PathSegment seg = new PathSegment(target, unsnappedTarget);
-        segments.add(seg);
+    @Deprecated
+    private void addFinalSegment(PathfindSnapMode snapMode) {
+        if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
+            PathSegment seg = new PathSegment(target, unsnappedTarget);
+            segments.add(seg);
+        }
     }
 
     private void bezierSmoothing() {
@@ -306,13 +315,5 @@ public class Path extends ArrayList<Vertex> {
      */
     public Vertex getTarget() {
         return target;
-    }
-
-    /**
-     * Get the unsnapped target vertex.
-     * @return The unsnapped target vertex
-     */
-    public Vertex getUnsnappedTarget() {
-        return unsnappedTarget;
     }
 }

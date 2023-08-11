@@ -205,11 +205,8 @@ public class Pathfinder {
         Astar astar = new Astar(map, this);
         // This could throw ImpossiblePathException
         Path path = astar.run(start, target);
-
-        if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
-            path.setUnsnappedTarget(unsnappedTarget);
-        }
-        path.processPath();
+        path.setUnsnappedTarget(unsnappedTarget);
+        path.processPath(snapMode);
         long endTime = System.nanoTime();
         System.out.println("Path generation time: " + (endTime - startTime) / 1000000 + "ms");
 
