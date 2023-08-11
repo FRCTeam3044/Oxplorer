@@ -11,6 +11,7 @@ import me.nabdev.pathfinding.Pathfinder.PathfindSnapMode;
  * A Path is a list of Vertices that represent a path from a start point to a
  * target point.
  */
+@SuppressWarnings("deprecation")
 public class Path extends ArrayList<Vertex> {
     /**
      * The start vertex of the path.
@@ -39,6 +40,11 @@ public class Path extends ArrayList<Vertex> {
      * The Pathfinder that created this path.
      */
     private Pathfinder pathfinder;
+
+    /**
+     * The snap mode used to create this path.
+     */
+    public PathfindSnapMode snapMode = PathfindSnapMode.SNAP_ALL;
 
     /**
      * Creates a new Path with the given start and target vertices.
@@ -84,6 +90,7 @@ public class Path extends ArrayList<Vertex> {
      * Apply all processing to the path to prepare it for use.
      */
     public void processPath(PathfindSnapMode snapMode) {
+        this.snapMode = snapMode;
         createFullPath();
         bezierSmoothing();
         addFinalSegment(snapMode);
@@ -266,7 +273,7 @@ public class Path extends ArrayList<Vertex> {
             temp.add(v.y);
             temp.add(v.rotation.getDegrees());
         }
-        if (unsnappedTarget != null) {
+        if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
             temp.add(unsnappedTarget.x);
             temp.add(unsnappedTarget.y);
             temp.add(unsnappedTarget.rotation.getDegrees());
@@ -293,7 +300,7 @@ public class Path extends ArrayList<Vertex> {
         for (Vertex v : this) {
             poses.add(v.asPose2d());
         }
-        if (unsnappedTarget != null) {
+        if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
             poses.add(unsnappedTarget.asPose2d());
         } else {
             poses.add(target.asPose2d());

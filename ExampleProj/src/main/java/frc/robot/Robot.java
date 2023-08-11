@@ -14,7 +14,6 @@ import frc.robot.subsystems.sim.SimDrive;
 import me.nabdev.pathfinding.Pathfinder;
 import me.nabdev.pathfinding.PathfinderBuilder;
 import me.nabdev.pathfinding.FieldLoader.Field;
-import me.nabdev.pathfinding.Pathfinder.PathfindSnapMode;
 import me.nabdev.pathfinding.Structures.Edge;
 import me.nabdev.pathfinding.Structures.ImpossiblePathException;
 import me.nabdev.pathfinding.Structures.Path;
@@ -47,8 +46,7 @@ public class Robot extends TimedRobot {
 
         pathfinder = new PathfinderBuilder(Field.DEBUG_FIELD)
             .setClearance(0.5)
-            .setCornerDist(5)
-            .setCornerSplitPercent(0.2)
+            .setCornerDist(1)
             .build();
 
         ArrayList<Edge> field = pathfinder.visualizeEdges();
@@ -56,7 +54,7 @@ public class Robot extends TimedRobot {
         DebugUtils.drawLines("Field", field, pathfinder.visualizeVertices());;
 
         SmartDashboard.putNumberArray("Start Vertex", new double[]{0, 0});
-        SmartDashboard.putNumberArray("End Vertex", new double[]{16.5, 8});
+        SmartDashboard.putNumberArray("End Vertex", new double[]{8, 4});
     }   
 
     /**
@@ -79,7 +77,7 @@ public class Robot extends TimedRobot {
             lastStart = SmartDashboard.getNumberArray("Start Vertex", lastStart);
             lastEnd = SmartDashboard.getNumberArray("End Vertex", lastEnd);
             try {
-                Path testPath = pathfinder.generatePath(new Vertex(lastStart[0], lastStart[1]), new Vertex(lastEnd[0], lastEnd[1]), PathfindSnapMode.SNAP_ALL_THEN_LINE);
+                Path testPath = pathfinder.generatePath(new Vertex(lastStart[0], lastStart[1]), new Vertex(lastEnd[0], lastEnd[1]));
                 ((SimDrive) m_robotContainer.drivetrain).field.getObject("Path").setPoses(testPath.asPose2dList());
                 SmartDashboard.putNumberArray("Path", testPath.toDoubleArray());
             } catch (ImpossiblePathException e){
