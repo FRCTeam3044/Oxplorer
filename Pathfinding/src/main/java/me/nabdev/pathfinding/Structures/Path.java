@@ -14,11 +14,11 @@ public class Path extends ArrayList<Vertex> {
     /**
      * The start vertex of the path.
      */
-    public Vertex start;
+    private Vertex start;
     /**
      * The target vertex of the path.
      */
-    public Vertex target;
+    private Vertex target;
 
     /**
      * The full path including the start and target vertices.
@@ -290,5 +290,29 @@ public class Path extends ArrayList<Vertex> {
             poses.add(target.asPose2d());
         }
         return poses;
+    }
+
+    /**
+     * Get the start vertex.
+     * @return The start vertex
+     */
+    public Vertex getStart() {
+        return start;
+    }
+
+    /**
+     * Get the target vertex.
+     * @return The target vertex
+     */
+    public Vertex getTarget() {
+        return target;
+    }
+
+    /**
+     * Get the unsnapped target vertex.
+     * @return The unsnapped target vertex
+     */
+    public Vertex getUnsnappedTarget() {
+        return unsnappedTarget;
     }
 }

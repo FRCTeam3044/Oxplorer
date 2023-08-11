@@ -56,14 +56,18 @@ public class Pathfinder {
      * Create a new pathfinder. Should only be done once, at the start of the
      * program.
      * 
-     * @param fieldType     The field to load
-     * @param pointSpacing  The distance between points on the path
-     * @param cornerPointSpacing The distance between points on the smoothed path
-     * @param cornerDist    The distance between points on the path when the robot
-     *                      is turning
-     * @param clearance     The clearance to use when inflating obstacles
+     * @param fieldType          The field to load
+     * @param pointSpacing       The distance between points on the straightaways
+     * @param cornerPointSpacing The distance between points on the corners
+     * @param cornerDist         How far back along the straightaway to dedicate to
+     *                           corners
+     * @param clearance          The clearance to use when inflating obstacles
+     * @param cornerSplitPercent How far back along the straightaway to dedicate to
+     *                           a corner when the straightaway is too small to fit
+     *                           both corners (percentage, should be < 0.5)
      */
-    public Pathfinder(Field fieldType, double pointSpacing, double cornerPointSpacing, double cornerDist, double clearance, double cornerSplitPercent) {
+    public Pathfinder(Field fieldType, double pointSpacing, double cornerPointSpacing, double cornerDist,
+            double clearance, double cornerSplitPercent) {
         this.pointSpacing = pointSpacing;
         this.cornerPointSpacing = cornerPointSpacing;
         this.cornerDist = cornerDist;
@@ -252,10 +256,18 @@ public class Pathfinder {
          */
         SNAP_ALL,
         /**
-         * Snap start and target vertices. If the target is inside an obstacle, draw a
+         * Snap start and
+         * target vertices. If the target is inside an obstacle, draw a
          * straight line from the snapped target to the original target to drive there
          * anyways
+         * 
+         * @deprecated Can create very sharp corners as it just draws a straight line,
+         *             not recommended. Instead, use
+         *             {@link Path#getUnsnappedTarget()} and handle moving
+         *             there yourself after you follow the path if you need to. This may
+         *             be replaced with a better solution in the future.
          */
+        @Deprecated
         SNAP_ALL_THEN_LINE,
         /**
          * Snap start vertex
@@ -265,10 +277,19 @@ public class Pathfinder {
          * Snap target vertex
          */
         SNAP_TARGET,
+
         /**
-         * If the target is inside an obstacle, snap it and draw a straight line from
+         * If the target is
+         * inside an obstacle, snap it and draw a straight line from
          * the snapped target to the original target to drive there anyways.
+         * 
+         * @deprecated Can create very sharp corners as it just draws a straight line,
+         *             not recommended. Instead, use
+         *             {@link Path#getUnsnappedTarget()} and handle moving
+         *             there yourself after you follow the path if you need to. This may
+         *             be replaced with a better solution in the future.
          */
+        @Deprecated
         SNAP_TARGET_THEN_LINE
 
     }

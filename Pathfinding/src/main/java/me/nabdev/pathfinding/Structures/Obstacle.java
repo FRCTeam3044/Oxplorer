@@ -34,7 +34,7 @@ public class Obstacle {
         this.edges = edges;
         this.vertices = vertices;
         for (Edge edge : edges) {
-            myVertices.add(vertices.get(edge.vertexOne));
+            myVertices.add(vertices.get(edge.getVertexOne()));
         }
     }
 
@@ -48,8 +48,8 @@ public class Obstacle {
         this.vertices = vertices;
         myVertices.clear();
         for (Edge edge : edges) {
-            vectors.add(vertices.get(edge.vertexOne).createVectorFrom(vertices.get(edge.vertexTwo)));
-            myVertices.add(vertices.get(edge.vertexOne));
+            vectors.add(vertices.get(edge.getVertexOne()).createVectorFrom(vertices.get(edge.getVertexTwo())));
+            myVertices.add(vertices.get(edge.getVertexOne()));
         }
     }
 
@@ -81,8 +81,8 @@ public class Obstacle {
         int n = edges.size();
 
         for (int i = 0; i < n; i++) {
-            Vertex v1 = vertices.get(edges.get(i).vertexOne);
-            Vertex v2 = vertices.get(edges.get(i).vertexTwo);
+            Vertex v1 = vertices.get(edges.get(i).getVertexOne());
+            Vertex v2 = vertices.get(edges.get(i).getVertexTwo());
 
             if (v1.y <= pos.y) {
                 if (v2.y > pos.y && isLeft(v1, v2, pos) > 0) {
@@ -113,9 +113,9 @@ public class Obstacle {
         Vertex[] closestPoints = new Vertex[edges.size()];
         for (int i = 0; i < edges.size(); i++) {
             Edge edge = edges.get(i);
-            Vertex vertexOne = vertices.get(edge.vertexOne);
+            Vertex vertexOne = vertices.get(edge.getVertexOne());
             Vector vect = v.createVectorFrom(vertexOne);
-            Vector edgeVector = vertices.get(edge.vertexTwo).createVectorFrom(vertexOne);
+            Vector edgeVector = vertices.get(edge.getVertexTwo()).createVectorFrom(vertexOne);
             double dot = vect.dotProduct(edgeVector.normalize());
             closestPoints[i] = vertexOne.moveByVector(edgeVector.normalize().scale(dot));
             distances[i] = v.distance(closestPoints[i]);

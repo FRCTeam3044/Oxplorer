@@ -78,7 +78,7 @@ public class PathfinderBuilder {
      * corner distance)
      * 
      * @param cornerSplitPercent The corner split percent, default 0.45 (max 0.5)
-     * @return
+     * @return The builder
      */
     public PathfinderBuilder setCornerSplitPercent(double cornerSplitPercent) {
         if(cornerSplitPercent > 0.5) throw new IllegalArgumentException("Corner split percent must be less than 0.5");

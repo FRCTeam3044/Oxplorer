@@ -1,19 +1,18 @@
 package me.nabdev.pathfinding.Structures;
 
 import java.util.ArrayList;
-
 /**
  * Edge class, used to represent an edge between two vertices.
  */
 public class Edge {
     /**
-     * The index of the first vertex in the obstacleVertices array.
+     * The index in the obstacleVertices array of the first vertex.
      */
-    public int vertexOne;
+    private int vertexOne;
     /**
-     * The index of the second vertex in the obstacleVertices array.
+     * The index in the obstacleVertices array of the second vertex.
      */
-    public int vertexTwo;
+    private int vertexTwo;
 
     /**
      * Constructor for the Edge class.
@@ -75,5 +74,21 @@ public class Edge {
         if (vertex.equals(vertices.get(vertexTwo)))
             return vertexOne;
         return -1;
+    }
+
+    /**
+     * Get the index in the obstacleVertices array of the first vertex.
+     * @return The index of the first vertex.
+     */
+    public int getVertexOne() {
+        return vertexOne;
+    }
+
+    /**
+     * Get the index in the obstacleVertices array of the second vertex.
+     * @return The index of the second vertex.
+     */
+    public int getVertexTwo() {
+        return vertexTwo;
     }
 }

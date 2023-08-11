@@ -32,39 +32,43 @@ public class Map {
      * When the class is first initialized, this represents the original uninflated
      * obstacle vertices, but it is shortly inflated by the clearance parameter.
      */
-    public ArrayList<Vertex> obstacleVertices;
+    ArrayList<Vertex> obstacleVertices;
+
     /**
      * The edges of the obstacles.
      */
-    public ArrayList<Edge> obstacleEdges;
+    ArrayList<Edge> obstacleEdges;
+
     /**
      * The obstacles themselves.
      */
-    public ArrayList<Obstacle> obstacles;
+    ArrayList<Obstacle> obstacles;
+
     /**
      * Represents the vertices and edges of the path that the robot can use as valid
      * travel points.
      * It is the same as obstacleVertices but inflated by a small epsilon, so that
      * points on the same edge can have a valid line of sight.
      */
-    public ArrayList<Vertex> pathVerticesStatic = new ArrayList<>();
+    ArrayList<Vertex> pathVerticesStatic = new ArrayList<>();
     /**
      * Intended to represent dynamic obstacle detections (like another robot) but is
      * currently unused.
      * It is fully implemented, if you have a robot detector.
      */
-    public ArrayList<Vertex> pathVertices;
+    ArrayList<Vertex> pathVertices;
 
     /**
      * Represents the valid connections between the path vertices.
      * If two path vertices have a valid line of sight, they are considered
      * neighbors.
      */
-    public ArrayList<Edge> neighborsStatic = new ArrayList<>();
+    ArrayList<Edge> neighborsStatic = new ArrayList<>();
+
     /**
      * Represents the valid connections between the non-static path vertices.
      */
-    public ArrayList<Edge> neighbors;
+    ArrayList<Edge> neighbors;
 
     /**
      * Create a new map with the given obstacles, vertices, and clearance parameter.
@@ -74,7 +78,7 @@ public class Map {
      * @param obEdges    The edges of the obstacles.
      * @param clearance  The clearance parameter to inflate the obstacles by.
      */
-    public Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance) {
+    Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance) {
         obstacleEdges = obEdges;
         obstacleVertices = obVertices;
         obstacles = obs;
@@ -178,7 +182,7 @@ public class Map {
      *                           neighbors to their static values (For when
      *                           generating a new path)
      */
-    public void calculateDynamicNeighbors(ArrayList<Vertex> additionalVertices, boolean reset) {
+    void calculateDynamicNeighbors(ArrayList<Vertex> additionalVertices, boolean reset) {
         if (reset || pathVertices == null)
             pathVertices = new ArrayList<>(pathVerticesStatic);
         if (reset || neighbors == null)
@@ -199,8 +203,8 @@ public class Map {
         boolean intersect = false;
         for (int x = 0; x < obstacleEdges.size(); x++) {
             if (Vector.dotIntersect(pathVerticesArray.get(cur), pathVerticesArray.get(i),
-                    obstacleVertices.get(obstacleEdges.get(x).vertexOne),
-                    obstacleVertices.get(obstacleEdges.get(x).vertexTwo))) {
+                    obstacleVertices.get(obstacleEdges.get(x).getVertexOne()),
+                    obstacleVertices.get(obstacleEdges.get(x).getVertexTwo()))) {
                 intersect = true;
                 break;
             }
@@ -217,7 +221,7 @@ public class Map {
      * @param Vertex The Vertex to get the neighbors of.
      * @return The neighbors of the given Vertex.
      */
-    public ArrayList<Vertex> getNeighbors(Vertex Vertex) {
+    ArrayList<Vertex> getNeighbors(Vertex Vertex) {
         int index = pathVertices.indexOf(Vertex);
         if (index < 0) {
             System.out.println("Given Vertex not in path");
