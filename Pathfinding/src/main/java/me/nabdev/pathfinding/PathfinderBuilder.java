@@ -12,6 +12,8 @@ public class PathfinderBuilder {
     private double cornerDist = 0.6;
     private double clearance = 0.6;
     private double cornerSplitPercent = 0.45;
+    private boolean injectPoints = true;
+    private boolean normalizeCorners = true;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -38,7 +40,8 @@ public class PathfinderBuilder {
      * Sets the corner point spacing (space between points on curves when generating
      * paths)
      * 
-     * @param cornerPointSpacing The corner point spacing, default 0.08 (percent of the
+     * @param cornerPointSpacing The corner point spacing, default 0.08 (percent of
+     *                           the
      *                           curve
      *                           length)
      * @return The builder
@@ -81,8 +84,35 @@ public class PathfinderBuilder {
      * @return The builder
      */
     public PathfinderBuilder setCornerSplitPercent(double cornerSplitPercent) {
-        if(cornerSplitPercent > 0.5) throw new IllegalArgumentException("Corner split percent must be less than 0.5");
+        if (cornerSplitPercent > 0.5)
+            throw new IllegalArgumentException("Corner split percent must be less than 0.5");
         this.cornerSplitPercent = cornerSplitPercent;
+        return this;
+    }
+
+    /**
+     * Sets whether or not to inject points (add points in the middle of
+     * straightaways, useful for certain path following algorithms)
+     * 
+     * @param injectPoints Whether or not to inject points, default true
+     * @return The builder
+     */
+    public PathfinderBuilder setInjectPoints(boolean injectPoints) {
+        this.injectPoints = injectPoints;
+        return this;
+    }
+
+    /**
+     * Sets whether or not to normalize corners (make sure that corner points are
+     * spaced evenly). Disabling this can greatly help path generation with a higher
+     * corner dist and can remove weird artifacts between corners, but will cause
+     * issues with certain path following algorithms.
+     * 
+     * @param normalizeCorners Whether or not to normalize corners, default true
+     * @return The builder
+     */
+    public PathfinderBuilder setNormalizeCorners(boolean normalizeCorners) {
+        this.normalizeCorners = normalizeCorners;
         return this;
     }
 
@@ -92,6 +122,6 @@ public class PathfinderBuilder {
      * @return The {@link Pathfinder}
      */
     public Pathfinder build() {
-        return new Pathfinder(field, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent);
+        return new Pathfinder(field, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent, injectPoints, normalizeCorners);
     }
 }

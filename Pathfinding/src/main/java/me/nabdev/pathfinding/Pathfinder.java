@@ -36,7 +36,14 @@ public class Pathfinder {
      * How far to inflate obstacles
      */
     public final double clearance;
-
+    /**
+     * Whether or not to inject points on straightaways
+     */
+    public final boolean injectPoints;
+    /**
+     * Whether or not to normalize distance between corner points
+     */
+    public final boolean normalizeCorners;
     /**
      * How far each corner should move towards the
      * other point if the distance is too short to allow both corners the full
@@ -67,12 +74,15 @@ public class Pathfinder {
      *                           both corners (percentage, should be less than 0.5)
      */
     public Pathfinder(Field fieldType, double pointSpacing, double cornerPointSpacing, double cornerDist,
-            double clearance, double cornerSplitPercent) {
+            double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners) {
         this.pointSpacing = pointSpacing;
         this.cornerPointSpacing = cornerPointSpacing;
         this.cornerDist = cornerDist;
         this.clearance = clearance;
         this.cornerSplitPercent = cornerSplitPercent;
+        this.injectPoints = injectPoints;
+        this.normalizeCorners = normalizeCorners;
+
         JSONObject field = FieldLoader.loadField(fieldType);
         // This is essentially a vertex and edge table, with some extra information.
         // Vertices are stored as an array [x, y]

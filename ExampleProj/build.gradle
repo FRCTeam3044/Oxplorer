@@ -75,7 +75,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
-    implementation 'me.nabdev.pathfinding:pathfinder:0.2.5'
+    implementation 'me.nabdev.pathfinding:pathfinder:0.2.7-SNAPSHOT'
     implementation 'org.json:json:20230618'
 }
 

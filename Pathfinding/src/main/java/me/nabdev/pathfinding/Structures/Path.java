@@ -72,11 +72,13 @@ public class Path extends ArrayList<Vertex> {
 
     /**
      * Get the unsnapped target vertex.
+     * 
      * @return The unsnapped target vertex
      */
     public Vertex getUnsnappedTarget() {
         return unsnappedTarget;
     }
+
     /**
      * Get the last vertex in the path (not including the target vertex)
      * 
@@ -88,6 +90,7 @@ public class Path extends ArrayList<Vertex> {
 
     /**
      * Apply all processing to the path to prepare it for use.
+     * 
      * @param snapMode The snap mode to use.
      */
     public void processPath(PathfindSnapMode snapMode) {
@@ -95,7 +98,8 @@ public class Path extends ArrayList<Vertex> {
         createFullPath();
         bezierSmoothing();
         addFinalSegment(snapMode);
-        injectPoints();
+        if (pathfinder.injectPoints)
+            injectPoints();
         updateFromSegments();
     }
 
@@ -129,8 +133,8 @@ public class Path extends ArrayList<Vertex> {
             // points to find the other two control points for our quadratic bezier curve.
             Vector prevVector = prev.createVectorFrom(p1);
             double prevMag = prevVector.magnitude();
-            if(prevMag < pathfinder.cornerDist * 2){
-                if(i > 0){
+            if (prevMag < pathfinder.cornerDist * 2) {
+                if (i > 0) {
                     prevVector = prevVector.scale(pathfinder.cornerSplitPercent);
                     cornerDist = prevMag * pathfinder.cornerSplitPercent;
                 } else {
@@ -140,11 +144,11 @@ public class Path extends ArrayList<Vertex> {
             } else {
                 prevVector = prevVector.normalize().scale(pathfinder.cornerDist);
             }
-                
+
             Vector nextVector = next.createVectorFrom(p1);
             double nextMag = nextVector.magnitude();
-            if(nextMag < pathfinder.cornerDist * 2){
-                if(i < this.size() - 1){
+            if (nextMag < pathfinder.cornerDist * 2) {
+                if (i < this.size() - 1) {
                     nextVector = nextVector.scale(pathfinder.cornerSplitPercent);
                     cornerDist += nextMag * pathfinder.cornerSplitPercent;
                 } else {
@@ -189,10 +193,23 @@ public class Path extends ArrayList<Vertex> {
         // I highly recomend checking out the visualization at
         // https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves
         // It's a lot easier to understand when you can see it.
-        for (double t = 0; t < cornerDist; t += pathfinder.cornerPointSpacing) {
-            Vertex q0 = p0.moveByVector(p1.createVectorFrom(p0).normalize().scale(t));
-            Vertex q1 = p1.moveByVector(p2.createVectorFrom(p1).normalize().scale(t));
-            Vertex pos = q0.moveByVector(q1.createVectorFrom(q0).normalize().scale(t));
+        double realCornerDist = pathfinder.normalizeCorners ? cornerDist : 1;
+        for (double t = 0; t < realCornerDist; t += pathfinder.cornerPointSpacing) {
+            Vector v0 = p1.createVectorFrom(p0);
+            if (pathfinder.normalizeCorners)
+                v0 = v0.normalize();
+            Vertex q0 = p0.moveByVector(v0.scale(t));
+
+            Vector v1 = p2.createVectorFrom(p1);
+            if (pathfinder.normalizeCorners)
+                v1 = v1.normalize();
+            Vertex q1 = p1.moveByVector(v1.scale(t));
+
+            Vector v2 = q1.createVectorFrom(q0);
+            if (pathfinder.normalizeCorners)
+                v2 = v2.normalize();
+            Vertex pos = q0.moveByVector(v2.scale(t));
+
             curve.add(pos);
         }
     }
@@ -311,6 +328,7 @@ public class Path extends ArrayList<Vertex> {
 
     /**
      * Get the start vertex.
+     * 
      * @return The start vertex
      */
     public Vertex getStart() {
@@ -319,6 +337,7 @@ public class Path extends ArrayList<Vertex> {
 
     /**
      * Get the target vertex.
+     * 
      * @return The target vertex
      */
     public Vertex getTarget() {
