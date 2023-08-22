@@ -23,9 +23,9 @@ We ran the rio one last season and its slow as dirt, so we had to offload pathfi
 A (unfinished) example of implimenting pathfinding into a real robot project
 
 ## Support
-Questions, Concerns, Suggestions, or anything of the sort? Feel free to message me on any of these:
+Questions, Concerns, Suggestions, or anything of the sort? Feel free to ask on any of these:
 
-- Discord: nab138
+- Discord: [3044 Packages Discord](https://discord.gg/ypRWZGnW66)
 - Email: nab@nabdev.me
 - ChiefDelphi: nab138
 
