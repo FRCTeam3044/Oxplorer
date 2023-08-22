@@ -1,6 +1,8 @@
-# Pathfinding 3044
-This repo will be transferred to [FRCTeam3044](https://github.com/FRCTeam3044) when I am done working on it.
+# Pathfinding 3044 by [nab138](https://github.com/nab138)
 
+**Join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for support, discussion, etc**
+
+I will hopefully make a wiki and publish this as a package soon, but for now it is fully javadoced if you're interested in using it. 
 ## Pathfinding
 The pathfinding folder contains the actual pathfinding code. I've mostly cleaned a lot of this up and documented it, so if you find any issues (bugs, conceptual, potential optimizations, etc) please let me know.
 
