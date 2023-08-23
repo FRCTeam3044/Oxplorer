@@ -1,6 +1,6 @@
 # Pathfinding 3044 by [nab138](https://github.com/nab138)
 
-**Join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for support, discussion, and more!**
+**Join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support, discussion, and more!**
 
 I will hopefully make a wiki and publish this as a package soon, but for now it is fully javadoced if you're interested in using it. 
 ## Pathfinding
