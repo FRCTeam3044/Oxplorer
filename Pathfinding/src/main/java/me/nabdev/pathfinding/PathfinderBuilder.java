@@ -65,7 +65,7 @@ public class PathfinderBuilder {
 
     /**
      * Sets the clearance (how far away from the obstacles to stay).
-     * Usually the radius of your robots circumcircle.
+     * Usually this is the radius of your robots' circumcircle.
      * 
      * @param clearance The clearance, default 0.6 (meters)
      * @return The builder
@@ -91,10 +91,10 @@ public class PathfinderBuilder {
     }
 
     /**
-     * Sets whether or not to inject points (add points in the middle of
-     * straightaways, useful for certain path following algorithms)
+     * Sets whether to inject points (add points in the middle of
+     * straightaways, useful for some path following algorithms)
      * 
-     * @param injectPoints Whether or not to inject points, default true
+     * @param injectPoints Whether to inject points, default true
      * @return The builder
      */
     public PathfinderBuilder setInjectPoints(boolean injectPoints) {
@@ -103,12 +103,12 @@ public class PathfinderBuilder {
     }
 
     /**
-     * Sets whether or not to normalize corners (make sure that corner points are
+     * Sets whether to normalize corners (make sure that corner points are
      * spaced evenly). Disabling this can greatly help path generation with a higher
      * corner dist and can remove weird artifacts between corners, but will cause
-     * issues with certain path following algorithms.
+     * issues with some path following algorithms.
      * 
-     * @param normalizeCorners Whether or not to normalize corners, default true
+     * @param normalizeCorners Whether to normalize corners, default true
      * @return The builder
      */
     public PathfinderBuilder setNormalizeCorners(boolean normalizeCorners) {

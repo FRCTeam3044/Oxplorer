@@ -24,9 +24,9 @@ public class Map {
     public Map(ArrayList<Vertex> obVerticies, ArrayList<Edge> obEdges, double clearance){
         obstacleEdges = obEdges;
         obstacleVerticies = obVerticies;
-        // Uses vectors to make a list of points around the verticies of obstacles, offset by the clearance parameter.
+        // Uses vectors to make a list of points around the vertices of obstacles, offset by the clearance parameter.
         calculateStaticPathVerticies(obEdges, clearance);
-        // Calculate the edges between these path verticies, so that the robot can't phase through obstacles.
+        // Calculate the edges between these path vertices, so that the robot can't phase through obstacles.
         calculateStaticNeighbors();
     }
     public void calculateStaticPathVerticies(ArrayList<Edge> edges, double clearance){

@@ -41,7 +41,8 @@ public class Path extends ArrayList<Vertex> {
             Vertex p1 = this.get(i);
             PathSegment curve = new PathSegment();
             Vertex prev = fullPath.get(i);
-            // fullPath takes into account the start and endpoint while this does not, so we can garuntee that i + 2 will never be out of bounds.
+            // fullPath takes into account the start and endpoint while this does not,
+            // so we can guarantee that i + 2 will never be out of bounds.
             Vertex next = fullPath.get(i + 2);
 
             Vector prevVector = prev.createVector(p1).normalize().scale(cornerDist);

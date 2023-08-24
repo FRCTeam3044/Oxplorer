@@ -2,7 +2,7 @@ package pathfinding.Structures;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 
-// Representing a point on the field for use with the astar algorithim.
+// Representing a point on the field for use with the astar algorithm.
 public class Node extends Vertex {
     public double G;
     // Dist from current point to target point 

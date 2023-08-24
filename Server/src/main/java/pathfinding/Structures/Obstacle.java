@@ -24,7 +24,7 @@ public class Obstacle {
     }
 
     public boolean isInside(Vertex pos){
-        // Check if the given vertex lays inside of this obstacle using the dot product to check if the point is on the same side of all edges.
+        // Check if the given vertex lays inside this obstacle using the dot product to check if the point is on the same side of all edges.
         boolean positive = false;
         boolean negative = false;
         for(int i = 0; i < 4; i++){

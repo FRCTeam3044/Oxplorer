@@ -16,7 +16,7 @@ import java.util.ArrayList;
 
 public class Pathfinder
 {
-    // Minimum distance between center of robot and obstacles
+    // Minimum distance between the center of robot and obstacles
     public final static double clearance = 1.1;
     
     // Red or Blue Alliance Map; true = red, false = blue
@@ -112,13 +112,14 @@ public class Pathfinder
         additionalNodes.addAll(dynamicVerticies);
         map.calculateDynamicNeighbors(additionalNodes, true);
 
-        // Debug code - Sends all the edges of path verticies via smartdashboard
+        // Debug code - Sends all the edges of path vertices via smartdashboard
         // SmartDashboard.putNumber("Field/LineOfSightCount", map.neighbors.size());
         // for(int i = 0; i < map.neighbors.size(); i++){
         //     SmartDashboard.putNumberArray("Field/LineOfSight" + i, new double[]{map.pathVerticies.get(map.neighbors.get(i).vertexOne).x, map.pathVerticies.get(map.neighbors.get(i).vertexOne).y, map.pathVerticies.get(map.neighbors.get(i).vertexTwo).x, map.pathVerticies.get(map.neighbors.get(i).vertexTwo).y});
         // }
         Astar astar = new Astar(map);
-        // Solve for the best path using a-star. Chargepad handling is temporary and will be replaced with a cleaner solution.
+        // Solve for the best path using a-star.
+        // Charge pad handling is temporary and will be replaced with a cleaner solution.
         Path path = astar.run(start, target);
         if(path == null){
             throw new ImpossiblePathException("No possible solutions");

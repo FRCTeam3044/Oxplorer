@@ -37,11 +37,11 @@ public class Pathfinder {
      */
     public final double clearance;
     /**
-     * Whether or not to inject points on straightaways
+     * Whether to inject points on straightaways
      */
     public final boolean injectPoints;
     /**
-     * Whether or not to normalize distance between corner points
+     * Whether to normalize distance between corner points
      */
     public final boolean normalizeCorners;
     /**
@@ -71,7 +71,7 @@ public class Pathfinder {
      * @param clearance          The clearance to use when inflating obstacles
      * @param cornerSplitPercent How far back along the straightaway to dedicate to
      *                           a corner when the straightaway is too small to fit
-     *                           both corners (percentage, should be less than 0.5)
+     *                           both corners (percentage should be less than 0.5)
      */
     public Pathfinder(Field fieldType, double pointSpacing, double cornerPointSpacing, double cornerDist,
             double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners) {
@@ -189,7 +189,7 @@ public class Pathfinder {
             ArrayList<Vertex> dynamicVertices) throws ImpossiblePathException {
         // Snapping is done because the center of the robot can be inside of the
         // inflated obstacle edges
-        // In the case where this happened the start needs to be snapped outside
+        // In the case where this happened, the start needs to be snapped outside
         // otherwise a* will fail
         Vertex unsnappedTarget = target;
         if (snapMode == PathfindSnapMode.SNAP_ALL || snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE
@@ -224,10 +224,10 @@ public class Pathfinder {
     }
 
     /**
-     * Snap a vertex to the nearest obstacle edge if it's inside of one
+     * Snap a vertex to the nearest obstacle edge if it's inside one
      * 
      * @param point Point to snap
-     * @return
+     * @return The snapped point
      */
     private Vertex snap(Vertex point) throws ImpossiblePathException {
         ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point);
@@ -248,13 +248,14 @@ public class Pathfinder {
 
     /**
      * Determines how vertices will be snapped to the nearest obstacle edge if they
-     * are inside of an obstacle.
-     * Snapping is useful in case the robot center is inside of the inflated
+     * are inside an obstacle.
+     * Snapping is useful in case the robot center is inside the inflated
      * obstacle vertices.
      */
     public enum PathfindSnapMode {
         /**
-         * No snapping. If a the start or target is inside of an obstacle, an
+         * No snapping.
+         * If at the start or target is inside an obstacle, an
          * ImpossiblePathException will be thrown.
          */
         NONE,
@@ -266,9 +267,9 @@ public class Pathfinder {
          * Snap start and
          * target vertices. If the target is inside an obstacle, draw a
          * straight line from the snapped target to the original target to drive there
-         * anyways
+         * regardless.
          * 
-         * @deprecated Can create very sharp corners as it just draws a straight line,
+         * @deprecated Can create sharp corners as it just draws a straight line,
          *             not recommended. Instead, use
          *             {@link Path#getUnsnappedTarget()} and handle moving
          *             there yourself after you follow the path if you need to. This may
@@ -288,9 +289,9 @@ public class Pathfinder {
         /**
          * If the target is
          * inside an obstacle, snap it and draw a straight line from
-         * the snapped target to the original target to drive there anyways.
+         * the snapped target to the original target to drive there regardless.
          * 
-         * @deprecated Can create very sharp corners as it just draws a straight line,
+         * @deprecated Can create sharp corners as it just draws a straight line,
          *             not recommended. Instead, use
          *             {@link Path#getUnsnappedTarget()} and handle moving
          *             there yourself after you follow the path if you need to. This may
@@ -322,7 +323,8 @@ public class Pathfinder {
      * visibility graph.
      * 
      * @return An arraylist containing vertices to represent all vertices in the
-     *         visibility graph. This is the same as visualizeVerticies, but
+     *         visibility graph.
+     *         This is the same as {@link Pathfinder#visualizeVertices()}, but
      *         includes dynamic vertices like the start and end points.
      */
     public ArrayList<Vertex> visualizePathVertices() {

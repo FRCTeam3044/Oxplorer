@@ -1,7 +1,7 @@
 package me.nabdev.pathfinding.Structures;
 
 /**
- * Class to represent a two dimensional vector
+ * Class to represent a two-dimensional vector
  */
 public class Vector {
     /**
@@ -143,17 +143,17 @@ public class Vector {
     }
 
     /**
-     * Calculate the cross product of this vector and another vector
+     * Calculate the cross-product of this vector and another vector
      * 
      * @param v2 The other vector
-     * @return The cross product of this vector and v2
+     * @return The cross-product of this vector and v2
      */
     public double crossProduct(Vector v2) {
         return x * v2.y - y * v2.x;
     }
 
     /**
-     * Whether or not the line segment from d1 to d2 intersects the line segment
+     * Whether the line segment from d1 to d2 intersects the line segment
      * from c1 to c2
      * 
      * @param d1 The first vertex of the first line segment
@@ -171,7 +171,7 @@ public class Vector {
         double p2d = p2.dotProduct(Normald);
         double p1c = p1.dotProduct(Normalc);
         double p2c = p2.dotProduct(Normalc);
-        // This is gross but I can't think of a proper
+        // This is gross, but I can't think of a proper
         // This misses when the lines are on the same line, but only if that line is diagonal.
         if(p1d == 0 && p2d == 0 && p1c == 0 && p2c == 0){
             if(d1.x == d2.x){

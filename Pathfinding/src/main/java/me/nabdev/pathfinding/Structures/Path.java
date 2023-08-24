@@ -32,7 +32,7 @@ public class Path extends ArrayList<Vertex> {
     private ArrayList<PathSegment> segments = new ArrayList<PathSegment>();
 
     /**
-     * Represents the target vertex before it was snapped to be outside of all
+     * Represents the target vertex before it was snapped to be outside all
      * obstacles.
      */
     private Vertex unsnappedTarget = null;
@@ -62,7 +62,7 @@ public class Path extends ArrayList<Vertex> {
 
     /**
      * Set the original unsnapped target vertex (the target vertex before it was
-     * snapped to be outside of all obstacles).
+     * snapped to be outside all obstacles).
      * 
      * @param unsnappedTarget The original unsnapped target vertex.
      */
@@ -114,7 +114,7 @@ public class Path extends ArrayList<Vertex> {
 
     private void bezierSmoothing() {
         // "this" does not include the start and endpoint, so in the case where the
-        // shortest path is a straight line it would be empty.
+        // shortest path is a straight line, it would be empty.
         if (this.size() < 1) {
             segments.add(new PathSegment(start, target));
             return;
@@ -125,12 +125,12 @@ public class Path extends ArrayList<Vertex> {
             PathSegment curve = new PathSegment();
             Vertex prev = fullPath.get(i);
             // fullPath takes into account the start and endpoint while this does not, so we
-            // can garuntee that i + 2 will never be out of bounds.
+            // can guarantee that i + 2 will never be out of bounds.
             Vertex next = fullPath.get(i + 2);
 
             double cornerDist = pathfinder.cornerDist;
             // We are creating vectors from the current point to the previous and next
-            // points to find the other two control points for our quadratic bezier curve.
+            // points to find the other two control points for our quadratic Bézier curve.
             Vector prevVector = prev.createVectorFrom(p1);
             double prevMag = prevVector.magnitude();
             if (prevMag < pathfinder.cornerDist * 2) {
@@ -160,12 +160,12 @@ public class Path extends ArrayList<Vertex> {
                 cornerDist += pathfinder.cornerDist;
             }
 
-            // These are the two points that will be used as control points for the bezier
+            // These are the two points that will be used as control points for the Bézier
             // curve.
             Vertex p0 = p1.moveByVector(prevVector);
             Vertex p2 = p1.moveByVector(nextVector);
 
-            // This is the actual bezier curve.
+            // This is the actual Bézier curve.
             generateBezierCorner(curve, cornerDist * 0.5, p0, p1, p2);
 
             // Just connecting the dots.
@@ -181,7 +181,7 @@ public class Path extends ArrayList<Vertex> {
     }
 
     /**
-     * Generates a bezier curve between the three given points.
+     * Generates a Bézier curve between the three given points.
      * 
      * @param curve The PathSegment to add the points to.
      * @param p0    The first point.
@@ -190,7 +190,7 @@ public class Path extends ArrayList<Vertex> {
      */
     private void generateBezierCorner(PathSegment curve, double cornerDist, Vertex p0, Vertex p1, Vertex p2) {
         // Want to understand how this function works?
-        // I highly recomend checking out the visualization at
+        // I highly recommend checking out the visualization at
         // https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves
         // It's a lot easier to understand when you can see it.
         double realCornerDist = pathfinder.normalizeCorners ? cornerDist : 1;

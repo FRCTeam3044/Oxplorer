@@ -52,7 +52,7 @@ public class Vector extends OrderedPair {
         double p2d = p2.dotProduct(Normald);
         double p1c = p1.dotProduct(Normalc);
         double p2c = p2.dotProduct(Normalc);
-        // This is gross but I don't have time to think of a proper way to handle this.
+        // This is gross, but I don't have time to think of a proper way to handle this.
         // This misses when the lines are on the same line, but only if that line is diagonal.
         if(p1d == 0 && p2d ==  0 && p1c == 0 && p2c == 0){
             if(d1.x == d2.x){

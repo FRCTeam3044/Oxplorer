@@ -12,7 +12,7 @@ public class PathSegment {
      */
     public ArrayList<Vertex> points = new ArrayList<Vertex>();
     /**
-     * Whether or not this segment is a corner.
+     * Whether this segment is a corner.
      * If true, it is a corner. If false, it is a straightaway.
      */
     public boolean corner;

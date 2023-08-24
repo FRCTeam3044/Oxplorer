@@ -21,7 +21,7 @@ public class Map {
      */
     public static final double fieldy = 8;
     /**
-     * A small epsilon value that that is used to slightly inflate the path vertices
+     * A small epsilon value that is used to slightly inflate the path vertices
      * so that points on the same edge can have a valid line of sight.
      */
     public static final double eps = 0.001;
@@ -54,7 +54,7 @@ public class Map {
     /**
      * Intended to represent dynamic obstacle detections (like another robot) but is
      * currently unused.
-     * It is fully implemented, if you have a robot detector.
+     * It is fully implemented if you have a robot detector.
      */
     ArrayList<Vertex> pathVertices;
 
@@ -94,7 +94,7 @@ public class Map {
      * Calculates the vertices of the path that the robot can use as valid travel
      * points as well as inflated obstacle vertices to generate the visibility graph
      * with.
-     * Generated with a modifed Minowski Sums approach.
+     * Generated with a modified Minowski Sums approach.
      * 
      * @param obEdges   The edges of the obstacles.
      * @param clearance The clearance parameter to inflate the obstacles by.
@@ -178,7 +178,7 @@ public class Map {
      * Calculates the neighbors of the non-static path vertices.
      * 
      * @param additionalVertices The vertices to add to the path vertices.
-     * @param reset              Whether or not to reset the path vertices and
+     * @param reset              Whether to reset the path vertices and
      *                           neighbors to their static values (For when
      *                           generating a new path)
      */
@@ -215,7 +215,7 @@ public class Map {
     }
 
     /**
-     * Little helper function to get all Vertexs connected via an edge to the given
+     * Little helper function to get all Vertices connected via an edge to the given
      * Vertex.
      * 
      * @param Vertex The Vertex to get the neighbors of.
