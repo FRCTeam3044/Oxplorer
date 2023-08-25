@@ -1,4 +1,4 @@
-package me.nabdev.pathfinding.Structures;
+package me.nabdev.pathfinding.structures;
 
 /**
  * Class to represent a two dimensional vector
@@ -162,7 +162,7 @@ public class Vector {
      * @param c2 The second vertex of the second line segment
      * @return True if the line segments intersect, false otherwise
      */
-    public static boolean dotIntersect(Vertex d1, Vertex d2, Vertex c1, Vertex c2){
+    public static boolean dotIntersect(Vertex d1, Vertex d2, Vertex c1, Vertex c2) {
         Vector Normald = d2.createVectorFrom(d1).calculateNormal();
         Vector Normalc = c2.createVectorFrom(c1).calculateNormal();
         Vector p1 = c1.createVectorFrom(d1);
@@ -172,17 +172,19 @@ public class Vector {
         double p1c = p1.dotProduct(Normalc);
         double p2c = p2.dotProduct(Normalc);
         // This is gross but I can't think of a proper
-        // This misses when the lines are on the same line, but only if that line is diagonal.
-        if(p1d == 0 && p2d == 0 && p1c == 0 && p2c == 0){
-            if(d1.x == d2.x){
+        // This misses when the lines are on the same line, but only if that line is
+        // diagonal.
+        if (p1d == 0 && p2d == 0 && p1c == 0 && p2c == 0) {
+            if (d1.x == d2.x) {
                 return (c1.x == d1.x && c1.y <= d2.y && c1.y >= d1.y) || (c2.x == d1.x &&
-                c2.y <= d2.y && c2.y >= d1.y);
+                        c2.y <= d2.y && c2.y >= d1.y);
             } else {
                 return (c1.y == d1.y && c1.x <= d2.x && c1.x >= d1.x) || (c2.y == d1.y &&
-                c2.x <= d2.x && c2.x >= d1.x);
+                        c2.x <= d2.x && c2.x >= d1.x);
             }
         }
-        if((p1d == 0 || p2d == 0) && (p1c == 0 || p2c == 0)) return true;
+        if ((p1d == 0 || p2d == 0) && (p1c == 0 || p2c == 0))
+            return true;
         return !(p1c < 0 == p2c < 0 || p1d < 0 == p2d < 0);
     }
 

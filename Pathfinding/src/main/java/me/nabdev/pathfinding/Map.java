@@ -2,10 +2,10 @@ package me.nabdev.pathfinding;
 
 import java.util.ArrayList;
 
-import me.nabdev.pathfinding.Structures.Edge;
-import me.nabdev.pathfinding.Structures.Obstacle;
-import me.nabdev.pathfinding.Structures.Vertex;
-import me.nabdev.pathfinding.Structures.Vector;
+import me.nabdev.pathfinding.structures.Edge;
+import me.nabdev.pathfinding.structures.Obstacle;
+import me.nabdev.pathfinding.structures.Vector;
+import me.nabdev.pathfinding.structures.Vertex;
 
 /**
  * Represents all the obstacles on the map as well as the visibility graph that
@@ -84,7 +84,7 @@ public class Map {
         obstacles = obs;
         // Uses vectors to make a list of points around the vertices of obstacles,
         // offset by the clearance parameter.
-        pathVerticesStatic = calculateStaticPathVertices(obEdges, clearance);
+        pathVerticesStatic = calculateStaticPathVertices(clearance);
         // Calculate the edges between these path vertices, so that the robot can't
         // phase through obstacles.
         calculateStaticNeighbors();
@@ -96,12 +96,11 @@ public class Map {
      * with.
      * Generated with a modifed Minowski Sums approach.
      * 
-     * @param obEdges   The edges of the obstacles.
      * @param clearance The clearance parameter to inflate the obstacles by.
      * @return The obstacle vertices inflated by clearance + eps (also modifies
      *         obstacleVertices to be inflated by the clearance parameter)
      */
-    private ArrayList<Vertex> calculateStaticPathVertices(ArrayList<Edge> obEdges, double clearance) {
+    private ArrayList<Vertex> calculateStaticPathVertices(double clearance) {
         ArrayList<Vertex> inflated = new ArrayList<>();
         ArrayList<Vertex> inflatedPlusEps = new ArrayList<>();
 
@@ -172,6 +171,12 @@ public class Map {
                 lineOfSight(cur, i, neighborsStatic, pathVerticesStatic);
             }
         }
+        for (Edge e : neighborsStatic) {
+            Vertex v1 = e.getVertexOne(pathVerticesStatic);
+            Vertex v2 = e.getVertexTwo(pathVerticesStatic);
+            v1.staticNeighbors.add(v2);
+            v2.staticNeighbors.add(v1);
+        }
     }
 
     /**
@@ -187,12 +192,28 @@ public class Map {
             pathVertices = new ArrayList<>(pathVerticesStatic);
         if (reset || neighbors == null)
             neighbors = new ArrayList<>(neighborsStatic);
+
+        ArrayList<Edge> dynamicNeighbors = new ArrayList<>();
         pathVertices.addAll(additionalVertices);
-        for (int cur = pathVertices.size() - additionalVertices.size(); cur < pathVertices.size(); cur++) {
-            for (int i = 0; i < pathVertices.size(); i++) {
-                lineOfSight(cur, i, neighbors, pathVertices);
+
+        if (reset) {
+            for (Vertex v : pathVertices) {
+                v.dynamicNeighbors.clear();
             }
         }
+
+        for (int cur = pathVertices.size() - additionalVertices.size(); cur < pathVertices.size(); cur++) {
+            for (int i = 0; i < pathVertices.size(); i++) {
+                lineOfSight(cur, i, dynamicNeighbors, pathVertices);
+            }
+        }
+        for (Edge e : dynamicNeighbors) {
+            Vertex v1 = e.getVertexOne(pathVertices);
+            Vertex v2 = e.getVertexTwo(pathVertices);
+            v1.dynamicNeighbors.add(v2);
+            v2.dynamicNeighbors.add(v1);
+        }
+        neighbors.addAll(dynamicNeighbors);
     }
 
     private void lineOfSight(int cur, int i, ArrayList<Edge> neighborArray, ArrayList<Vertex> pathVerticesArray) {
@@ -212,28 +233,5 @@ public class Map {
         if (!intersect) {
             neighborArray.add(new Edge(cur, i));
         }
-    }
-
-    /**
-     * Little helper function to get all Vertexs connected via an edge to the given
-     * Vertex.
-     * 
-     * @param Vertex The Vertex to get the neighbors of.
-     * @return The neighbors of the given Vertex.
-     */
-    ArrayList<Vertex> getNeighbors(Vertex Vertex) {
-        int index = pathVertices.indexOf(Vertex);
-        if (index < 0) {
-            System.out.println("Given Vertex not in path");
-            return null;
-        }
-        ArrayList<Vertex> curNeighbors = new ArrayList<>();
-        for (Edge edge : neighbors) {
-            int contained = edge.containsVertex(index);
-            if (contained < 0)
-                continue;
-            curNeighbors.add(pathVertices.get(contained));
-        }
-        return curNeighbors;
     }
 }

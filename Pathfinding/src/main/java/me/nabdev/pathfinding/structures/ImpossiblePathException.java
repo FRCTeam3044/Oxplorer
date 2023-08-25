@@ -1,4 +1,4 @@
-package me.nabdev.pathfinding.Structures;
+package me.nabdev.pathfinding.structures;
 
 /**
  * An exception that is thrown when a path is impossible to find for various

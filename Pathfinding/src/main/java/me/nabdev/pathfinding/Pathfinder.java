@@ -1,11 +1,15 @@
 package me.nabdev.pathfinding;
 
 import me.nabdev.pathfinding.FieldLoader.Field;
-import me.nabdev.pathfinding.Structures.Edge;
-import me.nabdev.pathfinding.Structures.ImpossiblePathException;
-import me.nabdev.pathfinding.Structures.Vertex;
-import me.nabdev.pathfinding.Structures.Obstacle;
-import me.nabdev.pathfinding.Structures.Path;
+import me.nabdev.pathfinding.algorithms.Astar;
+import me.nabdev.pathfinding.algorithms.SearchAlgorithm;
+import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
+import me.nabdev.pathfinding.structures.Edge;
+import me.nabdev.pathfinding.structures.ImpossiblePathException;
+import me.nabdev.pathfinding.structures.Obstacle;
+import me.nabdev.pathfinding.structures.Path;
+import me.nabdev.pathfinding.structures.Vertex;
+
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -51,6 +55,11 @@ public class Pathfinder {
      */
     public final double cornerSplitPercent;
 
+    /**
+     * The search algorithm to use
+     */
+    public final SearchAlgorithmType searchAlgorithmType;
+
     // Every obstacle vertex (ORDER IS IMPORTANT)
     ArrayList<Vertex> obstacleVertices = new ArrayList<>();
     ArrayList<Vertex> uninflatedObstacleVertices = new ArrayList<>();
@@ -63,18 +72,23 @@ public class Pathfinder {
      * Create a new pathfinder. Should only be done once, at the start of the
      * program.
      * 
-     * @param fieldType          The field to load
-     * @param pointSpacing       The distance between points on the straightaways
-     * @param cornerPointSpacing The distance between points on the corners
-     * @param cornerDist         How far back along the straightaway to dedicate to
-     *                           corners
-     * @param clearance          The clearance to use when inflating obstacles
-     * @param cornerSplitPercent How far back along the straightaway to dedicate to
-     *                           a corner when the straightaway is too small to fit
-     *                           both corners (percentage, should be less than 0.5)
+     * @param fieldType           The field to load
+     * @param pointSpacing        The distance between points on the straightaways
+     * @param cornerPointSpacing  The distance between points on the corners
+     * @param cornerDist          How far back along the straightaway to dedicate to
+     *                            corners
+     * @param clearance           The clearance to use when inflating obstacles
+     * @param cornerSplitPercent  How far back along the straightaway to dedicate to
+     *                            a corner when the straightaway is too small to fit
+     *                            both corners (percentage, should be less than 0.5)
+     * @param injectPoints        Whether or not to inject points on straightaways
+     * @param normalizeCorners    Whether or not to normalize distance between
+     *                            corner points
+     * @param searchAlgorithmType The search algorithm to use
      */
     public Pathfinder(Field fieldType, double pointSpacing, double cornerPointSpacing, double cornerDist,
-            double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners) {
+            double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners,
+            SearchAlgorithmType searchAlgorithmType) {
         this.pointSpacing = pointSpacing;
         this.cornerPointSpacing = cornerPointSpacing;
         this.cornerDist = cornerDist;
@@ -82,6 +96,7 @@ public class Pathfinder {
         this.cornerSplitPercent = cornerSplitPercent;
         this.injectPoints = injectPoints;
         this.normalizeCorners = normalizeCorners;
+        this.searchAlgorithmType = searchAlgorithmType;
 
         JSONObject field = FieldLoader.loadField(fieldType);
         // This is essentially a vertex and edge table, with some extra information.
@@ -212,9 +227,14 @@ public class Pathfinder {
         additionalVertexs.addAll(dynamicVertices);
         map.calculateDynamicNeighbors(additionalVertexs, true);
 
-        Astar astar = new Astar(map, this);
+        SearchAlgorithm searcher;
+        if (searchAlgorithmType == SearchAlgorithmType.ASTAR) {
+            searcher = new Astar(this);
+        } else {
+            throw new RuntimeException("Invalid search algorithm type");
+        }
         // This could throw ImpossiblePathException
-        Path path = astar.run(start, target);
+        Path path = searcher.run(start, target);
         path.setUnsnappedTarget(unsnappedTarget);
         path.processPath(snapMode);
         long endTime = System.nanoTime();

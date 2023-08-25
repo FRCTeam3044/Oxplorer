@@ -1,4 +1,4 @@
-package me.nabdev.pathfinding.Structures;
+package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
 

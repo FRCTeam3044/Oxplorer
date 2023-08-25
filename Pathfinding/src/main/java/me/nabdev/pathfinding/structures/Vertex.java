@@ -1,4 +1,6 @@
-package me.nabdev.pathfinding.Structures;
+package me.nabdev.pathfinding.structures;
+
+import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -47,6 +49,16 @@ public class Vertex {
     public Vertex connection;
 
     /**
+     * All of the static neighbors of this vertex in the visibility graph
+     */
+    public ArrayList<Vertex> staticNeighbors = new ArrayList<Vertex>();
+
+    /**
+     * All of the dynamic neighbors of this vertex in the visibility graph
+     */
+    public ArrayList<Vertex> dynamicNeighbors = new ArrayList<Vertex>();
+
+    /**
      * Creates a new Vertex from a Pose2d
      * 
      * @param pose The Pose2d to create the Vertex from
@@ -90,6 +102,18 @@ public class Vertex {
      */
     public Pose2d asPose2d() {
         return new Pose2d(x, y, rotation);
+    }
+
+    /**
+     * Get all of the neighbors of this vertex in the visibility graph
+     * 
+     * @return All static and dynamic neighbors
+     */
+    public ArrayList<Vertex> getNeighbors() {
+        ArrayList<Vertex> neighbors = new ArrayList<Vertex>();
+        neighbors.addAll(staticNeighbors);
+        neighbors.addAll(dynamicNeighbors);
+        return neighbors;
     }
 
     /**

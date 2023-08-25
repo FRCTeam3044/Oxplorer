@@ -1,6 +1,7 @@
 package me.nabdev.pathfinding;
 
 import me.nabdev.pathfinding.FieldLoader.Field;
+import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
 
 /**
  * Builder class for {@link Pathfinder}
@@ -14,6 +15,7 @@ public class PathfinderBuilder {
     private double cornerSplitPercent = 0.45;
     private boolean injectPoints = true;
     private boolean normalizeCorners = true;
+    private SearchAlgorithmType searchAlgorithmType = SearchAlgorithmType.ASTAR;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -117,11 +119,23 @@ public class PathfinderBuilder {
     }
 
     /**
+     * Sets the search algorithm type to use
+     * 
+     * @param searchAlgorithmType The search algorithm type, default ASTAR
+     * @return The builder
+     */
+    public PathfinderBuilder setSearchAlgorithmType(SearchAlgorithmType searchAlgorithmType) {
+        this.searchAlgorithmType = searchAlgorithmType;
+        return this;
+    }
+
+    /**
      * Builds the {@link Pathfinder}
      * 
      * @return The {@link Pathfinder}
      */
     public Pathfinder build() {
-        return new Pathfinder(field, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent, injectPoints, normalizeCorners);
+        return new Pathfinder(field, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
+                injectPoints, normalizeCorners, searchAlgorithmType);
     }
 }

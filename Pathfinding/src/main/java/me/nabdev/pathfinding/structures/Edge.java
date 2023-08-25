@@ -1,6 +1,7 @@
-package me.nabdev.pathfinding.Structures;
+package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
+
 /**
  * Edge class, used to represent an edge between two vertices.
  */
@@ -64,7 +65,7 @@ public class Edge {
      * Check if a vertex is contained in the edge, used when the index is not known.
      * 
      * @param vertex   The vertex to check.
-     * @param vertices The array of vertices to check against.
+     * @param vertices The list of vertices to check against.
      * @return The index of the other vertex if the vertex is contained in the edge,
      *         otherwise -1.
      */
@@ -77,7 +78,8 @@ public class Edge {
     }
 
     /**
-     * Get the index in the obstacleVertices array of the first vertex.
+     * Get the index in the obstacleVertices list of the first vertex.
+     * 
      * @return The index of the first vertex.
      */
     public int getVertexOne() {
@@ -85,10 +87,31 @@ public class Edge {
     }
 
     /**
-     * Get the index in the obstacleVertices array of the second vertex.
+     * Get the index in the obstacleVertices list of the second vertex.
+     * 
      * @return The index of the second vertex.
      */
     public int getVertexTwo() {
         return vertexTwo;
+    }
+
+    /**
+     * Get the first vertex.
+     * 
+     * @param vertices The list of vertices to get the vertex from.
+     * @return The first vertex.
+     */
+    public Vertex getVertexOne(ArrayList<Vertex> vertices) {
+        return vertices.get(vertexOne);
+    }
+
+    /**
+     * Get the second vertex.
+     * 
+     * @param vertices The list of vertices to get the vertex from.
+     * @return The second vertex.
+     */
+    public Vertex getVertexTwo(ArrayList<Vertex> vertices) {
+        return vertices.get(vertexTwo);
     }
 }

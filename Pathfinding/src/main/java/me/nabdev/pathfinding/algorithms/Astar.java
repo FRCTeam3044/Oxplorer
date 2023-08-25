@@ -1,20 +1,20 @@
-package me.nabdev.pathfinding;
+package me.nabdev.pathfinding.algorithms;
 
 import java.util.ArrayList;
 
-import me.nabdev.pathfinding.Structures.Vertex;
-import me.nabdev.pathfinding.Structures.ImpossiblePathException;
-import me.nabdev.pathfinding.Structures.Path;
+import me.nabdev.pathfinding.Pathfinder;
+import me.nabdev.pathfinding.structures.ImpossiblePathException;
+import me.nabdev.pathfinding.structures.Path;
+import me.nabdev.pathfinding.structures.Vertex;
 
 /**
  * A class to represent all the logic behind the A* pathfinding algorithm.
  */
-public class Astar {
+public class Astar implements SearchAlgorithm {
     private ArrayList<Vertex> toSearch = new ArrayList<>();
     private ArrayList<Vertex> processed = new ArrayList<>();
     private boolean started;
     private boolean solved;
-    private Map map;
     private Pathfinder pathfinder;
 
     // The maximum number of times A* will attempt to go backwards from the target
@@ -25,11 +25,9 @@ public class Astar {
     /**
      * Creates a new Astar object.
      * 
-     * @param map        The map to run the algorithm on.
      * @param pathfinder The Pathfinder object that created this Astar object.
      */
-    public Astar(Map map, Pathfinder pathfinder) {
-        this.map = map;
+    public Astar(Pathfinder pathfinder) {
         this.pathfinder = pathfinder;
     }
 
@@ -41,6 +39,7 @@ public class Astar {
      * @return A Path object containing the path from the start to the target.
      * @throws ImpossiblePathException If there is no possible path from the start
      */
+    @Override
     public Path run(Vertex start, Vertex end) throws ImpossiblePathException {
         while (!solved) {
             if (!started) {
@@ -64,7 +63,7 @@ public class Astar {
 
             toSearch.remove(current);
             processed.add(current);
-            for (Vertex neighbor : map.getNeighbors(current)) {
+            for (Vertex neighbor : current.getNeighbors()) {
                 if (neighbor == end) {
                     solved = true;
                     Path path = new Path(start, end, pathfinder);
