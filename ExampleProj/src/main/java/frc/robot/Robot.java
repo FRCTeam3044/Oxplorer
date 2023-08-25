@@ -14,10 +14,10 @@ import frc.robot.subsystems.sim.SimDrive;
 import me.nabdev.pathfinding.Pathfinder;
 import me.nabdev.pathfinding.PathfinderBuilder;
 import me.nabdev.pathfinding.FieldLoader.Field;
-import me.nabdev.pathfinding.Structures.Edge;
-import me.nabdev.pathfinding.Structures.ImpossiblePathException;
-import me.nabdev.pathfinding.Structures.Path;
-import me.nabdev.pathfinding.Structures.Vertex;
+import me.nabdev.pathfinding.structures.Edge;
+import me.nabdev.pathfinding.structures.ImpossiblePathException;
+import me.nabdev.pathfinding.structures.Path;
+import me.nabdev.pathfinding.structures.Vertex;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to

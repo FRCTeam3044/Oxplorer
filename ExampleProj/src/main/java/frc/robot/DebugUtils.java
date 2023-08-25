@@ -3,8 +3,8 @@ package frc.robot;
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import me.nabdev.pathfinding.Structures.Edge;
-import me.nabdev.pathfinding.Structures.Vertex;
+import me.nabdev.pathfinding.structures.Edge;
+import me.nabdev.pathfinding.structures.Vertex;
 
 /**
  * A little helper class for debugging pathfinding with my custom advantagescope fork
