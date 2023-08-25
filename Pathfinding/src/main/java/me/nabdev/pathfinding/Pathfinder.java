@@ -342,7 +342,7 @@ public class Pathfinder {
      * visibility graph.
      * 
      * @return An arraylist containing vertices to represent all vertices in the
-     *         visibility graph. This is the same as visualizeVerticies, but
+     *         visibility graph. This is the same as visualizeVertices, but
      *         includes dynamic vertices like the start and end points.
      */
     public ArrayList<Vertex> visualizePathVertices() {
