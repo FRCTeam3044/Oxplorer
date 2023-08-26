@@ -1,4 +1,4 @@
-# Oxplorer by [nab138](https://github.com/nab138)
+# Oxplorer by [nab138](https://github.com/nab138) (formerly Pathfinding-3044)
 
 **Join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support, discussion, and more!**
 
