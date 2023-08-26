@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 group 'me.nabdev.pathfinding'
-version '0.3.4'
+version '0.3.5'
 
 java {
     withSourcesJar()
@@ -39,13 +39,13 @@ publishing {
         }
     }
     repositories {
-        // maven {
-        //     name = "GitHubPackages"
-        //     url = "https://maven.pkg.github.com/FRCTeam3044/Oxplorer"
-        //     credentials {
-        //         username = System.getenv("USERNAME")
-        //         password = System.getenv("TOKEN")
-        //     }
-        // }
+        maven {
+            name = "GitHubPackages"
+            url = "https://maven.pkg.github.com/FRCTeam3044/Oxplorer"
+            credentials {
+                username = System.getenv("USERNAME")
+                password = System.getenv("TOKEN")
+            }
+        }
     }
 }
