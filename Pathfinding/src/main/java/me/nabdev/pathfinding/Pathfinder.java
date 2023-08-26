@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import edu.wpi.first.math.geometry.Pose2d;
+
 /**
  * The main pathfinder class, and the only one you should need to interact with.
  */
@@ -145,8 +147,7 @@ public class Pathfinder {
 
     /**
      * Snaps the start and target vertices according to the snap mode, calculates
-     * visibility graph for dynamic elements, and generates the best path using
-     * A-star algorithm.
+     * visibility graph for dynamic elements, and generates the best path.
      * 
      * @param start           The starting vertex
      * @param target          The target vertex
@@ -165,7 +166,7 @@ public class Pathfinder {
 
     /**
      * Snaps the start and target vertices to be outside of obstacles and generates
-     * the best path using A-star algorithm.
+     * the best path.
      * Defaults to PathfindSnapMode.SNAP_ALL
      * 
      * @param start  The starting vertex
@@ -181,8 +182,26 @@ public class Pathfinder {
     }
 
     /**
+     * Snaps the start and target poses to be outside of obstacles and generates
+     * the best path.
+     * Defaults to PathfindSnapMode.SNAP_ALL
+     * 
+     * @param start  The starting poses
+     * @param target The target poses
+     * 
+     * @return The shortest path from the starting vertex to the target vertex that
+     *         does not intersect any obstacles
+     * 
+     * @throws ImpossiblePathException If no path can be found
+     */
+    public Path generatePath(Pose2d start, Pose2d target) throws ImpossiblePathException {
+        return generatePathInner(new Vertex(start), new Vertex(target), PathfindSnapMode.SNAP_ALL,
+                new ArrayList<Vertex>());
+    }
+
+    /**
      * Snaps the start and target vertices according to the snap mode and generates
-     * the best path using A-star algorithm.
+     * the best path.
      * 
      * @param start    The starting vertex
      * @param target   The target vertex
@@ -195,6 +214,23 @@ public class Pathfinder {
      */
     public Path generatePath(Vertex start, Vertex target, PathfindSnapMode snapMode) throws ImpossiblePathException {
         return generatePathInner(start, target, snapMode, new ArrayList<Vertex>());
+    }
+
+    /**
+     * Snaps the start and target poses according to the snap mode and generates
+     * the best path.
+     * 
+     * @param start    The starting pose
+     * @param target   The target pose
+     * @param snapMode The snap mode to use
+     * 
+     * @return The shortest path from the starting pose to the target pose that
+     *         does not intersect any obstacles
+     * 
+     * @throws ImpossiblePathException If no path can be found
+     */
+    public Path generatePath(Pose2d start, Pose2d target, PathfindSnapMode snapMode) throws ImpossiblePathException {
+        return generatePathInner(new Vertex(start), new Vertex(target), snapMode, new ArrayList<Vertex>());
     }
 
     // Using an inner function because java handles optional parameters poorly
