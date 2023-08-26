@@ -8,7 +8,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 /**
  * Represents a point in 2D space
  */
-public class Vertex {
+public class Vertex implements Comparable<Vertex> {
     /**
      * The x coordinate of the vertex
      */
@@ -57,6 +57,12 @@ public class Vertex {
      * All of the dynamic neighbors of this vertex in the visibility graph
      */
     public ArrayList<Vertex> dynamicNeighbors = new ArrayList<Vertex>();
+
+    /**
+     * This will be set to false if the point is inside of an obstacle or outside of
+     * the field bounds, since the robot could never be there.
+     */
+    public boolean validVisiblity = true;
 
     /**
      * Creates a new Vertex from a Pose2d
@@ -248,7 +254,22 @@ public class Vertex {
      * 
      * @return "(x, y)"
      */
+    @Override
     public String toString() {
         return "(" + x + ", " + y + ")";
+    }
+
+    @Override
+    public int compareTo(Vertex o) {
+        if (this.F() < o.F())
+            return -1;
+        else if (this.F() > o.F())
+            return 1;
+        else if (this.H < o.H)
+            return -1;
+        else if (this.H > o.H)
+            return 1;
+        else
+            return 0;
     }
 }

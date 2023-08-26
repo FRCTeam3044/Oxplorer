@@ -21,6 +21,16 @@ public class Map {
      */
     public static final double fieldy = 8;
     /**
+     * The x coordinate of the origin of the field (meters)
+     * Used to compute if a point is inside of the field bounds.
+     */
+    public static final double originx = 0;
+    /**
+     * The y coordinate of the origin of the field (meters)
+     * Used to compute if a point is inside of the field bounds.
+     */
+    public static final double originy = 0;
+    /**
      * A small epsilon value that that is used to slightly inflate the path vertices
      * so that points on the same edge can have a valid line of sight.
      */
@@ -39,6 +49,10 @@ public class Map {
      */
     ArrayList<Edge> obstacleEdges;
 
+    /**
+     * The edges of obstacles that are inside of the field bounds.
+     */
+    ArrayList<Edge> validObstacleEdges = new ArrayList<>();
     /**
      * The obstacles themselves.
      */
@@ -85,9 +99,42 @@ public class Map {
         // Uses vectors to make a list of points around the vertices of obstacles,
         // offset by the clearance parameter.
         pathVerticesStatic = calculateStaticPathVertices(clearance);
+        checkPathVertices();
+        checkObstacleEdges();
         // Calculate the edges between these path vertices, so that the robot can't
         // phase through obstacles.
         calculateStaticNeighbors();
+    }
+
+    /**
+     * Check all obstacle vertices to see if they are outside of field bounds or
+     * inside of another obstacle, in which case, mark them to be skipped during
+     * visibility graph generation.
+     */
+    private void checkPathVertices() {
+        for (Vertex v : pathVerticesStatic) {
+            if (v.x < originx || v.x > fieldx || v.y < originy || v.y > fieldy) {
+                v.validVisiblity = false;
+            } else if (Obstacle.isRobotInObstacle(obstacles, v).size() > 0) {
+                v.validVisiblity = false;
+            }
+        }
+    }
+
+    /**
+     * Check all obstacle edges to see if they are completely outside of field
+     * bounds, and if they aren't add them to the validObstacleEdges list.
+     * This currently only covers some cases, but is good enough for now.
+     */
+    private void checkObstacleEdges() {
+        for (Edge e : obstacleEdges) {
+            Vertex v1 = obstacleVertices.get(e.getVertexOne());
+            Vertex v2 = obstacleVertices.get(e.getVertexTwo());
+            if (!((v1.x < originx && v2.x < originx) || (v1.x > fieldx && v2.x > fieldx)
+                    || (v1.y < originy && v2.y < originy) || (v1.y > fieldy && v2.y > fieldy))) {
+                validObstacleEdges.add(e);
+            }
+        }
     }
 
     /**
@@ -167,7 +214,7 @@ public class Map {
 
     private void calculateStaticNeighbors() {
         for (int cur = 0; cur < pathVerticesStatic.size(); cur++) {
-            for (int i = 0; i < pathVerticesStatic.size(); i++) {
+            for (int i = cur; i < pathVerticesStatic.size(); i++) {
                 lineOfSight(cur, i, neighborsStatic, pathVerticesStatic);
             }
         }
@@ -221,11 +268,19 @@ public class Map {
             return;
         if (neighborArray.contains(new Edge(i, cur)))
             return;
+
+        Vertex curVertex = pathVerticesArray.get(cur);
+        Vertex iVertex = pathVerticesArray.get(i);
+
+        if (!curVertex.validVisiblity || !iVertex.validVisiblity)
+            return;
+
         boolean intersect = false;
-        for (int x = 0; x < obstacleEdges.size(); x++) {
-            if (Vector.dotIntersect(pathVerticesArray.get(cur), pathVerticesArray.get(i),
-                    obstacleVertices.get(obstacleEdges.get(x).getVertexOne()),
-                    obstacleVertices.get(obstacleEdges.get(x).getVertexTwo()))) {
+
+        for (int x = 0; x < validObstacleEdges.size(); x++) {
+            Edge e = validObstacleEdges.get(x);
+            if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
+                    e.getVertexTwo(obstacleVertices))) {
                 intersect = true;
                 break;
             }

@@ -162,6 +162,48 @@ public class Vector {
      * @param c2 The second vertex of the second line segment
      * @return True if the line segments intersect, false otherwise
      */
+    public static boolean dotIntersectFast(Vertex d1, Vertex d2, Vertex c1, Vertex c2) {
+        double normaldy = d2.y - d1.y;
+        double normaldx = d2.x - d1.x;
+        double normalcy = c2.y - c1.y;
+        double normalcx = c2.x - c1.x;
+        double p1d = (c1.x - d1.x) * normaldy - (c1.y - d1.y) * normaldx;
+        double p2d = (c2.x - d1.x) * normaldy - (c2.y - d1.y) * normaldx;
+        double p1c = (d1.x - c1.x) * normalcy - (d1.y - c1.y) * normalcx;
+        double p2c = (d2.x - c1.x) * normalcy - (d2.y - c1.y) * normalcx;
+
+        // This is gross but I can't think of a proper
+        // This misses when the lines are on the same line, but only if that line is
+        // diagonal.
+        if (p1d == 0 && p2d == 0 && p1c == 0 && p2c == 0) {
+            if (d1.x == d2.x) {
+                return (c1.x == d1.x && c1.y <= d2.y && c1.y >= d1.y) || (c2.x == d1.x &&
+                        c2.y <= d2.y && c2.y >= d1.y);
+            } else {
+                return (c1.y == d1.y && c1.x <= d2.x && c1.x >= d1.x) || (c2.y == d1.y &&
+                        c2.x <= d2.x && c2.x >= d1.x);
+            }
+        }
+        if ((p1d == 0 || p2d == 0) && (p1c == 0 || p2c == 0))
+            return true;
+        return !(p1c < 0 == p2c < 0 || p1d < 0 == p2d < 0);
+    }
+
+    /**
+     * Whether or not the line segment from d1 to d2 intersects the line segment
+     * from c1 to c2
+     * 
+     * @param d1 The first vertex of the first line segment
+     * @param d2 The second vertex of the first line segment
+     * @param c1 The first vertex of the second line segment
+     * @param c2 The second vertex of the second line segment
+     * @return True if the line segments intersect, false otherwise
+     * 
+     * @deprecated This method is left here to clarify how dotIntersectFast works,
+     *             but it creates a lot of garbage and is slow. Use
+     *             {@link Vector#dotIntersectFast} instead.
+     */
+    @Deprecated
     public static boolean dotIntersect(Vertex d1, Vertex d2, Vertex c1, Vertex c2) {
         Vector Normald = d2.createVectorFrom(d1).calculateNormal();
         Vector Normalc = c2.createVectorFrom(c1).calculateNormal();

@@ -52,8 +52,8 @@ public class Robot extends TimedRobot {
         DebugUtils.drawLines("Field Inflated", field, pathfinder.visualizeInflatedVertices());
         DebugUtils.drawLines("Field", field, pathfinder.visualizeVertices());;
 
-        SmartDashboard.putNumberArray("Start Vertex", new double[]{0, 0});
-        SmartDashboard.putNumberArray("End Vertex", new double[]{10, 6});
+        SmartDashboard.putNumberArray("Start Vertex", new double[]{2, 0});
+        SmartDashboard.putNumberArray("End Vertex", new double[]{16, 8});
     }   
 
     /**

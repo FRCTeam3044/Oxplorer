@@ -13,7 +13,7 @@ public class PathfinderBuilder {
     private double cornerDist = 0.6;
     private double clearance = 0.6;
     private double cornerSplitPercent = 0.45;
-    private boolean injectPoints = true;
+    private boolean injectPoints = false;
     private boolean normalizeCorners = true;
     private SearchAlgorithmType searchAlgorithmType = SearchAlgorithmType.ASTAR;
 
@@ -96,7 +96,7 @@ public class PathfinderBuilder {
      * Sets whether or not to inject points (add points in the middle of
      * straightaways, useful for certain path following algorithms)
      * 
-     * @param injectPoints Whether or not to inject points, default true
+     * @param injectPoints Whether or not to inject points, default false
      * @return The builder
      */
     public PathfinderBuilder setInjectPoints(boolean injectPoints) {

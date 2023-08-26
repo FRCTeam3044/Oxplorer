@@ -1,6 +1,7 @@
 package me.nabdev.pathfinding.algorithms;
 
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 import me.nabdev.pathfinding.Pathfinder;
 import me.nabdev.pathfinding.structures.ImpossiblePathException;
@@ -11,7 +12,7 @@ import me.nabdev.pathfinding.structures.Vertex;
  * A class to represent all the logic behind the A* pathfinding algorithm.
  */
 public class Astar implements SearchAlgorithm {
-    private ArrayList<Vertex> toSearch = new ArrayList<>();
+    private PriorityQueue<Vertex> toSearch = new PriorityQueue<>();
     private ArrayList<Vertex> processed = new ArrayList<>();
     private boolean started;
     private boolean solved;
@@ -46,19 +47,9 @@ public class Astar implements SearchAlgorithm {
                 toSearch.add(start);
                 started = true;
             }
-            Vertex current;
-            try {
-                current = toSearch.get(0);
-            } catch (IndexOutOfBoundsException exception) {
-                // If there are no more nodes to search, then there is no valid path.
-                solved = true;
+            Vertex current = toSearch.poll();
+            if (current == null) {
                 throw new ImpossiblePathException("No possible path found.");
-            }
-            for (Vertex Vertex : toSearch) {
-                if (Vertex.F() < current.F())
-                    current = Vertex;
-                else if (Vertex.F() == current.F() && Vertex.H < current.H)
-                    current = Vertex;
             }
 
             toSearch.remove(current);

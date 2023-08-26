@@ -240,10 +240,7 @@ public class Path extends ArrayList<Vertex> {
 
     // Adding points in the middle of straight segments to allow for pure pursuit to
     // work its magic.
-    // I might make this optional in the future, because we might not go with pure
-    // pursuit again.
     private void injectPoints() {
-        // Create an ArrayList of Edges from the path
         for (int x = 0; x < segments.size(); x++) {
             ArrayList<Vertex> newPoints = new ArrayList<Vertex>();
             PathSegment seg = segments.get(x);
@@ -251,12 +248,18 @@ public class Path extends ArrayList<Vertex> {
                 continue;
             Vertex startPoint = seg.get(0);
             Vertex endPoint = seg.get(1);
-            Vector vector = endPoint.createVectorFrom(startPoint);
-            double mag = vector.magnitude();
-            double numPoints = Math.round(mag / pathfinder.pointSpacing);
-            vector = vector.normalize().scale(pathfinder.pointSpacing);
+
+            double dx = endPoint.x - startPoint.x;
+            double dy = endPoint.y - startPoint.y;
+            double length = Math.sqrt(dx * dx + dy * dy);
+            double numPoints = Math.round(length / pathfinder.pointSpacing);
+            double stepX = dx / numPoints;
+            double stepY = dy / numPoints;
+
             for (int i = 0; i < numPoints; i++) {
-                newPoints.add(startPoint.moveByVector(vector.scale(i)));
+                double newX = startPoint.x + stepX * i;
+                double newY = startPoint.y + stepY * i;
+                newPoints.add(new Vertex(newX, newY));
             }
             newPoints.add(endPoint);
             seg.replace(newPoints);
