@@ -34,7 +34,7 @@ test {
 
 publishing {
     publications {
-        Pathfinding(MavenPublication) {
+        Oxplorer(MavenPublication) {
             from components.java
         }
     }
