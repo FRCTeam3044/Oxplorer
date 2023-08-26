@@ -1,6 +1,5 @@
 package me.nabdev.pathfinding;
 
-import me.nabdev.pathfinding.FieldLoader.Field;
 import me.nabdev.pathfinding.algorithms.Astar;
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm;
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
@@ -72,7 +71,7 @@ public class Pathfinder {
      * Create a new pathfinder. Should only be done once, at the start of the
      * program.
      * 
-     * @param fieldType           The field to load
+     * @param field               The field json object to use
      * @param pointSpacing        The distance between points on the straightaways
      * @param cornerPointSpacing  The distance between points on the corners
      * @param cornerDist          How far back along the straightaway to dedicate to
@@ -86,7 +85,7 @@ public class Pathfinder {
      *                            corner points
      * @param searchAlgorithmType The search algorithm to use
      */
-    public Pathfinder(Field fieldType, double pointSpacing, double cornerPointSpacing, double cornerDist,
+    public Pathfinder(JSONObject field, double pointSpacing, double cornerPointSpacing, double cornerDist,
             double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners,
             SearchAlgorithmType searchAlgorithmType) {
         this.pointSpacing = pointSpacing;
@@ -98,7 +97,6 @@ public class Pathfinder {
         this.normalizeCorners = normalizeCorners;
         this.searchAlgorithmType = searchAlgorithmType;
 
-        JSONObject field = FieldLoader.loadField(fieldType);
         // This is essentially a vertex and edge table, with some extra information.
         // Vertices are stored as an array [x, y]
         JSONArray verticesRaw = field.getJSONArray("vertices");

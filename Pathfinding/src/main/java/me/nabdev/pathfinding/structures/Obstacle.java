@@ -132,4 +132,26 @@ public class Obstacle {
 
         return v.moveByVector(finalVector.add(normalizedFinalVector));
     }
+
+    /**
+     * Checks if the obstacle is convex and clockwise, used to validate the map.
+     * 
+     * @return True if the obstacle is convex and clockwise, false otherwise.
+     */
+    public boolean isConvexAndClockwise() {
+        int n = edges.size();
+
+        for (int i = 0; i < n; i++) {
+            Vertex v1 = vertices.get(edges.get(i).getVertexOne());
+            Vertex v2 = vertices.get(edges.get(i).getVertexTwo());
+            Vertex v3 = vertices.get(edges.get((i + 1) % n).getVertexTwo());
+
+            double crossProduct = isLeft(v1, v2, v3);
+
+            if (crossProduct > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

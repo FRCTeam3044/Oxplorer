@@ -1,5 +1,7 @@
 package me.nabdev.pathfinding;
 
+import org.json.JSONObject;
+
 import me.nabdev.pathfinding.FieldLoader.Field;
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
 
@@ -8,10 +10,11 @@ import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
  */
 public class PathfinderBuilder {
     private Field field;
+    private String customFieldPath;
     private double pointSpacing = 0.15;
     private double cornerPointSpacing = 0.08;
     private double cornerDist = 0.6;
-    private double clearance = 0.6;
+    private double clearance = 0.5;
     private double cornerSplitPercent = 0.45;
     private boolean injectPoints = false;
     private boolean normalizeCorners = true;
@@ -24,6 +27,17 @@ public class PathfinderBuilder {
      */
     public PathfinderBuilder(Field field) {
         this.field = field;
+    }
+
+    /**
+     * Creates a new PathfinderBuilder with the given field json map. Recommended to
+     * store this in the deploy directory and use Filesystem.getDeployDirectory() to
+     * get the path so it works on the rio and in sim.
+     * 
+     * @param field The full path to the field json map to use
+     */
+    public PathfinderBuilder(String field) {
+        this.customFieldPath = field;
     }
 
     /**
@@ -135,7 +149,17 @@ public class PathfinderBuilder {
      * @return The {@link Pathfinder}
      */
     public Pathfinder build() {
-        return new Pathfinder(field, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
+        JSONObject loadedField;
+        if (field != null) {
+            loadedField = FieldLoader.loadField(field);
+        } else {
+            try {
+                loadedField = FieldLoader.loadField(customFieldPath);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to load field from path " + customFieldPath);
+            }
+        }
+        return new Pathfinder(loadedField, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
                 injectPoints, normalizeCorners, searchAlgorithmType);
     }
 }

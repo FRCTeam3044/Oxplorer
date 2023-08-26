@@ -1,5 +1,8 @@
 package me.nabdev.pathfinding;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
@@ -22,9 +25,16 @@ public class FieldLoader {
     }
 
     static JSONObject loadField(Field field) {
-        JSONTokener tokener;
-        tokener = new JSONTokener(
+        JSONTokener tokener = new JSONTokener(
                 FieldLoader.class.getClassLoader().getResourceAsStream(field.name().toLowerCase() + ".json"));
+        return new JSONObject(tokener);
+    }
+
+    static JSONObject loadField(String fieldPath) throws FileNotFoundException {
+        // Load like a normal file, not a resource
+        JSONTokener tokener;
+        FileInputStream input = new FileInputStream(fieldPath);
+        tokener = new JSONTokener(input);
         return new JSONObject(tokener);
     }
 }

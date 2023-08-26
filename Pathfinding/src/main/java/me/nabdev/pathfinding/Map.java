@@ -96,6 +96,13 @@ public class Map {
         obstacleEdges = obEdges;
         obstacleVertices = obVertices;
         obstacles = obs;
+        for (int i = 0; i < obstacles.size(); i++) {
+            Obstacle o = obstacles.get(i);
+            if (!o.isConvexAndClockwise()) {
+                throw new IllegalArgumentException(
+                        "Obstacle at index " + i + " is invalid (not clockwise and/or convex).");
+            }
+        }
         // Uses vectors to make a list of points around the vertices of obstacles,
         // offset by the clearance parameter.
         pathVerticesStatic = calculateStaticPathVertices(clearance);

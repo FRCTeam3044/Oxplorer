@@ -44,9 +44,7 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
-        pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023)
-            .setClearance(0.5)
-            .build();
+        pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023).build();
 
         ArrayList<Edge> field = pathfinder.visualizeEdges();
         DebugUtils.drawLines("Field Inflated", field, pathfinder.visualizeInflatedVertices());
