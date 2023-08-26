@@ -2,7 +2,10 @@
 
 **Join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support, discussion, and more!**
 
-I will hopefully make a wiki and publish this as a package soon, but for now it is fully javadoced if you're interested in using it.
+Oxplorer is a realtime, dynamic, on-the-fly path generator designed for use with FRC robots. It can avoid any obstacles on a given field map, avoid dynamic obstacles if you have a detector of your own, and more.
+Oxplorer is *not* a path following library. It can generate paths, but not follow them. That is up to you (I do have a unreleased method that converts my path structure to a WPILib trajectory that might work for some people, it will be released soon).
+
+Hopefully a wiki is coming soon, but all the methods have full javadoc if you want to play with it.
 
 ## Installation
 
