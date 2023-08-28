@@ -56,10 +56,7 @@ public class PathfinderBuilder {
      * Sets the corner point spacing (space between points on curves when generating
      * paths)
      * 
-     * @param cornerPointSpacing The corner point spacing, default 0.08 (percent of
-     *                           the
-     *                           curve
-     *                           length)
+     * @param cornerPointSpacing The corner point spacing, default 0.08
      * @return The builder
      */
     public PathfinderBuilder setCornerPointSpacing(double cornerPointSpacing) {
@@ -101,7 +98,7 @@ public class PathfinderBuilder {
      */
     public PathfinderBuilder setCornerSplitPercent(double cornerSplitPercent) {
         if (cornerSplitPercent > 0.5)
-            throw new IllegalArgumentException("Corner split percent must be less than 0.5");
+            throw new IllegalArgumentException("Corner split percent must be less than or equal to 0.5");
         this.cornerSplitPercent = cornerSplitPercent;
         return this;
     }

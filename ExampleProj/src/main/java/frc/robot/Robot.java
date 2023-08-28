@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
-        pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023).build();
+        pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023).setCornerPointSpacing(0.2).build();
 
         ArrayList<Edge> field = pathfinder.visualizeEdges();
         DebugUtils.drawLines("Field Inflated", field, pathfinder.visualizeInflatedVertices());
@@ -52,6 +52,13 @@ public class Robot extends TimedRobot {
 
         SmartDashboard.putNumberArray("Start Vertex", new double[]{2, 0});
         SmartDashboard.putNumberArray("End Vertex", new double[]{16, 8});
+        // try {
+        //     Path p1 = pathfinder.generatePath(new Vertex(2, 0), new Vertex(16, 8));
+        //     Path p2 = pathfinder.generatePath(new Vertex(2, 0), new Vertex(16, 8));
+        //     Path p3 = pathfinder.generatePath(new Vertex(2, 0), new Vertex(16, 8));
+        // } catch (ImpossiblePathException e){
+        //     e.printStackTrace();
+        // }
     }   
 
     /**

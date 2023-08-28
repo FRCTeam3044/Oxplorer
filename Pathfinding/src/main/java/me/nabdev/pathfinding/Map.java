@@ -273,8 +273,6 @@ public class Map {
     private void lineOfSight(int cur, int i, ArrayList<Edge> neighborArray, ArrayList<Vertex> pathVerticesArray) {
         if (cur == i)
             return;
-        if (neighborArray.contains(new Edge(i, cur)))
-            return;
 
         Vertex curVertex = pathVerticesArray.get(cur);
         Vertex iVertex = pathVerticesArray.get(i);
@@ -284,16 +282,14 @@ public class Map {
 
         boolean intersect = false;
 
-        for (int x = 0; x < validObstacleEdges.size(); x++) {
-            Edge e = validObstacleEdges.get(x);
+        for (Edge e : validObstacleEdges) {
             if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
                     e.getVertexTwo(obstacleVertices))) {
                 intersect = true;
                 break;
             }
         }
-        if (!intersect) {
+        if (!intersect)
             neighborArray.add(new Edge(cur, i));
-        }
     }
 }

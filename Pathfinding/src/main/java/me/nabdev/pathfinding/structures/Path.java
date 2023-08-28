@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import me.nabdev.pathfinding.Pathfinder;
 import me.nabdev.pathfinding.Pathfinder.PathfindSnapMode;
 
@@ -319,14 +322,29 @@ public class Path extends ArrayList<Vertex> {
         ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
         poses.add(start.asPose2d());
         for (Vertex v : this) {
-            poses.add(v.asPose2d());
+            // Calculate the heading from this point to the next point
+            Rotation2d rot = new Rotation2d(Math.atan2(v.y - poses.get(poses.size() - 1).getY(),
+                    v.x - poses.get(poses.size() - 1).getX()));
+            poses.add(new Pose2d(v.x, v.y, rot));
         }
         if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
-            poses.add(unsnappedTarget.asPose2d());
+            Rotation2d rot = new Rotation2d(Math.atan2(unsnappedTarget.y - poses.get(poses.size() - 1).getY(),
+                    unsnappedTarget.x - poses.get(poses.size() - 1).getX()));
+            poses.add(new Pose2d(unsnappedTarget.x, unsnappedTarget.y, rot));
         } else {
-            poses.add(target.asPose2d());
+            poses.add(new Pose2d(target.x, target.y, getFinalRot()));
         }
         return poses;
+    }
+
+    /**
+     * Get the path as a Trajectory.
+     * 
+     * @param config The TrajectoryConfig to use.
+     * @return The path as a Trajectory.
+     */
+    public Trajectory asTrajectory(TrajectoryConfig config) {
+        return TrajectoryGenerator.generateTrajectory(asPose2dList(), config);
     }
 
     /**

@@ -15,6 +15,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
 
 /**
  * The main pathfinder class, and the only one you should need to interact with.
@@ -231,6 +233,27 @@ public class Pathfinder {
      */
     public Path generatePath(Pose2d start, Pose2d target, PathfindSnapMode snapMode) throws ImpossiblePathException {
         return generatePathInner(new Vertex(start), new Vertex(target), snapMode, new ArrayList<Vertex>());
+    }
+
+    /**
+     * Snaps the start and target vertices to be outside of obstacles and generates
+     * the best path as a wpilib trajectory.
+     * Defaults to PathfindSnapMode.SNAP_ALL
+     * 
+     * @param start  The starting pose
+     * @param target The target pose
+     * @param config The trajectory config to use when generating the trajectory
+     * 
+     * @return A trajectory from the starting vertex to the target vertex that
+     *         does not intersect any obstacles
+     * 
+     * @throws ImpossiblePathException If no path can be found
+     */
+    public Trajectory generateTrajectory(Pose2d start, Pose2d target, TrajectoryConfig config)
+            throws ImpossiblePathException {
+        Path path = generatePathInner(new Vertex(start), new Vertex(target), PathfindSnapMode.SNAP_ALL,
+                new ArrayList<Vertex>());
+        return path.asTrajectory(config);
     }
 
     // Using an inner function because java handles optional parameters poorly
