@@ -2,11 +2,14 @@
 
 **Join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support, discussion, and more!**
 
-I will hopefully make a wiki and publish this as a package soon, but for now it is fully javadoced if you're interested in using it.
+Oxplorer is a realtime, dynamic, on-the-fly path generator designed for use with FRC robots. It can avoid any obstacles on a given field map, avoid dynamic obstacles if you have a detector of your own, and more.
+Oxplorer is *not* a path following library. It can generate paths, but not follow them. That is up to you (I do have a unreleased method that converts my path structure to a WPILib trajectory that might work for some people, it will be released soon).
+
+Hopefully a wiki is coming soon, but all the methods have full javadoc if you want to play with it.
 
 ## Installation
 
-Add the folowing repository to your `build.gradle`:
+Add the folowing to the repositories section of your `build.gradle`:
 
 ```gradle
 maven {
@@ -16,6 +19,11 @@ maven {
           password = "\u0067\u0068\u0070\u005f\u006e\u0056\u0051\u006a\u0055\u004f\u004c\u0061\u0079\u0066\u006e\u0078\u006e\u0037\u0051\u0049\u0054\u0042\u0032\u004c\u004a\u006d\u0055\u0070\u0073\u0031\u006d\u0037\u004c\u005a\u0030\u0076\u0062\u0070\u0063\u0051"
   }
 }
+```
+
+Then add this line to the dependencies section:
+```gradle
+implementation 'me.nabdev.pathfinding:oxplorer:0.4.1'
 ```
 
 ## Usage
