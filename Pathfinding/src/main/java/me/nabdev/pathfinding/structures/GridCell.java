@@ -18,6 +18,11 @@ public class GridCell {
         this.center = center;
     }
 
+    public boolean contains(Vertex v) {
+        return v.x >= center.x - xSize / 2 && v.x <= center.x + xSize / 2 &&
+                v.y >= center.y - ySize / 2 && v.y <= center.y + ySize / 2;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this)

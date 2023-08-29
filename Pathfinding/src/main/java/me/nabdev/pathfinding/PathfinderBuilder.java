@@ -19,6 +19,8 @@ public class PathfinderBuilder {
     private boolean injectPoints = false;
     private boolean normalizeCorners = true;
     private SearchAlgorithmType searchAlgorithmType = SearchAlgorithmType.ASTAR;
+    private int precomputeGridX = 8;
+    private int precomputeGridY = 4;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -141,6 +143,28 @@ public class PathfinderBuilder {
     }
 
     /**
+     * Sets the number of cells on the x axis to use when precomputing the grid
+     * 
+     * @param precomputeGridX The number of cells on the x axis, default 8
+     * @return The builder
+     */
+    public PathfinderBuilder setPrecomputeGridX(int precomputeGridX) {
+        this.precomputeGridX = precomputeGridX;
+        return this;
+    }
+
+    /**
+     * Sets the number of cells on the y axis to use when precomputing the grid
+     * 
+     * @param precomputeGridY The number of cells on the y axis, default 4
+     * @return The builder
+     */
+    public PathfinderBuilder setPrecomputeGridY(int precomputeGridY) {
+        this.precomputeGridY = precomputeGridY;
+        return this;
+    }
+
+    /**
      * Builds the {@link Pathfinder}
      * 
      * @return The {@link Pathfinder}
@@ -157,6 +181,6 @@ public class PathfinderBuilder {
             }
         }
         return new Pathfinder(loadedField, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
-                injectPoints, normalizeCorners, searchAlgorithmType);
+                injectPoints, normalizeCorners, searchAlgorithmType, precomputeGridX, precomputeGridY);
     }
 }

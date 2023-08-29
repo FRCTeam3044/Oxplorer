@@ -14,6 +14,38 @@ public class GridCellPair {
     // This could probably be made more efficient but its precomputed so it doesn't
     // really matter
     public ArrayList<Edge> getPossibleEdges(ArrayList<Edge> edges, ArrayList<Vertex> vertices) {
+        if (a.equals(b))
+            return getPossibleEdgesIn1(edges, vertices);
+        return getPossibleEdgesBetween2(edges, vertices);
+    }
+
+    private ArrayList<Edge> getPossibleEdgesIn1(ArrayList<Edge> edges, ArrayList<Vertex> vertices) {
+        ArrayList<Edge> possibleEdges = new ArrayList<>();
+
+        Vertex bottomLeft = a.center.moveByVector(GridCell.bottomLeft);
+        Vertex bottomRight = a.center.moveByVector(GridCell.bottomRight);
+        Vertex topLeft = a.center.moveByVector(GridCell.topLeft);
+        Vertex topRight = a.center.moveByVector(GridCell.topRight);
+        for (Edge e : edges) {
+            Vertex v1 = e.getVertexOne(vertices);
+            Vertex v2 = e.getVertexTwo(vertices);
+            if (Vector.dotIntersectFast(topLeft, topRight, v1, v2) ||
+                    Vector.dotIntersectFast(topRight, bottomRight, v1, v2) ||
+                    Vector.dotIntersectFast(bottomRight, bottomLeft, v1, v2) ||
+                    Vector.dotIntersectFast(bottomLeft, topLeft, v1, v2)) {
+                possibleEdges.add(e);
+            } else {
+                // If both vertices are inside the cell, the edge is possible
+                if (a.contains(v1) && a.contains(v2)) {
+                    possibleEdges.add(e);
+                }
+            }
+        }
+
+        return possibleEdges;
+    }
+
+    private ArrayList<Edge> getPossibleEdgesBetween2(ArrayList<Edge> edges, ArrayList<Vertex> vertices) {
         ArrayList<Edge> possibleEdges = new ArrayList<>();
 
         Vector normal = a.center.createVectorTo(b.center).calculateNormal().normalize();

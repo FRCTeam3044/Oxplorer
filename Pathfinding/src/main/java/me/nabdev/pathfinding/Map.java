@@ -108,7 +108,7 @@ public class Map {
         pathVerticesStatic = calculateStaticPathVertices(clearance);
         checkPathVertices();
         ArrayList<Edge> validEdges = validObstacleEdges();
-        precomputeGrid = new Grid(33, 16, validEdges, obstacleVertices);
+        precomputeGrid = new Grid(8, 4, validEdges, obstacleVertices);
         // Calculate the edges between these path vertices, so that the robot can't
         // phase through obstacles.
         calculateStaticNeighbors();
@@ -275,6 +275,11 @@ public class Map {
         neighbors.addAll(dynamicNeighbors);
     }
 
+    // private int iterations = 0;
+    // private long hashMapTime = 0;
+    // private long lineOfSightTime = 0;
+    // private long totalTime = 0;
+
     private void lineOfSight(int cur, int i, ArrayList<Edge> neighborArray, ArrayList<Vertex> pathVerticesArray) {
         if (cur == i)
             return;
@@ -288,8 +293,12 @@ public class Map {
         boolean intersect = false;
 
         GridCellPair gcp = precomputeGrid.getCellsOf(curVertex, iVertex);
+        // long startHashTime = System.nanoTime();
         ArrayList<Edge> possibleEdges = precomputeGrid.possibleEdgeLookup.get(gcp);
-        System.out.println(possibleEdges.size());
+        // long endHashTime = System.nanoTime();
+        // hashMapTime += endHashTime - startHashTime;
+
+        // long startLineOfSightTime = System.nanoTime();
         for (Edge e : possibleEdges) {
             if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
                     e.getVertexTwo(obstacleVertices))) {
@@ -297,7 +306,20 @@ public class Map {
                 break;
             }
         }
+        // long endLineOfSightTime = System.nanoTime();
+        // lineOfSightTime += endLineOfSightTime - startLineOfSightTime;
         if (!intersect)
             neighborArray.add(new Edge(cur, i));
+
+        // totalTime += endLineOfSightTime - startHashTime;
+        // iterations++;
+        // double averageTime = (double) (totalTime) / iterations;
+        // double averageHashTime = (double) (hashMapTime) / iterations;
+        // double averageLineOfSightTime = (double) (lineOfSightTime) / iterations;
+        // System.out.println("Average hash time: " + averageHashTime + " (" +
+        // averageHashTime / averageTime * 100 + "%)");
+        // System.out.println("Average line of sight time: " + averageLineOfSightTime +
+        // " ("
+        // + averageLineOfSightTime / averageTime * 100 + "%)");
     }
 }
