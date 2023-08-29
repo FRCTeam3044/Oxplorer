@@ -3,6 +3,8 @@ package me.nabdev.pathfinding;
 import java.util.ArrayList;
 
 import me.nabdev.pathfinding.structures.Edge;
+import me.nabdev.pathfinding.structures.Grid;
+import me.nabdev.pathfinding.structures.GridCellPair;
 import me.nabdev.pathfinding.structures.Obstacle;
 import me.nabdev.pathfinding.structures.Vector;
 import me.nabdev.pathfinding.structures.Vertex;
@@ -50,10 +52,6 @@ public class Map {
     ArrayList<Edge> obstacleEdges;
 
     /**
-     * The edges of obstacles that are inside of the field bounds.
-     */
-    ArrayList<Edge> validObstacleEdges = new ArrayList<>();
-    /**
      * The obstacles themselves.
      */
     ArrayList<Obstacle> obstacles;
@@ -84,6 +82,8 @@ public class Map {
      */
     ArrayList<Edge> neighbors;
 
+    Grid precomputeGrid;
+
     /**
      * Create a new map with the given obstacles, vertices, and clearance parameter.
      * 
@@ -107,7 +107,8 @@ public class Map {
         // offset by the clearance parameter.
         pathVerticesStatic = calculateStaticPathVertices(clearance);
         checkPathVertices();
-        checkObstacleEdges();
+        ArrayList<Edge> validEdges = validObstacleEdges();
+        precomputeGrid = new Grid(33, 16, validEdges, obstacleVertices);
         // Calculate the edges between these path vertices, so that the robot can't
         // phase through obstacles.
         calculateStaticNeighbors();
@@ -133,15 +134,19 @@ public class Map {
      * bounds, and if they aren't add them to the validObstacleEdges list.
      * This currently only covers some cases, but is good enough for now.
      */
-    private void checkObstacleEdges() {
+    private ArrayList<Edge> validObstacleEdges() {
+        // We remove edges that are completely outside of the field bounds.
+        ArrayList<Edge> validObstacleEdges = new ArrayList<>();
         for (Edge e : obstacleEdges) {
-            Vertex v1 = obstacleVertices.get(e.getVertexOne());
-            Vertex v2 = obstacleVertices.get(e.getVertexTwo());
+            Vertex v1 = e.getVertexOne(obstacleVertices);
+            Vertex v2 = e.getVertexTwo(obstacleVertices);
             if (!((v1.x < originx && v2.x < originx) || (v1.x > fieldx && v2.x > fieldx)
                     || (v1.y < originy && v2.y < originy) || (v1.y > fieldy && v2.y > fieldy))) {
                 validObstacleEdges.add(e);
             }
         }
+        return validObstacleEdges;
+
     }
 
     /**
@@ -282,7 +287,10 @@ public class Map {
 
         boolean intersect = false;
 
-        for (Edge e : validObstacleEdges) {
+        GridCellPair gcp = precomputeGrid.getCellsOf(curVertex, iVertex);
+        ArrayList<Edge> possibleEdges = precomputeGrid.possibleEdgeLookup.get(gcp);
+        System.out.println(possibleEdges.size());
+        for (Edge e : possibleEdges) {
             if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
                     e.getVertexTwo(obstacleVertices))) {
                 intersect = true;

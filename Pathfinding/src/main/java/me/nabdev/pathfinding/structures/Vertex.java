@@ -246,7 +246,7 @@ public class Vertex implements Comparable<Vertex> {
             return false;
         Vertex compare = (Vertex) o;
 
-        return compare.x == this.x && compare.y == this.y;
+        return Double.compare(compare.x, this.x) == 0 && Double.compare(compare.y, this.y) == 0;
     }
 
     /**
@@ -271,5 +271,20 @@ public class Vertex implements Comparable<Vertex> {
             return 1;
         else
             return 0;
+    }
+
+    @Override
+    public int hashCode() {
+        // Choose prime numbers to ensure diverse distribution
+        final int prime = 31;
+        int result = 1;
+
+        long xBits = Double.doubleToLongBits(x);
+        long yBits = Double.doubleToLongBits(y);
+
+        result = prime * result + (int) (xBits ^ (xBits >>> 32));
+        result = prime * result + (int) (yBits ^ (yBits >>> 32));
+
+        return result;
     }
 }

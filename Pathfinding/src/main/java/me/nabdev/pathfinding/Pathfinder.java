@@ -51,6 +51,9 @@ public class Pathfinder {
      * Whether or not to normalize distance between corner points
      */
     public final boolean normalizeCorners;
+
+    public final int lookupGridX = 8;
+    public final int lookupGridY = 8;
     /**
      * How far each corner should move towards the
      * other point if the distance is too short to allow both corners the full
@@ -276,7 +279,7 @@ public class Pathfinder {
                 || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
             target = snap(target);
         }
-        // long snapEndTime = System.nanoTime();
+        long snapEndTime = System.nanoTime();
 
         ArrayList<Vertex> additionalVertexs = new ArrayList<>();
         additionalVertexs.add(start);
@@ -284,7 +287,7 @@ public class Pathfinder {
         additionalVertexs.addAll(dynamicVertices);
         map.calculateDynamicNeighbors(additionalVertexs, true);
 
-        // long visibilityEndTime = System.nanoTime();
+        long visibilityEndTime = System.nanoTime();
 
         SearchAlgorithm searcher;
         if (searchAlgorithmType == SearchAlgorithmType.ASTAR) {
@@ -295,30 +298,30 @@ public class Pathfinder {
         // This could throw ImpossiblePathException
         Path path = searcher.run(start, target);
 
-        // long searchEndTime = System.nanoTime();
+        long searchEndTime = System.nanoTime();
 
         path.setUnsnappedTarget(unsnappedTarget);
         path.processPath(snapMode);
         long endTime = System.nanoTime();
         long totalTime = endTime - startTime;
-        // long snapTime = snapEndTime - startTime;
-        // long visibilityTime = visibilityEndTime - snapEndTime;
-        // long searchTime = searchEndTime - visibilityEndTime;
-        // long processPathTime = endTime - searchEndTime;
+        long snapTime = snapEndTime - startTime;
+        long visibilityTime = visibilityEndTime - snapEndTime;
+        long searchTime = searchEndTime - visibilityEndTime;
+        long processPathTime = endTime - searchEndTime;
         System.out.println("Total Path generation time: " + totalTime / 1000000.0 +
                 "ms");
-        // System.out.println("Snapping time: " + snapTime / 1000000.0 + "ms ("
-        // + Math.round((snapTime / (double) totalTime) * 100) + "%)");
-        // System.out.println("Visibility graph time: " + visibilityTime / 1000000.0 +
-        // "ms ("
-        // + Math.round((visibilityTime / (double) totalTime) * 100) + "%)");
-        // System.out.println(
-        // "Search time: " + searchTime / 1000000.0 + "ms (" + Math.round((searchTime /
-        // (double) totalTime) * 100)
-        // + "%)");
-        // System.out.println("Path processing time: " + processPathTime / 1000000.0 +
-        // "ms ("
-        // + Math.round((processPathTime / (double) totalTime) * 100) + "%)");
+        System.out.println("Snapping time: " + snapTime / 1000000.0 + "ms ("
+                + Math.round((snapTime / (double) totalTime) * 100) + "%)");
+        System.out.println("Visibility graph time: " + visibilityTime / 1000000.0 +
+                "ms ("
+                + Math.round((visibilityTime / (double) totalTime) * 100) + "%)");
+        System.out.println(
+                "Search time: " + searchTime / 1000000.0 + "ms (" + Math.round((searchTime /
+                        (double) totalTime) * 100)
+                        + "%)");
+        System.out.println("Path processing time: " + processPathTime / 1000000.0 +
+                "ms ("
+                + Math.round((processPathTime / (double) totalTime) * 100) + "%)");
 
         return path;
     }

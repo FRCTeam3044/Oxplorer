@@ -75,7 +75,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
 
-    implementation 'me.nabdev.pathfinding:oxplorer:0.4.3-SNAPSHOT4'
+    implementation 'me.nabdev.pathfinding:oxplorer:0.5.0-SNAPSHOT2'
     implementation 'org.json:json:20230618'
 }
 

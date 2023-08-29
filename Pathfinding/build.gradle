@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = '1.11'
 targetCompatibility = '1.11'
 group 'me.nabdev.pathfinding'
-version '0.4.3-SNAPSHOT4'
+version '0.5.0-SNAPSHOT2'
 
 java {
     withSourcesJar()
