@@ -146,7 +146,7 @@ public class Pathfinder {
         }
 
         // Create the map object
-        map = new Map(obstacles, obstacleVertices, edges, clearance);
+        map = new Map(obstacles, obstacleVertices, edges, this);
 
         for (Obstacle obs : obstacles) {
             obs.initialize(map.pathVerticesStatic);

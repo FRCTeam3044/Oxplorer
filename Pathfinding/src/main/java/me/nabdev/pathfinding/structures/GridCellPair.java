@@ -6,6 +6,10 @@ public class GridCellPair {
     private GridCell a;
     private GridCell b;
 
+    public ArrayList<Edge> possibleEdges = new ArrayList<>();
+
+    private int hashCode = -1;
+
     public GridCellPair(GridCell a, GridCell b) {
         this.a = a;
         this.b = b;
@@ -131,6 +135,8 @@ public class GridCellPair {
 
     @Override
     public int hashCode() {
-        return 31 * a.hashCode() + b.hashCode();
+        if (hashCode == -1)
+            hashCode = 31 * a.hashCode() + b.hashCode();
+        return hashCode;
     }
 }

@@ -6,6 +6,8 @@ package me.nabdev.pathfinding.structures;
 public class GridCell {
     public static double xSize;
     public static double ySize;
+    public static double xSizeDividend;
+    public static double ySizeDividend;
 
     public static Vector topLeft;
     public static Vector topRight;
@@ -39,6 +41,8 @@ public class GridCell {
     }
 
     public static void recomputeVectors() {
+        xSizeDividend = 1 / xSize;
+        ySizeDividend = 1 / ySize;
         topLeft = new Vector(-xSize / 2, ySize / 2);
         topRight = new Vector(xSize / 2, ySize / 2);
         bottomLeft = new Vector(-xSize / 2, -ySize / 2);

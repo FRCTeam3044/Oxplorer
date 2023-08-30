@@ -42,6 +42,9 @@ public class Vertex implements Comparable<Vertex> {
         return G + H;
     }
 
+    public int gridX = -1;
+    public int gridY = -1;
+
     /**
      * Used with A*. The previous vertex in the path, saved so that the path can be
      * traced backwards after reaching the target.
@@ -273,18 +276,18 @@ public class Vertex implements Comparable<Vertex> {
             return 0;
     }
 
-    @Override
-    public int hashCode() {
-        // Choose prime numbers to ensure diverse distribution
-        final int prime = 31;
-        int result = 1;
+    // @Override
+    // public int hashCode() {
+    // // Choose prime numbers to ensure diverse distribution
+    // final int prime = 31;
+    // int result = 1;
 
-        long xBits = Double.doubleToLongBits(x);
-        long yBits = Double.doubleToLongBits(y);
+    // long xBits = Double.doubleToLongBits(x);
+    // long yBits = Double.doubleToLongBits(y);
 
-        result = prime * result + (int) (xBits ^ (xBits >>> 32));
-        result = prime * result + (int) (yBits ^ (yBits >>> 32));
+    // result = prime * result + (int) (xBits ^ (xBits >>> 32));
+    // result = prime * result + (int) (yBits ^ (yBits >>> 32));
 
-        return result;
-    }
+    // return result;
+    // }
 }

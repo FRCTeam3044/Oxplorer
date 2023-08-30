@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import me.nabdev.pathfinding.structures.Edge;
 import me.nabdev.pathfinding.structures.Grid;
+import me.nabdev.pathfinding.structures.GridCell;
 import me.nabdev.pathfinding.structures.GridCellPair;
 import me.nabdev.pathfinding.structures.Obstacle;
 import me.nabdev.pathfinding.structures.Vector;
@@ -92,7 +93,7 @@ public class Map {
      * @param obEdges    The edges of the obstacles.
      * @param clearance  The clearance parameter to inflate the obstacles by.
      */
-    Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance) {
+    Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, Pathfinder pathfinder) {
         obstacleEdges = obEdges;
         obstacleVertices = obVertices;
         obstacles = obs;
@@ -105,10 +106,14 @@ public class Map {
         }
         // Uses vectors to make a list of points around the vertices of obstacles,
         // offset by the clearance parameter.
-        pathVerticesStatic = calculateStaticPathVertices(clearance);
+        pathVerticesStatic = calculateStaticPathVertices(pathfinder.clearance);
         checkPathVertices();
         ArrayList<Edge> validEdges = validObstacleEdges();
-        precomputeGrid = new Grid(8, 4, validEdges, obstacleVertices);
+        precomputeGrid = new Grid(pathfinder.precomputeGridX, pathfinder.precomputeGridY, validEdges, obstacleVertices);
+        for (Vertex v : pathVerticesStatic) {
+            v.gridX = (int) Math.floor(v.x / GridCell.xSize);
+            v.gridY = (int) Math.floor(v.y / GridCell.ySize);
+        }
         // Calculate the edges between these path vertices, so that the robot can't
         // phase through obstacles.
         calculateStaticNeighbors();
@@ -224,6 +229,11 @@ public class Map {
         return inflatedPlusEps;
     }
 
+    private int iterations = 0;
+    private long hashMapTime = 0;
+    private long lineOfSightTime = 0;
+    private long totalTime = 0;
+
     private void calculateStaticNeighbors() {
         for (int cur = 0; cur < pathVerticesStatic.size(); cur++) {
             for (int i = cur; i < pathVerticesStatic.size(); i++) {
@@ -247,6 +257,10 @@ public class Map {
      *                           generating a new path)
      */
     void calculateDynamicNeighbors(ArrayList<Vertex> additionalVertices, boolean reset) {
+        iterations = 0;
+        hashMapTime = 0;
+        lineOfSightTime = 0;
+        totalTime = 0;
         if (reset || pathVertices == null)
             pathVertices = new ArrayList<>(pathVerticesStatic);
         if (reset || neighbors == null)
@@ -275,11 +289,6 @@ public class Map {
         neighbors.addAll(dynamicNeighbors);
     }
 
-    // private int iterations = 0;
-    // private long hashMapTime = 0;
-    // private long lineOfSightTime = 0;
-    // private long totalTime = 0;
-
     private void lineOfSight(int cur, int i, ArrayList<Edge> neighborArray, ArrayList<Vertex> pathVerticesArray) {
         if (cur == i)
             return;
@@ -292,13 +301,12 @@ public class Map {
 
         boolean intersect = false;
 
-        GridCellPair gcp = precomputeGrid.getCellsOf(curVertex, iVertex);
-        // long startHashTime = System.nanoTime();
-        ArrayList<Edge> possibleEdges = precomputeGrid.possibleEdgeLookup.get(gcp);
-        // long endHashTime = System.nanoTime();
-        // hashMapTime += endHashTime - startHashTime;
+        long startHashTime = System.nanoTime();
+        ArrayList<Edge> possibleEdges = precomputeGrid.getCellsOf(curVertex, iVertex).possibleEdges;
+        long endHashTime = System.nanoTime();
+        hashMapTime += endHashTime - startHashTime;
 
-        // long startLineOfSightTime = System.nanoTime();
+        long startLineOfSightTime = System.nanoTime();
         for (Edge e : possibleEdges) {
             if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
                     e.getVertexTwo(obstacleVertices))) {
@@ -306,20 +314,20 @@ public class Map {
                 break;
             }
         }
-        // long endLineOfSightTime = System.nanoTime();
-        // lineOfSightTime += endLineOfSightTime - startLineOfSightTime;
+        long endLineOfSightTime = System.nanoTime();
+        lineOfSightTime += endLineOfSightTime - startLineOfSightTime;
         if (!intersect)
             neighborArray.add(new Edge(cur, i));
 
-        // totalTime += endLineOfSightTime - startHashTime;
-        // iterations++;
-        // double averageTime = (double) (totalTime) / iterations;
-        // double averageHashTime = (double) (hashMapTime) / iterations;
-        // double averageLineOfSightTime = (double) (lineOfSightTime) / iterations;
-        // System.out.println("Average hash time: " + averageHashTime + " (" +
-        // averageHashTime / averageTime * 100 + "%)");
-        // System.out.println("Average line of sight time: " + averageLineOfSightTime +
-        // " ("
-        // + averageLineOfSightTime / averageTime * 100 + "%)");
+        totalTime += endLineOfSightTime - startHashTime;
+        iterations++;
+        double averageTime = (double) (totalTime) / iterations;
+        double averageHashTime = (double) (hashMapTime) / iterations;
+        double averageLineOfSightTime = (double) (lineOfSightTime) / iterations;
+        System.out.println("Average hash time: " + averageHashTime + " (" +
+                averageHashTime / averageTime * 100 + "%)");
+        System.out.println("Average line of sight time: " + averageLineOfSightTime +
+                " ("
+                + averageLineOfSightTime / averageTime * 100 + "%)");
     }
 }
