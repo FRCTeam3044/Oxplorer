@@ -42,7 +42,16 @@ public class Vertex implements Comparable<Vertex> {
         return G + H;
     }
 
+    /**
+     * Used with the grid optimizations, just caching the grid x coordinate of the
+     * vertex
+     */
     public int gridX = -1;
+
+    /**
+     * Used with the grid optimizations, just caching the grid y coordinate of the
+     * vertex
+     */
     public int gridY = -1;
 
     /**

@@ -64,7 +64,15 @@ public class Pathfinder {
      */
     public final SearchAlgorithmType searchAlgorithmType;
 
+    /**
+     * How many cells to use on the x axis of the grid when precomputing the edges
+     * for the dynamic visibility graph
+     */
     public final int precomputeGridX;
+    /**
+     * How many cells to use on the y axis of the grid when precomputing the edges
+     * for the dynamic visibility graph
+     */
     public final int precomputeGridY;
 
     // Every obstacle vertex (ORDER IS IMPORTANT)
@@ -92,6 +100,12 @@ public class Pathfinder {
      * @param normalizeCorners    Whether or not to normalize distance between
      *                            corner points
      * @param searchAlgorithmType The search algorithm to use
+     * @param precomputeGridX     How many cells to use on the x axis of the grid
+     *                            when precomputing the edges for the dynamic
+     *                            visibility graph
+     * @param precomputeGridY     How many cells to use on the y axis of the grid
+     *                            when precomputing the edges for the dynamic
+     *                            visibility graph
      */
     public Pathfinder(JSONObject field, double pointSpacing, double cornerPointSpacing, double cornerDist,
             double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners,

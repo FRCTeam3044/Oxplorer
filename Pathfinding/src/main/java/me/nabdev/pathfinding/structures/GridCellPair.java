@@ -2,25 +2,36 @@ package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
 
+/**
+ * Represents a pair of {@link GridCell}s
+ */
 public class GridCellPair {
     private GridCell a;
     private GridCell b;
 
-    public ArrayList<Edge> possibleEdges = new ArrayList<>();
+    /**
+     * The possible edges that a line between the two cells might intersect
+     */
+    public ArrayList<Edge> possibleEdges;
 
     private int hashCode = -1;
 
+    /**
+     * Creates a new GridCellPair with the given cells
+     * 
+     * @param a The first cell
+     * @param b The second cell
+     */
     public GridCellPair(GridCell a, GridCell b) {
         this.a = a;
         this.b = b;
     }
 
-    // This could probably be made more efficient but its precomputed so it doesn't
-    // really matter
-    public ArrayList<Edge> getPossibleEdges(ArrayList<Edge> edges, ArrayList<Vertex> vertices) {
+    void calculatePossibleEdges(ArrayList<Edge> edges, ArrayList<Vertex> vertices) {
         if (a.equals(b))
-            return getPossibleEdgesIn1(edges, vertices);
-        return getPossibleEdgesBetween2(edges, vertices);
+            possibleEdges = getPossibleEdgesIn1(edges, vertices);
+        else
+            possibleEdges = getPossibleEdgesBetween2(edges, vertices);
     }
 
     private ArrayList<Edge> getPossibleEdgesIn1(ArrayList<Edge> edges, ArrayList<Vertex> vertices) {
@@ -99,27 +110,18 @@ public class GridCellPair {
      *         (or smallest if negative is true) dot product
      */
     private Vector getVectorFromDots(double tL, double tR, double bL, double bR, boolean negative) {
-        if (negative) {
-            double min = Math.min(tL, Math.min(tR, Math.min(bL, bR)));
-            if (tL == min)
-                return GridCell.topLeft;
-            if (tR == min)
-                return GridCell.topRight;
-            if (bL == min)
-                return GridCell.bottomLeft;
-            if (bR == min)
-                return GridCell.bottomRight;
-        } else {
-            double max = Math.max(tL, Math.max(tR, Math.max(bL, bR)));
-            if (tL == max)
-                return GridCell.topLeft;
-            if (tR == max)
-                return GridCell.topRight;
-            if (bL == max)
-                return GridCell.bottomLeft;
-            if (bR == max)
-                return GridCell.bottomRight;
-        }
+        double val = negative ?
+                Math.min(tL, Math.min(tR, Math.min(bL, bR))) :
+                Math.max(tL, Math.max(tR, Math.max(bL, bR)));
+        if (tL == val)
+            return GridCell.topLeft;
+        if (tR == val)
+            return GridCell.topRight;
+        if (bL == val)
+            return GridCell.bottomLeft;
+        if (bR == val)
+            return GridCell.bottomRight;
+            
         return null;
     }
 

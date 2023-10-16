@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import me.nabdev.pathfinding.structures.Edge;
 import me.nabdev.pathfinding.structures.Grid;
 import me.nabdev.pathfinding.structures.GridCell;
-import me.nabdev.pathfinding.structures.GridCellPair;
 import me.nabdev.pathfinding.structures.Obstacle;
 import me.nabdev.pathfinding.structures.Vector;
 import me.nabdev.pathfinding.structures.Vertex;
@@ -229,11 +228,6 @@ public class Map {
         return inflatedPlusEps;
     }
 
-    private int iterations = 0;
-    private long hashMapTime = 0;
-    private long lineOfSightTime = 0;
-    private long totalTime = 0;
-
     private void calculateStaticNeighbors() {
         for (int cur = 0; cur < pathVerticesStatic.size(); cur++) {
             for (int i = cur; i < pathVerticesStatic.size(); i++) {
@@ -257,10 +251,6 @@ public class Map {
      *                           generating a new path)
      */
     void calculateDynamicNeighbors(ArrayList<Vertex> additionalVertices, boolean reset) {
-        iterations = 0;
-        hashMapTime = 0;
-        lineOfSightTime = 0;
-        totalTime = 0;
         if (reset || pathVertices == null)
             pathVertices = new ArrayList<>(pathVerticesStatic);
         if (reset || neighbors == null)
@@ -300,13 +290,8 @@ public class Map {
             return;
 
         boolean intersect = false;
+        ArrayList<Edge> possibleEdges = precomputeGrid.getCellPairOf(curVertex, iVertex).possibleEdges;
 
-        long startHashTime = System.nanoTime();
-        ArrayList<Edge> possibleEdges = precomputeGrid.getCellsOf(curVertex, iVertex).possibleEdges;
-        long endHashTime = System.nanoTime();
-        hashMapTime += endHashTime - startHashTime;
-
-        long startLineOfSightTime = System.nanoTime();
         for (Edge e : possibleEdges) {
             if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
                     e.getVertexTwo(obstacleVertices))) {
@@ -314,20 +299,7 @@ public class Map {
                 break;
             }
         }
-        long endLineOfSightTime = System.nanoTime();
-        lineOfSightTime += endLineOfSightTime - startLineOfSightTime;
         if (!intersect)
             neighborArray.add(new Edge(cur, i));
-
-        totalTime += endLineOfSightTime - startHashTime;
-        iterations++;
-        double averageTime = (double) (totalTime) / iterations;
-        double averageHashTime = (double) (hashMapTime) / iterations;
-        double averageLineOfSightTime = (double) (lineOfSightTime) / iterations;
-        System.out.println("Average hash time: " + averageHashTime + " (" +
-                averageHashTime / averageTime * 100 + "%)");
-        System.out.println("Average line of sight time: " + averageLineOfSightTime +
-                " ("
-                + averageLineOfSightTime / averageTime * 100 + "%)");
     }
 }

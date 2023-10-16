@@ -1,25 +1,26 @@
 package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import me.nabdev.pathfinding.Map;
 
 /**
- * Represent a grid with an arbitray number of cells on either dimension.
- * When created, the grid should be filled with {@link GridCell} with the size
- * calculated based on the field size and the number of cells.
+ * Represents a grid used to speed up the visibility graph generation. It
+ * generates a big list of possible edges that could be in the way between any
+ * two cells, and then when generating the visibility graph, it only checks
+ * those edges.
  */
 public class Grid {
     private GridCell[][] cells;
     private GridCellPair[][][][] cellPairs;
-    public HashMap<GridCellPair, ArrayList<Edge>> possibleEdgeLookup = new HashMap<>();
 
     /**
      * Creates a new grid with the given number of cells on each dimension.
      * 
-     * @param xCells The number of cells on the x axis
-     * @param yCells The number of cells on the y axis
+     * @param xCells   The number of cells on the x axis
+     * @param yCells   The number of cells on the y axis
+     * @param edges    The edges to use when generating the possible edges
+     * @param vertices The vertices to use when generating the possible edges
      */
     public Grid(int xCells, int yCells, ArrayList<Edge> edges, ArrayList<Vertex> vertices) {
         GridCell.xSize = (Map.fieldx - Map.originx) / (double) xCells;
@@ -41,7 +42,7 @@ public class Grid {
                 for (int x2 = 0; x2 < xCells; x2++) {
                     for (int y2 = 0; y2 < yCells; y2++) {
                         GridCellPair pair = new GridCellPair(cells[x][y], cells[x2][y2]);
-                        pair.possibleEdges = pair.getPossibleEdges(edges, vertices);
+                        pair.calculatePossibleEdges(edges, vertices);
                         cellPairs[x][y][x2][y2] = pair;
                         // if (!possibleEdgeLookup.containsKey(pair)) {
                         // possibleEdgeLookup.put(pair,
@@ -53,28 +54,38 @@ public class Grid {
         }
     }
 
-    // TODO: Clamp this inside field bounds
-    public GridCell getCellOf(Vertex v) {
-        int x = (int) Math.floor(v.x / GridCell.xSize);
-        int y = (int) Math.floor(v.y / GridCell.ySize);
-        return cells[x][y];
-    }
-
     // long calculatetimeAverage = 0;
     // long arrayLookupAverage = 0;
     // long totalTimeAverage = 0;
     // int iterations = 0;
 
-    public GridCellPair getCellsOf(Vertex a, Vertex b) {
+    // TODO: Clamp the x and y values to the grid size
+    /**
+     * Gets the {@link GridCellPair} for the given vertices and caches it
+     * 
+     * @param a The first vertex
+     * @param b The second vertex
+     * @return The {@link GridCellPair} for the given vertices
+     */
+    public GridCellPair getCellPairOf(Vertex a, Vertex b) {
         // iterations++;
         // long startTime = System.nanoTime();
-        boolean aCellPrecomputed = a.gridX != -1;
-        boolean bCellPrecomputed = b.gridX != -1;
-
-        int x = aCellPrecomputed ? a.gridX : (int) Math.floor(a.x * GridCell.xSizeDividend);
-        int y = aCellPrecomputed ? a.gridY : (int) Math.floor(a.y * GridCell.ySizeDividend);
-        int x2 = bCellPrecomputed ? b.gridX : (int) Math.floor(b.x * GridCell.xSizeDividend);
-        int y2 = bCellPrecomputed ? b.gridY : (int) Math.floor(b.y * GridCell.ySizeDividend);
+        int x = a.gridX;
+        int y = a.gridY;
+        int x2 = b.gridX;
+        int y2 = b.gridY;
+        if (a.gridX == -1) {
+            x = (int) Math.floor(a.x * GridCell.xSizeDividend);
+            y = (int) Math.floor(a.y * GridCell.ySizeDividend);
+            a.gridX = x;
+            a.gridY = y;
+        }
+        if (b.gridX == -1) {
+            x2 = (int) Math.floor(b.x * GridCell.xSizeDividend);
+            y2 = (int) Math.floor(b.y * GridCell.ySizeDividend);
+            b.gridX = x2;
+            b.gridY = y2;
+        }
         // long endTime = System.nanoTime();
         // long arrayLookupStart = System.nanoTime();
         return cellPairs[x][y][x2][y2];

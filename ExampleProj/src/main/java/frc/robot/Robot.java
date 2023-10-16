@@ -44,11 +44,11 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
-        pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023).setCornerPointSpacing(0.2).setPrecomputeGridX(33).setPrecomputeGridY(16).build();
+        pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023).setCornerDist(1).setPrecomputeGridX(33).setPrecomputeGridY(16).build();
 
         ArrayList<Edge> field = pathfinder.visualizeEdges();
         DebugUtils.drawLines("Field Inflated", field, pathfinder.visualizeInflatedVertices());
-        DebugUtils.drawLines("Field", field, pathfinder.visualizeVertices());;
+        DebugUtils.drawLines("Field", field, pathfinder.visualizeVertices());
 
         SmartDashboard.putNumberArray("Start Vertex", new double[]{2, 0});
         SmartDashboard.putNumberArray("End Vertex", new double[]{16, 8});
