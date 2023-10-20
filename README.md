@@ -7,6 +7,8 @@ Oxplorer is *not* a path following library. It can generate paths, but not follo
 
 Hopefully a wiki is coming soon, but all the methods have full javadoc if you want to play with it.
 
+Take a look at the [Roadmap](https://trello.com/b/DJ243CXC/oxplorer)
+
 ## Installation
 
 Add the folowing to the repositories section of your `build.gradle`:
