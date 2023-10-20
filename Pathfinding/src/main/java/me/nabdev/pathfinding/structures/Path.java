@@ -63,6 +63,15 @@ public class Path extends ArrayList<Vertex> {
         this.pathfinder = pathfinder;
     }
 
+    public Path(Vertex start, Vertex target, ArrayList<Vertex> points) {
+        super();
+        this.start = start;
+        this.target = target;
+        this.addAll(points);
+
+        createFullPath();
+    }
+
     /**
      * Set the original unsnapped target vertex (the target vertex before it was
      * snapped to be outside of all obstacles).
