@@ -26,21 +26,4 @@ public class OrderedJSONObject extends JSONObject {
         }
 
     }
-
-    /**
-     * Creates a new OrderedJSONObject from a JSONTokener
-     * 
-     * @param tokener The JSONTokener to use
-     */
-    public OrderedJSONObject(JSONTokener tokener) {
-        super(tokener);
-        try {
-            Field jsonMap = getClass().getSuperclass().getDeclaredField("map");
-            jsonMap.setAccessible(true);
-            jsonMap.set(this, new LinkedHashMap<>());
-            jsonMap.setAccessible(false);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

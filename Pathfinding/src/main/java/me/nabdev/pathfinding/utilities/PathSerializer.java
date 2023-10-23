@@ -34,7 +34,7 @@ public class PathSerializer {
         // Load like a normal file, not a resource
         FileInputStream input = new FileInputStream(path);
         JSONTokener tokener = new JSONTokener(input);
-        return fromJSON(new OrderedJSONObject(tokener));
+        return fromJSON(new JSONObject(tokener));
     }
 
     /**
@@ -50,7 +50,7 @@ public class PathSerializer {
         FileInputStream input = new FileInputStream(
                 Filesystem.getDeployDirectory().toPath().resolve("oxplorer/paths/" + path).toString());
         JSONTokener tokener = new JSONTokener(input);
-        return fromJSON(new OrderedJSONObject(tokener));
+        return fromJSON(new JSONObject(tokener));
     }
 
     /**
@@ -62,7 +62,7 @@ public class PathSerializer {
      * @throws IOException If the file cannot be written to
      */
     public static void toDisk(String filePath, Path path, String displayName) throws IOException {
-        OrderedJSONObject pathJsonObject = toJSON(path, displayName);
+        JSONObject pathJsonObject = toJSON(path, displayName);
         FileWriter file = new FileWriter(filePath);
         file.write(pathJsonObject.toString(1));
         file.close();
@@ -78,7 +78,7 @@ public class PathSerializer {
      */
     public static void toDeployFolder(Path path, String displayName)
             throws IOException {
-        OrderedJSONObject pathJsonObject = toJSON(path, displayName);
+        JSONObject pathJsonObject = toJSON(path, displayName);
         String fileName = displayName.replaceAll("[^a-zA-Z0-9.-]", "_").toLowerCase() + ".json";
         // Write to deploy folder
         pathJsonObject.write(new java.io.FileWriter(
@@ -128,8 +128,8 @@ public class PathSerializer {
      * @param displayName The display name of the path
      * @return The JSON object
      */
-    public static OrderedJSONObject toJSON(Path path, String displayName) {
-        OrderedJSONObject pathJsonObject = new OrderedJSONObject();
+    public static JSONObject toJSON(Path path, String displayName) {
+        JSONObject pathJsonObject = new OrderedJSONObject();
         JSONArray pathJsonArray = new JSONArray();
 
         path.getFullPath().forEach(v -> {
@@ -144,8 +144,8 @@ public class PathSerializer {
         return pathJsonObject;
     }
 
-    private static OrderedJSONObject serializeVertex(Vertex v) {
-        OrderedJSONObject pointJsonObject = new OrderedJSONObject();
+    private static JSONObject serializeVertex(Vertex v) {
+        JSONObject pointJsonObject = new OrderedJSONObject();
         pointJsonObject.put("x", v.x);
         pointJsonObject.put("y", v.y);
         pointJsonObject.put("rotation", v.rotation.getDegrees());
