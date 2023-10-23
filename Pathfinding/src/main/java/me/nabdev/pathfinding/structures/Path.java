@@ -63,6 +63,13 @@ public class Path extends ArrayList<Vertex> {
         this.pathfinder = pathfinder;
     }
 
+    /**
+     * Creates a new Path with the given start and target vertices and the given
+     * 
+     * @param start  The start vertex of the path.
+     * @param target The target vertex of the path.
+     * @param points The points in the path.
+     */
     public Path(Vertex start, Vertex target, ArrayList<Vertex> points) {
         super();
         this.start = start;
@@ -372,5 +379,14 @@ public class Path extends ArrayList<Vertex> {
      */
     public Vertex getTarget() {
         return target;
+    }
+
+    /**
+     * Get the full path including the start and target vertices.
+     * 
+     * @return The full path including the start and target vertices.
+     */
+    public ArrayList<Vertex> getFullPath() {
+        return fullPath;
     }
 }

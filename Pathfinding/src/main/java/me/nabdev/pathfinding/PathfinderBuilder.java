@@ -2,8 +2,9 @@ package me.nabdev.pathfinding;
 
 import org.json.JSONObject;
 
-import me.nabdev.pathfinding.FieldLoader.Field;
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
+import me.nabdev.pathfinding.utilities.FieldLoader;
+import me.nabdev.pathfinding.utilities.FieldLoader.Field;
 
 /**
  * Builder class for {@link Pathfinder}
