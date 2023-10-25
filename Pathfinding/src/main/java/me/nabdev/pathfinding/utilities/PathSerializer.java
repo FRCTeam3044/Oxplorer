@@ -130,11 +130,7 @@ public class PathSerializer {
      */
     public static JSONObject toJSON(Path path, String displayName) {
         JSONObject pathJsonObject = new OrderedJSONObject();
-        JSONArray pathJsonArray = new JSONArray();
-
-        path.getFullPath().forEach(v -> {
-            pathJsonArray.put(serializeVertex(v));
-        });
+        JSONArray pathJsonArray = serializePath(path);
 
         pathJsonObject.put("version", VERSION);
         pathJsonObject.put("displayName", displayName);
@@ -155,5 +151,20 @@ public class PathSerializer {
     private static Vertex deserializeVertex(JSONObject jsonObject) {
         return new Vertex(jsonObject.getDouble("x"), jsonObject.getDouble("y"),
                 jsonObject.getDouble("rotation"));
+    }
+
+    /**
+     * Serialize a path to a JSON array
+     * @param path The path to serialize
+     * @return The JSON array representing the path
+     */
+    private static JSONArray serializePath(Path path){
+        JSONArray pathJsonArray = new JSONArray();
+
+        path.getFullPath().forEach(v -> {
+            pathJsonArray.put(serializeVertex(v));
+        });
+
+        return pathJsonArray;
     }
 }
