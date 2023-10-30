@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
@@ -38,17 +39,36 @@ public class PathSerializer {
     }
 
     /**
-     * Load a path from the deploy folder
+     * Load a path from the deploy folder by its filename
      * 
      * @param path The path of the JSON file to load, relative to
      *             deploy/oxplorer/paths
      * @return The path
      * @throws FileNotFoundException If the file does not exist
      */
-    public static Path fromDeployFolder(String path) throws FileNotFoundException {
-        // Load like a normal file, not a resource
-        FileInputStream input = new FileInputStream(
-                Filesystem.getDeployDirectory().toPath().resolve("oxplorer/paths/" + path).toString());
+    public static Path fromDeployFolderByFilename(String path) throws FileNotFoundException, IOException {
+        java.nio.file.Path containingFolder = Filesystem.getDeployDirectory().toPath().resolve("oxplorer/paths/");
+        // Ensures that oxplorer/paths exists
+        Files.createDirectories(containingFolder);
+        FileInputStream input = new FileInputStream(containingFolder.resolve(path).toString());
+        JSONTokener tokener = new JSONTokener(input);
+        return fromJSON(new JSONObject(tokener));
+    }
+
+    /**
+     * Load a path from the deploy folder via its display name. Spaces and other
+     * non-alphanumeric characters will be replaced with underscores when searching.
+     * 
+     * @param name The name of the path to load (without the .json extension)
+     * @return The path
+     * @throws FileNotFoundException If the file could not be found
+     */
+    public static Path fromDeployFolder(String displayName) throws FileNotFoundException, IOException {
+        java.nio.file.Path containingFolder = Filesystem.getDeployDirectory().toPath().resolve("oxplorer/paths/");
+        String fileName = displayName.replaceAll("[^a-zA-Z0-9.-]", "_").toLowerCase() + ".json";
+        // Ensures that oxplorer/paths exists
+        Files.createDirectories(containingFolder);
+        FileInputStream input = new FileInputStream(containingFolder.resolve(fileName).toString());
         JSONTokener tokener = new JSONTokener(input);
         return fromJSON(new JSONObject(tokener));
     }
@@ -79,10 +99,36 @@ public class PathSerializer {
     public static void toDeployFolder(Path path, String displayName)
             throws IOException {
         JSONObject pathJsonObject = toJSON(path, displayName);
+        java.nio.file.Path containingFolder = Filesystem.getDeployDirectory().toPath().resolve("oxplorer/paths/");
         String fileName = displayName.replaceAll("[^a-zA-Z0-9.-]", "_").toLowerCase() + ".json";
+        // Ensure that oxplorer/paths exists
+        Files.createDirectories(containingFolder);
         // Write to deploy folder
-        pathJsonObject.write(new java.io.FileWriter(
-                Filesystem.getDeployDirectory().toPath().resolve("oxplorer/paths/" + fileName).toString()));
+        FileWriter file = new FileWriter(containingFolder.resolve(fileName).toString());
+        file.write(pathJsonObject.toString(1));
+        file.close();
+
+    }
+
+    /**
+     * Save a path to the deploy folder
+     * 
+     * @param path        The path to save
+     * @param displayName The display name of the path (will be used as the file
+     *                    name)
+     * @param fileName    The name of the file to save to
+     * @throws IOException If the file cannot be written to
+     */
+    public static void toDeployFolder(Path path, String displayName, String fileName)
+            throws IOException {
+        JSONObject pathJsonObject = toJSON(path, displayName);
+        java.nio.file.Path containingFolder = Filesystem.getDeployDirectory().toPath().resolve("oxplorer/paths/");
+        // Ensure that oxplorer/paths exists
+        Files.createDirectories(containingFolder);
+        // Write to deploy folder
+        FileWriter file = new FileWriter(containingFolder.resolve(fileName).toString());
+        file.write(pathJsonObject.toString(1));
+        file.close();
     }
 
     /**
@@ -155,10 +201,11 @@ public class PathSerializer {
 
     /**
      * Serialize a path to a JSON array
+     * 
      * @param path The path to serialize
      * @return The JSON array representing the path
      */
-    private static JSONArray serializePath(Path path){
+    private static JSONArray serializePath(Path path) {
         JSONArray pathJsonArray = new JSONArray();
 
         path.getFullPath().forEach(v -> {
