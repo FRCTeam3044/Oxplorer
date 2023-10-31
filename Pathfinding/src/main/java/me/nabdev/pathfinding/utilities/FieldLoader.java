@@ -1,4 +1,4 @@
-package me.nabdev.pathfinding;
+package me.nabdev.pathfinding.utilities;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,13 +24,26 @@ public class FieldLoader {
         DEBUG_FIELD
     }
 
-    static JSONObject loadField(Field field) {
+    /**
+     * Load a field from the resources folder
+     * 
+     * @param field The field to load
+     * @return The field JSON
+     */
+    public static JSONObject loadField(Field field) {
         JSONTokener tokener = new JSONTokener(
                 FieldLoader.class.getClassLoader().getResourceAsStream(field.name().toLowerCase() + ".json"));
         return new JSONObject(tokener);
     }
 
-    static JSONObject loadField(String fieldPath) throws FileNotFoundException {
+    /**
+     * Load a field from a file
+     * 
+     * @param fieldPath The path to the field JSON file
+     * @return The field JSON
+     * @throws FileNotFoundException If the file does not exist
+     */
+    public static JSONObject loadField(String fieldPath) throws FileNotFoundException {
         // Load like a normal file, not a resource
         JSONTokener tokener;
         FileInputStream input = new FileInputStream(fieldPath);
