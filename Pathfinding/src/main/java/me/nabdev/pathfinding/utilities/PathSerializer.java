@@ -59,7 +59,7 @@ public class PathSerializer {
      * Load a path from the deploy folder via its display name. Spaces and other
      * non-alphanumeric characters will be replaced with underscores when searching.
      * 
-     * @param name The name of the path to load (without the .json extension)
+     * @param displayName The name of the path to load (without the .json extension)
      * @return The path
      * @throws FileNotFoundException If the file could not be found
      */
