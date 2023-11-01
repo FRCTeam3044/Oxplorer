@@ -1,11 +1,6 @@
-package me.nabdev.pathfinding;
+package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
-
-import me.nabdev.pathfinding.structures.Edge;
-import me.nabdev.pathfinding.structures.Obstacle;
-import me.nabdev.pathfinding.structures.Vector;
-import me.nabdev.pathfinding.structures.Vertex;
 
 /**
  * Represents all the obstacles on the map as well as the visibility graph that
@@ -92,7 +87,7 @@ public class Map {
      * @param obEdges    The edges of the obstacles.
      * @param clearance  The clearance parameter to inflate the obstacles by.
      */
-    Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance) {
+    public Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance) {
         obstacleEdges = obEdges;
         obstacleVertices = obVertices;
         obstacles = obs;
@@ -241,7 +236,7 @@ public class Map {
      *                           neighbors to their static values (For when
      *                           generating a new path)
      */
-    void calculateDynamicNeighbors(ArrayList<Vertex> additionalVertices, boolean reset) {
+    public void calculateDynamicNeighbors(ArrayList<Vertex> additionalVertices, boolean reset) {
         if (reset || pathVertices == null)
             pathVertices = new ArrayList<>(pathVerticesStatic);
         if (reset || neighbors == null)
@@ -291,5 +286,37 @@ public class Map {
         }
         if (!intersect)
             neighborArray.add(new Edge(cur, i));
+    }
+
+    /**
+     * Get the uninflated vertices of the obstacles.
+     * @return The vertices of the obstacles.
+     */
+    public ArrayList<Vertex> getPathVertices(){
+        return pathVertices;
+    }
+
+    /**
+     * Get the inflated vertices of the obstacles.
+     * @return The inflated vertices of the obstacles.
+     */
+    public ArrayList<Vertex> getPathVerticesStatic(){
+        return pathVerticesStatic;
+    }
+
+    /**
+     * Get the neighbors of the vertices of the static obstacles.
+     * @return The neighbors of the vertices of the static obstacles.
+     */
+    public ArrayList<Edge> getNeighbors(){
+        return neighbors;
+    }
+
+    /**
+     * Get the neighbors of the dynamic vertices.
+     * @return The neighbors of the dynamic vertices.
+     */
+    public ArrayList<Edge> getNeighborsStatic(){
+        return neighborsStatic;
     }
 }
