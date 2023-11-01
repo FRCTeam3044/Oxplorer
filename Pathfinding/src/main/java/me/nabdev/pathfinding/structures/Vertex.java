@@ -114,6 +114,19 @@ public class Vertex implements Comparable<Vertex> {
     }
 
     /**
+     * Creates a new Vertex from an x and y coordinate and a rotation
+     * 
+     * @param _x  The x coordinate of the vertex
+     * @param _y  The y coordinate of the vertex
+     * @param rot The rotation of the vertex, in degrees
+     */
+    public Vertex(double _x, double _y, double rot) {
+        x = _x;
+        y = _y;
+        rotation = Rotation2d.fromDegrees(rot);
+    }
+
+    /**
      * Get a pose2d representation of the current Vertex
      * 
      * @return The current Vertex as a Pose2d

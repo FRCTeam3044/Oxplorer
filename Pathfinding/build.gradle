@@ -1,11 +1,10 @@
 plugins {
     id 'java-library'
     id "edu.wpi.first.GradleRIO" version "2023.4.3"
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'maven-publish'
 }
 
-sourceCompatibility = '1.11'
-targetCompatibility = '1.11'
 group 'me.nabdev.pathfinding'
 version '0.5.0-SNAPSHOT42'
 
@@ -20,23 +19,23 @@ repositories {
 }
 
 dependencies {
-    implementation wpi.java.deps.wpilib() // Just easier debugging temporarily, not required
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.2'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-
     implementation 'edu.wpi.first.wpimath:wpimath-java:2023.4.3' // Needed for methods that convert Rotation2d and Pose2d to native pathfinding structures
-    implementation 'org.json:json:20230618'
+    implementation 'edu.wpi.first.wpilibj:wpilibj-java:2023.+'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0'
+    implementation 'org.json:json:20231013'
 }
 
-test {
-    useJUnitPlatform()
+shadowJar {
+    archiveClassifier.set('')
+    mergeServiceFiles()
+    zip64 true
 }
 
 publishing {
     publications {
-        Oxplorer(MavenPublication) {
-            from components.java
+        Oxplorer(MavenPublication) { publication ->
+            from project.shadow.component(publication)
+            artifactId = 'oxplorer'
         }
     }
     repositories {
