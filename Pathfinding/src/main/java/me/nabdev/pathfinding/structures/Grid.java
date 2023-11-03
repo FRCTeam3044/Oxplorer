@@ -2,8 +2,6 @@ package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
 
-import me.nabdev.pathfinding.Map;
-
 /**
  * Represents a grid used to speed up the visibility graph generation. It
  * generates a big list of possible edges that could be in the way between any
