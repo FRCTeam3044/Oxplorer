@@ -5,6 +5,7 @@ import me.nabdev.pathfinding.algorithms.SearchAlgorithm;
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
 import me.nabdev.pathfinding.structures.Edge;
 import me.nabdev.pathfinding.structures.ImpossiblePathException;
+import me.nabdev.pathfinding.structures.Map;
 import me.nabdev.pathfinding.structures.Obstacle;
 import me.nabdev.pathfinding.structures.Path;
 import me.nabdev.pathfinding.structures.Vertex;
@@ -163,7 +164,7 @@ public class Pathfinder {
         map = new Map(obstacles, obstacleVertices, edges, this);
 
         for (Obstacle obs : obstacles) {
-            obs.initialize(map.pathVerticesStatic);
+            obs.initialize(map.getPathVerticesStatic());
         }
     }
 
@@ -430,10 +431,10 @@ public class Pathfinder {
      */
     public ArrayList<Edge> visualizeNeighbors() {
         ArrayList<Edge> list = new ArrayList<>();
-        if (map.neighbors != null)
-            list.addAll(map.neighbors);
-        if (map.neighborsStatic != null)
-            list.addAll(map.neighborsStatic);
+        if (map.getNeighbors() != null)
+            list.addAll(map.getNeighbors());
+        if (map.getNeighborsStatic() != null)
+            list.addAll(map.getNeighborsStatic());
         return list;
     }
 
@@ -447,8 +448,8 @@ public class Pathfinder {
      */
     public ArrayList<Vertex> visualizePathVertices() {
         ArrayList<Vertex> list = new ArrayList<>();
-        if (map.pathVertices != null)
-            list.addAll(map.pathVertices);
+        if (map.getPathVertices() != null)
+            list.addAll(map.getPathVertices());
         return list;
     }
 
@@ -486,7 +487,7 @@ public class Pathfinder {
      */
     public ArrayList<Vertex> visualizeInflatedVertices() {
         ArrayList<Vertex> list = new ArrayList<>();
-        list.addAll(map.pathVerticesStatic);
+        list.addAll(map.getPathVerticesStatic());
         return list;
     }
 }
