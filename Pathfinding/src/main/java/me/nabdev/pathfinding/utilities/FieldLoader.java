@@ -17,9 +17,14 @@ public class FieldLoader {
      */
     public enum Field {
         /**
+         * The 2024 field (Crescendo)
+         */
+        CRESCENDO_2024,
+        /**
          * The 2023 field (Charged Up)
          */
         CHARGED_UP_2023,
+
         /**
          * A debug field for testing
          */
