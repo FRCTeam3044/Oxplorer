@@ -4,11 +4,21 @@
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Scheduler": "Scheduler"
+    },
+    "windows": {
+      "/SmartDashboard/Field": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
     "transitory": {
       "SmartDashboard": {
+        "Field": {
+          "open": true
+        },
         "open": true
       }
     }

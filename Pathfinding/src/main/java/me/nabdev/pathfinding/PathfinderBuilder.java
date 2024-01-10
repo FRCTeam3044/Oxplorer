@@ -1,10 +1,9 @@
 package me.nabdev.pathfinding;
 
-import org.json.JSONObject;
-
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
 import me.nabdev.pathfinding.utilities.FieldLoader;
 import me.nabdev.pathfinding.utilities.FieldLoader.Field;
+import me.nabdev.pathfinding.utilities.FieldLoader.FieldData;
 
 /**
  * Builder class for {@link Pathfinder}
@@ -147,7 +146,7 @@ public class PathfinderBuilder {
      * @return The {@link Pathfinder}
      */
     public Pathfinder build() {
-        JSONObject loadedField;
+        FieldData loadedField;
         if (field != null) {
             loadedField = FieldLoader.loadField(field);
         } else {

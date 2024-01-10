@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.sim.SimDrive;
 import me.nabdev.pathfinding.Pathfinder;
 import me.nabdev.pathfinding.PathfinderBuilder;
-import me.nabdev.pathfinding.FieldLoader.Field;
+import me.nabdev.pathfinding.utilities.FieldLoader.Field;
 import me.nabdev.pathfinding.structures.Edge;
 import me.nabdev.pathfinding.structures.ImpossiblePathException;
 import me.nabdev.pathfinding.structures.Path;

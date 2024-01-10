@@ -19,6 +19,12 @@ public class Obstacle {
      */
     public ArrayList<Vertex> myVertices = new ArrayList<Vertex>();
 
+    /**
+     * The id of the obstacle. This will be used to add special behavior to
+     * obstacles which may only be used in certain situations.
+     */
+    public String id;
+
     // ALL VERTICES FOR THE ENTIRE MAP! NOT JUST THE OBSTACLE!
     private ArrayList<Vertex> vertices;
     // Vectors along the edges of the obstacle
@@ -29,10 +35,12 @@ public class Obstacle {
      * 
      * @param vertices All vertices on the map.
      * @param edges    The edges that make up the obstacle.
+     * @param id       The id of the obstacle.
      */
-    public Obstacle(ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
+    public Obstacle(ArrayList<Vertex> vertices, ArrayList<Edge> edges, String id) {
         this.edges = edges;
         this.vertices = vertices;
+        this.id = id;
         for (Edge edge : edges) {
             myVertices.add(vertices.get(edge.getVertexOne()));
         }

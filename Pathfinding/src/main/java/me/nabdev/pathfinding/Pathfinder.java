@@ -9,12 +9,10 @@ import me.nabdev.pathfinding.structures.Map;
 import me.nabdev.pathfinding.structures.Obstacle;
 import me.nabdev.pathfinding.structures.Path;
 import me.nabdev.pathfinding.structures.Vertex;
+import me.nabdev.pathfinding.utilities.FieldLoader.FieldData;
+import me.nabdev.pathfinding.utilities.FieldLoader.ObstacleData;
 
 import java.util.ArrayList;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
@@ -90,7 +88,7 @@ public class Pathfinder {
      *                            corner points
      * @param searchAlgorithmType The search algorithm to use
      */
-    public Pathfinder(JSONObject field, double pointSpacing, double cornerPointSpacing, double cornerDist,
+    public Pathfinder(FieldData field, double pointSpacing, double cornerPointSpacing, double cornerDist,
             double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners,
             SearchAlgorithmType searchAlgorithmType) {
         this.pointSpacing = pointSpacing;
@@ -104,39 +102,23 @@ public class Pathfinder {
 
         // This is essentially a vertex and edge table, with some extra information.
         // Vertices are stored as an array [x, y]
-        JSONArray verticesRaw = field.getJSONArray("vertices");
-        /*
-         * Obstacles are stored as an array of edges, each edge being an array of 2
-         * vertices.
-         * The vertices are stored as the index of the vertex in the vertex array.
-         * Example:
-         * [
-         * [0,1],
-         * [1,2],
-         * [2,3],
-         * [3,0]
-         * ]
-         * This is so that we can detect when the robot or target is inside an obstacle
-         * and snap it.
-         * Obstacles MUST be convex, and the vertices MUST be in clockwise order.
-         */
-        JSONArray obstaclesRaw = field.getJSONArray("obstacles");
 
-        // Convert from JSONArray to arraylist to make math easier
-        for (int i = 0; i < verticesRaw.length(); i++) {
-            JSONArray vertex = verticesRaw.getJSONArray(i);
-            obstacleVertices.add(new Vertex(vertex.getDouble(0), vertex.getDouble(1)));
-            uninflatedObstacleVertices.add(new Vertex(vertex.getDouble(0), vertex.getDouble(1)));
+        // Process the Double[] into Vertex objects
+        for (int i = 0; i < field.vertices.size(); i++) {
+            Double[] vertex = field.vertices.get(i);
+            obstacleVertices.add(new Vertex(vertex[0], vertex[1]));
+            uninflatedObstacleVertices.add(new Vertex(vertex[0], vertex[1]));
         }
-        for (int i = 0; i < obstaclesRaw.length(); i++) {
-            JSONArray obstacle = obstaclesRaw.getJSONArray(i);
+        // Process the edges into Edge objects and make Obstacle objects
+        for (int i = 0; i < field.obstacles.size(); i++) {
+            ObstacleData obstacle = field.obstacles.get(i);
             ArrayList<Edge> curEdges = new ArrayList<Edge>();
-            for (int x = 0; x < obstacle.length(); x++) {
-                JSONArray edgeRaw = obstacle.getJSONArray(x);
-                edges.add(new Edge(edgeRaw.getInt(0), edgeRaw.getInt(1)));
-                curEdges.add(new Edge(edgeRaw.getInt(0), edgeRaw.getInt(1)));
+            for (int x = 0; x < obstacle.edges.size(); x++) {
+                Integer[] edgeRaw = obstacle.edges.get(x);
+                edges.add(new Edge(edgeRaw[0], edgeRaw[1]));
+                curEdges.add(new Edge(edgeRaw[0], edgeRaw[1]));
             }
-            Obstacle newObs = new Obstacle(obstacleVertices, curEdges);
+            Obstacle newObs = new Obstacle(obstacleVertices, curEdges, obstacle.id);
             obstacles.add(newObs);
         }
 
