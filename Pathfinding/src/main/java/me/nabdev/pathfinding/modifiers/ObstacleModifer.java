@@ -87,6 +87,13 @@ public abstract class ObstacleModifer {
     public abstract boolean isActive();
 
     /**
+     * Whether or not this modifier MUST be active to have the obstacle active.
+     * If true, will use the AND operator with other modifiers, if false, uses OR.
+     * @return True if required to keep the obstacle active, false if not required.
+     */
+    public abstract boolean requiredForActive();
+
+    /**
      * Get the current phase of the match
      * 
      * @return The current phase of the match
