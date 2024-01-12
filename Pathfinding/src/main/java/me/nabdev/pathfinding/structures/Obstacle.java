@@ -1,7 +1,7 @@
 package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
-import me.nabdev.pathfinding.modifiers.ObstacleModifer;
+import me.nabdev.pathfinding.modifiers.ObstacleModifier;
 /**
  * Represents an obstacle on the map. An obstacle is a collection of vertices
  * and edges.
@@ -166,12 +166,5 @@ public class Obstacle {
             }
         }
         return true;
-    }
-
-    /** 
-     * Check to see if an obstacle has a modifier
-     */
-    public boolean hasModifier(){
-
     }
 }

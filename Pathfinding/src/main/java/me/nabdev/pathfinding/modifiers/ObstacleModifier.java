@@ -1,4 +1,8 @@
-public abstract class ObstacleModifer {
+package me.nabdev.pathfinding.modifiers;
+
+import java.lang.UnsupportedOperationException;
+
+public abstract class ObstacleModifier {
     /**
      * Enum to represent which phase of the match we are currently in.
      */
@@ -57,7 +61,7 @@ public abstract class ObstacleModifer {
         RED_ALLIANCE
     }
 
-    public static ObstacleModifer getModifier(ObstacleModifierTypes type) {
+    public static ObstacleModifier getModifier(ObstacleModifierTypes type) {
         switch (type) {
             case ALWAYS_ACTIVE:
                 break;
@@ -76,7 +80,7 @@ public abstract class ObstacleModifer {
             case RED_ALLIANCE:
                 break;
         }
-        throw new NotImplementedException("TODO");
+        throw new UnsupportedOperationException("TODO");
     }
 
     /**
@@ -99,6 +103,6 @@ public abstract class ObstacleModifer {
      * @return The current phase of the match
      */
     protected MatchPhase getCurrentPhase() {
-        throw new NotImplementedException("TODO");
+        throw new UnsupportedOperationException("TODO");
     }
 }
