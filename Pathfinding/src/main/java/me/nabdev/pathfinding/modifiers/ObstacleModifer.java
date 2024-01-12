@@ -20,24 +20,78 @@ public abstract class ObstacleModifer {
     /**
      * All available obstacle modifiers
      */
-    public enum ObstacleModifiers {
+    public enum ObstacleModifierTypes {
         /**
          * Obstacle is always active
          */
-        ALWAYS_ACTIVE
+        ALWAYS_ACTIVE,
+        /**
+         * Obstacle is active during endgame (last 20 seconds)
+         */
+        ACTIVE_ENGAME,
+        /**
+         * Obstacle is active during autonomous (first 15 seconds)
+         */
+        ACTIVE_AUTO,
+        /**
+         * Obstacle is active during teleop
+         */
+        ACTIVE_TELE,
+        /**
+         * Obstacle is active if it is my alliance's
+         */
+        ACTIVE_MY_ALLIANCE,
+        /**
+         * Obstacle is active if it is the other alliance's
+         */
+        ACTIVE_OTHER_ALLIANCE,
+        /**
+         * Marks the obstacle as the blue alliance's, does not affect if it is active
+         * unless ACTIVE_MY_ALLIANCE/ACTIVE_OTHER_ALLIANCE is also applied
+         */
+        BLUE_ALLIANCE,
+        /**
+         * Marks the obstacle as the red alliance's, does not affect if it is active
+         * unless ACTIVE_MY_ALLIANCE/ACTIVE_OTHER_ALLIANCE is also applied
+         */
+        RED_ALLIANCE
+    }
+
+    public static ObstacleModifer getModifier(ObstacleModifierTypes type) {
+        switch (type) {
+            case ALWAYS_ACTIVE:
+                break;
+            case ACTIVE_ENGAME:
+                break;
+            case ACTIVE_AUTO:
+                break;
+            case ACTIVE_TELE:
+                break;
+            case ACTIVE_MY_ALLIANCE:
+                break;
+            case ACTIVE_OTHER_ALLIANCE:
+                break;
+            case BLUE_ALLIANCE:
+                break;
+            case RED_ALLIANCE:
+                break;
+        }
+        throw new NotImplementedException("TODO");
     }
 
     /**
      * Whether or not the obstacle is active at this time.
+     * 
      * @return true if the obstacle is currently active, false if not
      */
     public abstract boolean isActive();
 
     /**
      * Get the current phase of the match
+     * 
      * @return The current phase of the match
      */
-    protected MatchPhase getCurrentPhase(){
-        return MatchPhase.ENDGAME;
+    protected MatchPhase getCurrentPhase() {
+        throw new NotImplementedException("TODO");
     }
 }
