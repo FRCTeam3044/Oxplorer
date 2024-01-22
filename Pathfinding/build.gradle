@@ -1,6 +1,6 @@
 plugins {
     id 'java-library'
-    id "edu.wpi.first.GradleRIO" version "2023.4.3"
+    id "edu.wpi.first.GradleRIO" version "2024.1.1"
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'maven-publish'
 }
@@ -19,8 +19,10 @@ repositories {
 }
 
 dependencies {
-    implementation 'edu.wpi.first.wpimath:wpimath-java:2023.4.3' // Needed for methods that convert Rotation2d and Pose2d to native pathfinding structures
-    implementation 'edu.wpi.first.wpilibj:wpilibj-java:2023.+'
+    implementation wpi.java.deps.wpilib()
+    
+    implementation 'edu.wpi.first.wpimath:wpimath-java:2024.+' // Needed for methods that convert Rotation2d and Pose2d to native pathfinding structures
+    implementation 'edu.wpi.first.wpilibj:wpilibj-java:2024.+'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0'
     implementation 'org.json:json:20231013'
 }
