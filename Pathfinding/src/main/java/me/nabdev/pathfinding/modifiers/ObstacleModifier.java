@@ -2,6 +2,9 @@ package me.nabdev.pathfinding.modifiers;
 
 import java.lang.UnsupportedOperationException;
 
+/**
+ * Represents a modifier that changes when obstacles are active
+ */
 public abstract class ObstacleModifier {
     /**
      * Enum to represent which phase of the match we are currently in.
@@ -82,6 +85,12 @@ public abstract class ObstacleModifier {
         }
         throw new UnsupportedOperationException("TODO");
     }
+
+    /**
+     * Get the modifier type of this modifier
+     * @return the modifier type of this modifier
+     */
+    public abstract ObstacleModifierTypes getType();
 
     /**
      * Whether or not the obstacle is active at this time.
