@@ -10,11 +10,11 @@ public class Map {
     /**
      * The x dimension of the field (meters)
      */
-    public static final double fieldx = 16.5;
+    public final double fieldx;
     /**
      * The y dimension of the field (meters)
      */
-    public static final double fieldy = 8;
+    public final double fieldy;
     /**
      * The x coordinate of the origin of the field (meters)
      * Used to compute if a point is inside of the field bounds.
@@ -86,11 +86,16 @@ public class Map {
      * @param obVertices The vertices of the obstacles.
      * @param obEdges    The edges of the obstacles.
      * @param clearance  The clearance parameter to inflate the obstacles by.
+     * @param fieldx     The x dimension of the field (meters)
+     * @param fieldy     The y dimension of the field (meters)
      */
-    public Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance) {
+    public Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance,
+            double fieldx, double fieldy) {
         obstacleEdges = obEdges;
         obstacleVertices = obVertices;
         obstacles = obs;
+        this.fieldx = fieldx;
+        this.fieldy = fieldy;
         for (int i = 0; i < obstacles.size(); i++) {
             Obstacle o = obstacles.get(i);
             if (!o.isConvexAndClockwise()) {

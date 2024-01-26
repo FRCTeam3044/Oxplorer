@@ -123,7 +123,7 @@ public class Pathfinder {
         }
 
         // Create the map object
-        map = new Map(obstacles, obstacleVertices, edges, clearance);
+        map = new Map(obstacles, obstacleVertices, edges, clearance, field.fieldX, field.fieldY);
 
         for (Obstacle obs : obstacles) {
             obs.initialize(map.getPathVerticesStatic());

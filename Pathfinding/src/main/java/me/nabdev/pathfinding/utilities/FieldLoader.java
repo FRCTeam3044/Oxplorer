@@ -48,12 +48,25 @@ public class FieldLoader {
         public ArrayList<ObstacleData> obstacles;
 
         /**
+         * The field's x dimension (meters)
+         */
+        public double fieldX;
+
+        /**
+         * The field's y dimension (meters)
+         */
+        public double fieldY;
+
+        /**
          * Creates a new FieldData
          * 
          * @param vertices  The vertices of the field
          * @param obstacles The obstacles of the field
+         * @param fieldX    The field's x dimension (meters)
+         * @param fieldY    The field's y dimension (meters)
          */
-        public FieldData(ArrayList<Double[]> vertices, ArrayList<ObstacleData> obstacles) {
+        public FieldData(ArrayList<Double[]> vertices, ArrayList<ObstacleData> obstacles, double fieldX,
+                double fieldY) {
             this.vertices = vertices;
             this.obstacles = obstacles;
         }
@@ -190,6 +203,8 @@ public class FieldLoader {
             ObstacleData obstacle = new ObstacleData(edges, rawObstacle.getString("id"), modifiers);
             obstacles.add(obstacle);
         }
-        return new FieldData(vertices, obstacles);
+        double fieldX = rawField.getDouble("fieldX");
+        double fieldY = rawField.getDouble("fieldY");
+        return new FieldData(vertices, obstacles, fieldX, fieldY);
     }
 }
