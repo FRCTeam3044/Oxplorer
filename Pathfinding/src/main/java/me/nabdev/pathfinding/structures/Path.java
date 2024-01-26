@@ -120,6 +120,7 @@ public class Path extends ArrayList<Vertex> {
         if (pathfinder.injectPoints)
             injectPoints();
         updateFromSegments();
+        createFullPath();
     }
 
     // This probably needs to change in the future.
