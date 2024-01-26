@@ -278,6 +278,8 @@ public class Map {
         boolean intersect = false;
 
         for (Edge e : validObstacleEdges) {
+            if (!e.isActive())
+                continue;
             if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
                     e.getVertexTwo(obstacleVertices))) {
                 intersect = true;
@@ -290,33 +292,37 @@ public class Map {
 
     /**
      * Get the uninflated vertices of the obstacles.
+     * 
      * @return The vertices of the obstacles.
      */
-    public ArrayList<Vertex> getPathVertices(){
+    public ArrayList<Vertex> getPathVertices() {
         return pathVertices;
     }
 
     /**
      * Get the inflated vertices of the obstacles.
+     * 
      * @return The inflated vertices of the obstacles.
      */
-    public ArrayList<Vertex> getPathVerticesStatic(){
+    public ArrayList<Vertex> getPathVerticesStatic() {
         return pathVerticesStatic;
     }
 
     /**
      * Get the neighbors of the vertices of the static obstacles.
+     * 
      * @return The neighbors of the vertices of the static obstacles.
      */
-    public ArrayList<Edge> getNeighbors(){
+    public ArrayList<Edge> getNeighbors() {
         return neighbors;
     }
 
     /**
      * Get the neighbors of the dynamic vertices.
+     * 
      * @return The neighbors of the dynamic vertices.
      */
-    public ArrayList<Edge> getNeighborsStatic(){
+    public ArrayList<Edge> getNeighborsStatic() {
         return neighborsStatic;
     }
 }

@@ -115,10 +115,10 @@ public class Pathfinder {
             ArrayList<Edge> curEdges = new ArrayList<Edge>();
             for (int x = 0; x < obstacle.edges.size(); x++) {
                 Integer[] edgeRaw = obstacle.edges.get(x);
-                edges.add(new Edge(edgeRaw[0], edgeRaw[1]));
-                curEdges.add(new Edge(edgeRaw[0], edgeRaw[1]));
+                edges.add(new Edge(edgeRaw[0], edgeRaw[1], obstacle.modifiers));
+                curEdges.add(new Edge(edgeRaw[0], edgeRaw[1], obstacle.modifiers));
             }
-            Obstacle newObs = new Obstacle(obstacleVertices, curEdges, obstacle.id);
+            Obstacle newObs = new Obstacle(obstacleVertices, curEdges, obstacle.id, obstacle.modifiers);
             obstacles.add(newObs);
         }
 

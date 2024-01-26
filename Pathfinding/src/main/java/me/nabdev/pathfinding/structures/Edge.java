@@ -2,6 +2,8 @@ package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
 
+import me.nabdev.pathfinding.modifiers.ModifierCollection;
+
 /**
  * Edge class, used to represent an edge between two vertices.
  */
@@ -16,10 +18,30 @@ public class Edge {
     private int vertexTwo;
 
     /**
+     * The obstacle this edge is a part of.
+     */
+    private ModifierCollection myModifiers;
+
+    /**
+     * Constructor for the Edge class.
+     * 
+     * @param _x        The index of the first vertex in the obstacleVertices array.
+     * @param _y        The index of the second vertex in the obstacleVertices
+     *                  array.
+     * @param modifiers The modifiers on this edge.
+     */
+    public Edge(int _x, int _y, ModifierCollection modifiers) {
+        vertexOne = _x;
+        vertexTwo = _y;
+        myModifiers = modifiers;
+    }
+
+    /**
      * Constructor for the Edge class.
      * 
      * @param _x The index of the first vertex in the obstacleVertices array.
-     * @param _y The index of the second vertex in the obstacleVertices array.
+     * @param _y The index of the second vertex in the obstacleVertices
+     *           array.
      */
     public Edge(int _x, int _y) {
         vertexOne = _x;
@@ -113,5 +135,16 @@ public class Edge {
      */
     public Vertex getVertexTwo(ArrayList<Vertex> vertices) {
         return vertices.get(vertexTwo);
+    }
+
+    /**
+     * Whether or not the edge is active right now based on the modifiers
+     * 
+     * @return true if the edge is active (or has no modifiers)
+     */
+    public boolean isActive() {
+        if (myModifiers == null)
+            return true;
+        return myModifiers.isActive();
     }
 }

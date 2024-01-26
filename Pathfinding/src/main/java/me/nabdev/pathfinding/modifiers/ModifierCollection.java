@@ -25,6 +25,16 @@ public class ModifierCollection {
     private ArrayList<ObstacleModifier> allModifiers;
 
     /**
+     * Whether or not the obstacle is active right now
+     */
+    private boolean isActive;
+
+    /**
+     * Whether or not the cache is invalid
+     */
+    private boolean cacheInvalid = true;
+
+    /**
      * Create a new modifer collection and apply the given modifiers
      * 
      * @param modifiers The modifiers to apply
@@ -59,20 +69,31 @@ public class ModifierCollection {
     }
 
     /**
+     * Command a re-calculation for if the obstacle is active or not.
+     */
+    public void invalidateCache() {
+        cacheInvalid = true;
+    }
+
+    /**
      * Whether or not the obstacle is active right now based on the modifiers
      * 
      * @return true if the obstacle is active
      */
     public boolean isActive() {
-        for (ObstacleModifier mod : requiredModifiers) {
-            if (!mod.isActive())
-                return false;
+        if (cacheInvalid) {
+            for (ObstacleModifier mod : requiredModifiers) {
+                if (!mod.isActive())
+                    isActive = false;
+            }
+            boolean hasOptional = false;
+            for (ObstacleModifier mod : optionalModifiers) {
+                if (mod.isActive())
+                    hasOptional = true;
+            }
+            isActive = isActive && hasOptional;
+            cacheInvalid = false;
         }
-        boolean hasOptional = false;
-        for (ObstacleModifier mod : optionalModifiers) {
-            if (mod.isActive())
-                hasOptional = true;
-        }
-        return hasOptional;
+        return isActive;
     }
 }
