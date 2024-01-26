@@ -32,14 +32,18 @@ public class Obstacle {
     // Vectors along the edges of the obstacle
     private ArrayList<Vector> vectors = new ArrayList<Vector>();
 
+    /**
+     * The modifiers on this obstacle.
+     */
     public ModifierCollection modifiers;
 
     /**
      * Creates a new obstacle.
      * 
-     * @param vertices All vertices on the map.
-     * @param edges    The edges that make up the obstacle.
-     * @param id       The id of the obstacle.
+     * @param vertices  All vertices on the map.
+     * @param edges     The edges that make up the obstacle.
+     * @param id        The id of the obstacle.
+     * @param modifiers The modifiers on this obstacle.
      */
     public Obstacle(ArrayList<Vertex> vertices, ArrayList<Edge> edges, String id, ModifierCollection modifiers) {
         this.edges = edges;

@@ -82,6 +82,7 @@ public class ModifierCollection {
      */
     public boolean isActive() {
         if (cacheInvalid) {
+            boolean hasRequired = true;
             for (ObstacleModifier mod : requiredModifiers) {
                 if (!mod.isActive())
                     isActive = false;
@@ -91,7 +92,7 @@ public class ModifierCollection {
                 if (mod.isActive())
                     hasOptional = true;
             }
-            isActive = isActive && hasOptional;
+            isActive = hasRequired && hasOptional;
             cacheInvalid = false;
         }
         return isActive;

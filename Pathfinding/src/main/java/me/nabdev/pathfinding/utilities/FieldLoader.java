@@ -179,7 +179,14 @@ public class FieldLoader {
                 }
             }
 
-            ModifierCollection modifiers = new ModifierCollection(rawObstacle.getJSONArray("modifiers"));
+            JSONArray modifiersArr;
+            if (rawObstacle.has("modifiers")) {
+                modifiersArr = rawObstacle.getJSONArray("modifiers");
+            } else {
+                modifiersArr = new JSONArray();
+                modifiersArr.put("ALWAYS_ACTIVE");
+            }
+            ModifierCollection modifiers = new ModifierCollection(modifiersArr);
             ObstacleData obstacle = new ObstacleData(edges, rawObstacle.getString("id"), modifiers);
             obstacles.add(obstacle);
         }
