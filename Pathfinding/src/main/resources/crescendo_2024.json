@@ -3,6 +3,7 @@
   "obstacles": [
     {
       "id": "1",
+      "modifiers": ["BLUE_ALLIANCE", "ACTIVE_MY_ALLIANCE", "ALWAYS_ACTIVE"],
       "vertices": [
         [0, 8.21],
         [0, 6.5],

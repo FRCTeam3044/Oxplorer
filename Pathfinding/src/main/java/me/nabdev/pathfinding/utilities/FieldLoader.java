@@ -8,6 +8,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import me.nabdev.pathfinding.modifiers.ModifierCollection;
+
 /**
  * Loads a field from a JSON file
  */
@@ -72,14 +74,21 @@ public class FieldLoader {
         public String id;
 
         /**
+         * The modifiers on this obstacle
+         */
+        public ModifierCollection modifiers;
+
+        /**
          * Creates a new ObstacleData
          * 
-         * @param edges The edges of the obstacle
-         * @param id    The id of the obstacle
+         * @param edges     The edges of the obstacle
+         * @param id        The id of the obstacle
+         * @param modifiers The modifiers on this obstacle
          */
-        public ObstacleData(ArrayList<Integer[]> edges, String id) {
+        public ObstacleData(ArrayList<Integer[]> edges, String id, ModifierCollection modifiers) {
             this.edges = edges;
             this.id = id;
+            this.modifiers = modifiers;
         }
     }
 
@@ -155,6 +164,8 @@ public class FieldLoader {
         for (int i = 0; i < rawObstacles.length(); i++) {
             JSONObject rawObstacle = rawObstacles.getJSONObject(i);
             ArrayList<Integer[]> edges = new ArrayList<>();
+
+            // This creates the edge table, treating the vertices as a circular array
             JSONArray rawVerticies = rawObstacle.getJSONArray("vertices");
             for (int j = 0; j < rawVerticies.length(); j++) {
                 JSONArray rawVertex = rawVerticies.getJSONArray(j);
@@ -168,7 +179,8 @@ public class FieldLoader {
                 }
             }
 
-            ObstacleData obstacle = new ObstacleData(edges, rawObstacle.getString("id"));
+            ModifierCollection modifiers = new ModifierCollection(rawObstacle.getJSONArray("modifiers"));
+            ObstacleData obstacle = new ObstacleData(edges, rawObstacle.getString("id"), modifiers);
             obstacles.add(obstacle);
         }
         return new FieldData(vertices, obstacles);

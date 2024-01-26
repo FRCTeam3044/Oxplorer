@@ -64,10 +64,17 @@ public abstract class ObstacleModifier {
         RED_ALLIANCE
     }
 
-    public static ObstacleModifier getModifier(ObstacleModifierTypes type) {
+    /**
+     * Get a modifier instance associated with the given type
+     * 
+     * @param type       The type of modifier to get
+     * @param collection The collection of modifiers to associate with the modifier
+     * @return The modifier associated with the given type
+     */
+    public static ObstacleModifier getModifier(ObstacleModifierTypes type, ModifierCollection collection) {
         switch (type) {
             case ALWAYS_ACTIVE:
-                break;
+                return new AlwaysActiveModifier();
             case ACTIVE_ENGAME:
                 break;
             case ACTIVE_AUTO:
@@ -75,19 +82,20 @@ public abstract class ObstacleModifier {
             case ACTIVE_TELE:
                 break;
             case ACTIVE_MY_ALLIANCE:
-                break;
+                return new ActiveMyAllianceModifier(collection);
             case ACTIVE_OTHER_ALLIANCE:
-                break;
+                return new ActiveOtherAllianceModifier(collection);
             case BLUE_ALLIANCE:
-                break;
+                return new BlueAllianceModifier();
             case RED_ALLIANCE:
-                break;
+                return new RedAllianceModifier();
         }
         throw new UnsupportedOperationException("TODO");
     }
 
     /**
      * Get the modifier type of this modifier
+     * 
      * @return the modifier type of this modifier
      */
     public abstract ObstacleModifierTypes getType();
@@ -102,6 +110,7 @@ public abstract class ObstacleModifier {
     /**
      * Whether or not this modifier MUST be active to have the obstacle active.
      * If true, will use the AND operator with other modifiers, if false, uses OR.
+     * 
      * @return True if required to keep the obstacle active, false if not required.
      */
     public abstract boolean requiredForActive();

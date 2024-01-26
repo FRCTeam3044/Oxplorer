@@ -1,12 +1,12 @@
 package me.nabdev.pathfinding.modifiers;
 
 /**
- * A modifier that keeps the obstacle active at all times
+ * A modifier that denotes the obstacle as the blue alliance's
  */
-public class AlwaysActiveModifier extends ObstacleModifier {
+public class BlueAllianceModifier extends ObstacleModifier {
     @Override
     public boolean isActive() {
-        return true;
+        return false;
     }
 
     @Override
@@ -16,6 +16,6 @@ public class AlwaysActiveModifier extends ObstacleModifier {
 
     @Override
     public ObstacleModifierTypes getType() {
-        return ObstacleModifierTypes.ALWAYS_ACTIVE;
+        return ObstacleModifierTypes.BLUE_ALLIANCE;
     }
 }
