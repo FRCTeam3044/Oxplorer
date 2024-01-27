@@ -69,6 +69,8 @@ public class FieldLoader {
                 double fieldY) {
             this.vertices = vertices;
             this.obstacles = obstacles;
+            this.fieldX = fieldX;
+            this.fieldY = fieldY;
         }
     }
 
