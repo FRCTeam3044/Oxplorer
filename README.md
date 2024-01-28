@@ -44,10 +44,6 @@ try {
 }
 ```
 
-## ExampleProj
-
-A (unfinished) example of implimenting pathfinding into a real robot project
-
 ## Support
 
 Questions, Concerns, Suggestions, Bug reports, or anything of the sort? Feel free to reach out on any of these:
