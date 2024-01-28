@@ -19,7 +19,7 @@ public class PathfinderBuilder {
     private boolean normalizeCorners = true;
     private SearchAlgorithmType searchAlgorithmType = SearchAlgorithmType.ASTAR;
     private double robotWidth = 0.7;
-    private double robotHeight = 0.7;
+    private double robotLength = 0.7;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -89,13 +89,13 @@ public class PathfinderBuilder {
     }
 
     /**
-     * Sets the robot height in meters (used to calculate the clearance)
+     * Sets the robot length in meters (used to calculate the clearance)
      * 
-     * @param robotHeight The clearance, default 0.7 (meters)
+     * @param robotLength The clearance, default 0.7 (meters)
      * @return The builder
      */
-    public PathfinderBuilder setRobotHeight(double robotHeight) {
-        this.robotHeight = robotHeight;
+    public PathfinderBuilder setRobotLength(double robotLength) {
+        this.robotLength = robotLength;
         return this;
     }
 
@@ -169,7 +169,7 @@ public class PathfinderBuilder {
         }
 
         // clearance is the circumcircle radius of the robot
-        double clearance = Math.sqrt(Math.pow(robotWidth / 2, 2) + Math.pow(robotHeight / 2, 2));
+        double clearance = Math.sqrt(Math.pow(robotWidth / 2, 2) + Math.pow(robotLength / 2, 2));
         return new Pathfinder(loadedField, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
                 injectPoints, normalizeCorners, searchAlgorithmType);
     }
