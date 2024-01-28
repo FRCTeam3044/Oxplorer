@@ -14,11 +14,12 @@ public class PathfinderBuilder {
     private double pointSpacing = 0.15;
     private double cornerPointSpacing = 0.08;
     private double cornerDist = 0.6;
-    private double clearance = 0.5;
     private double cornerSplitPercent = 0.45;
     private boolean injectPoints = false;
     private boolean normalizeCorners = true;
     private SearchAlgorithmType searchAlgorithmType = SearchAlgorithmType.ASTAR;
+    private double robotWidth = 0.7;
+    private double robotHeight = 0.7;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -77,14 +78,46 @@ public class PathfinderBuilder {
     }
 
     /**
-     * Sets the clearance (how far away from the obstacles to stay).
-     * Usually the radius of your robots circumcircle.
+     * Sets the robot width in meters (used to calculate the clearance)
      * 
-     * @param clearance The clearance, default 0.6 (meters)
+     * @param robotWidth The clearance, default 0.7 (meters)
      * @return The builder
      */
-    public PathfinderBuilder setClearance(double clearance) {
-        this.clearance = clearance;
+    public PathfinderBuilder setRobotWidthMeters(double robotWidth) {
+        this.robotWidth = robotWidth;
+        return this;
+    }
+
+    /**
+     * Sets the robot height in meters (used to calculate the clearance)
+     * 
+     * @param robotHeight The clearance, default 0.7 (meters)
+     * @return The builder
+     */
+    public PathfinderBuilder setRobotHeightMeters(double robotHeight) {
+        this.robotHeight = robotHeight;
+        return this;
+    }
+
+    /**
+     * Sets the robot width in inches (used to calculate the clearance)
+     * 
+     * @param robotWidth The clearance, default ~27.56 (inches)
+     * @return The builder
+     */
+    public PathfinderBuilder setRobotWidthInches(double robotWidth) {
+        this.robotWidth = robotWidth * 0.0254;
+        return this;
+    }
+
+    /**
+     * Sets the robot height in inches (used to calculate the clearance)
+     * 
+     * @param robotHeight The clearance, default ~27.56 (inches)
+     * @return The builder
+     */
+    public PathfinderBuilder setRobotHeightInches(double robotHeight) {
+        this.robotHeight = robotHeight * 0.0254;
         return this;
     }
 
@@ -156,6 +189,9 @@ public class PathfinderBuilder {
                 throw new RuntimeException("Failed to load field from path " + customFieldPath);
             }
         }
+
+        // clearance is the circumcircle radius of the robot
+        double clearance = Math.sqrt(Math.pow(robotWidth / 2, 2) + Math.pow(robotHeight / 2, 2));
         return new Pathfinder(loadedField, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
                 injectPoints, normalizeCorners, searchAlgorithmType);
     }
