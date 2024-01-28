@@ -1,4 +1,4 @@
-# Oxplorer by [nab138](https://github.com/nab138) (formerly Pathfinding-3044)
+# Oxplorer - The on-the-fly pathfinder for FRC!
 
 **Join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support, discussion, and more!**
 
@@ -60,3 +60,7 @@ Questions, Concerns, Suggestions, Bug reports, or anything of the sort? Feel fre
 - ChiefDelphi: nab138
 
 Or open a github issue/pr if that's more suitable.
+
+### Credits
+Developer - [nab138](https://github.com/nab138)
+[WPILIB](https://github.com/wpilibsuite)
