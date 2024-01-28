@@ -146,7 +146,7 @@ public class Pathfinder {
      */
     public Path generatePath(Vertex start, Vertex target, PathfindSnapMode snapMode, ArrayList<Vertex> dynamicVertices)
             throws ImpossiblePathException {
-        return generatePathInner(start, target, snapMode, dynamicVertices);
+        return generatePathInner(start, target, snapMode, dynamicVertices, true);
     }
 
     /**
@@ -163,7 +163,7 @@ public class Pathfinder {
      * @throws ImpossiblePathException If no path can be found
      */
     public Path generatePath(Vertex start, Vertex target) throws ImpossiblePathException {
-        return generatePathInner(start, target, PathfindSnapMode.SNAP_ALL, new ArrayList<Vertex>());
+        return generatePathInner(start, target, PathfindSnapMode.SNAP_ALL, new ArrayList<Vertex>(), true);
     }
 
     /**
@@ -181,7 +181,7 @@ public class Pathfinder {
      */
     public Path generatePath(Pose2d start, Pose2d target) throws ImpossiblePathException {
         return generatePathInner(new Vertex(start), new Vertex(target), PathfindSnapMode.SNAP_ALL,
-                new ArrayList<Vertex>());
+                new ArrayList<Vertex>(), true);
     }
 
     /**
@@ -198,7 +198,7 @@ public class Pathfinder {
      * @throws ImpossiblePathException If no path can be found
      */
     public Path generatePath(Vertex start, Vertex target, PathfindSnapMode snapMode) throws ImpossiblePathException {
-        return generatePathInner(start, target, snapMode, new ArrayList<Vertex>());
+        return generatePathInner(start, target, snapMode, new ArrayList<Vertex>(), true);
     }
 
     /**
@@ -215,7 +215,7 @@ public class Pathfinder {
      * @throws ImpossiblePathException If no path can be found
      */
     public Path generatePath(Pose2d start, Pose2d target, PathfindSnapMode snapMode) throws ImpossiblePathException {
-        return generatePathInner(new Vertex(start), new Vertex(target), snapMode, new ArrayList<Vertex>());
+        return generatePathInner(new Vertex(start), new Vertex(target), snapMode, new ArrayList<Vertex>(), true);
     }
 
     /**
@@ -236,7 +236,7 @@ public class Pathfinder {
             TrajectoryConfig config)
             throws ImpossiblePathException {
         Path path = generatePathInner(new Vertex(start), new Vertex(target), snapMode,
-                new ArrayList<Vertex>());
+                new ArrayList<Vertex>(), true);
         return path.asTrajectory(config);
     }
 
@@ -261,7 +261,7 @@ public class Pathfinder {
             ArrayList<Vertex> dynamicVertices,
             TrajectoryConfig config)
             throws ImpossiblePathException {
-        Path path = generatePathInner(new Vertex(start), new Vertex(target), snapMode, dynamicVertices);
+        Path path = generatePathInner(new Vertex(start), new Vertex(target), snapMode, dynamicVertices, true);
         return path.asTrajectory(config);
     }
 
@@ -282,13 +282,44 @@ public class Pathfinder {
     public Trajectory generateTrajectory(Pose2d start, Pose2d target, TrajectoryConfig config)
             throws ImpossiblePathException {
         Path path = generatePathInner(new Vertex(start), new Vertex(target), PathfindSnapMode.SNAP_ALL,
+                new ArrayList<Vertex>(), true);
+        return path.asTrajectory(config);
+    }
+
+    /**
+     * Snaps the start and target vertices to be outside of obstacles and generates
+     * the best path that passes through all waypoints as a wpilib trajectory.
+     * Defaults to PathfindSnapMode.SNAP_ALL
+     * 
+     * @param start  The starting pose
+     * @param target The target pose
+     * @param config The trajectory config to use when generating the trajectory
+     * 
+     * @return A trajectory from the starting vertex passing through all waypoints
+     *         that does not intersect any obstacles
+     * 
+     * @throws ImpossiblePathException If no path can be found
+     */
+    public Trajectory generateTrajectory(Pose2d start, ArrayList<Pose2d> target, TrajectoryConfig config)
+            throws ImpossiblePathException {
+        Path path = generatePathInner(new Vertex(start), Vertex.fromPose2dArray(target), PathfindSnapMode.SNAP_ALL,
                 new ArrayList<Vertex>());
         return path.asTrajectory(config);
     }
 
+    private Path generatePathInner(Vertex start, ArrayList<Vertex> waypoints, PathfindSnapMode snapMode,
+            ArrayList<Vertex> dynamicVertices) throws ImpossiblePathException {
+        Path path = generatePathInner(start, waypoints.get(0), snapMode, dynamicVertices, false);
+        for (int i = 1; i < waypoints.size(); i++) {
+            path.addPath(generatePathInner(waypoints.get(i - 1), waypoints.get(i), snapMode, dynamicVertices, false));
+        }
+        path.processPath(snapMode);
+        return path;
+    }
+
     // Using an inner function because java handles optional parameters poorly
     private Path generatePathInner(Vertex start, Vertex target, PathfindSnapMode snapMode,
-            ArrayList<Vertex> dynamicVertices) throws ImpossiblePathException {
+            ArrayList<Vertex> dynamicVertices, boolean processPath) throws ImpossiblePathException {
         long startTime = System.nanoTime();
         // Snapping is done because the center of the robot can be inside of the
         // inflated obstacle edges
@@ -328,7 +359,8 @@ public class Pathfinder {
         // long searchEndTime = System.nanoTime();
 
         path.setUnsnappedTarget(unsnappedTarget);
-        path.processPath(snapMode);
+        if (processPath)
+            path.processPath(snapMode);
         long endTime = System.nanoTime();
         long totalTime = endTime - startTime;
         // long snapTime = snapEndTime - startTime;

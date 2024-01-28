@@ -90,6 +90,18 @@ public class Path extends ArrayList<Vertex> {
     }
 
     /**
+     * Add a path to the end of this path, to be used BEFORE processing the path.
+     * 
+     * @param path The path to add.
+     */
+    public void addPath(Path path) {
+        this.addAll(path);
+        createFullPath();
+        setUnsnappedTarget(path.getUnsnappedTarget());
+        this.target = path.getTarget();
+    }
+
+    /**
      * Get the unsnapped target vertex.
      * 
      * @return The unsnapped target vertex
