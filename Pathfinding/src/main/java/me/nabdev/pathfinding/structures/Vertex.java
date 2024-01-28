@@ -127,6 +127,20 @@ public class Vertex implements Comparable<Vertex> {
     }
 
     /**
+     * Converts an array of Pose2ds to an array of Vertices
+     * 
+     * @param poses The array of Pose2ds to convert
+     * @return The array of Vertices
+     */
+    public static ArrayList<Vertex> fromPose2dArray(ArrayList<Pose2d> poses) {
+        ArrayList<Vertex> vertices = new ArrayList<Vertex>();
+        for (Pose2d pose : poses) {
+            vertices.add(new Vertex(pose));
+        }
+        return vertices;
+    }
+
+    /**
      * Get a pose2d representation of the current Vertex
      * 
      * @return The current Vertex as a Pose2d
