@@ -2,12 +2,13 @@
 
 **Join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support, discussion, and more!**
 
-Oxplorer is a realtime, dynamic, on-the-fly path generator designed for use with FRC robots. It can avoid any obstacles on a given field map, avoid dynamic obstacles if you have a detector of your own, and more.
-Oxplorer is *not* a path following library. It can generate paths, but not follow them. That is up to you (I do have a unreleased method that converts my path structure to a WPILib trajectory that might work for some people, it will be released soon).
+Oxplorer is a realtime, dynamic, on-the-fly path generator designed for use with FRC robots. It can avoid any obstacles on a given field map and generate the optimal path in an instant.
 
-Hopefully a wiki is coming soon, but all the methods have full javadoc if you want to play with it.
+Oxplorer is not finished, and will continue to be updated (For those worried it is too slow, I have major optimiziations implemented that just need some polishing before a merge). You may have to play with the path settings a little to get them to look right. If there is a feature you want, please feel free to let me know!
 
-Take a look at the [Roadmap](https://trello.com/b/DJ243CXC/oxplorer)
+A wiki is on it's way, but in the meantime, you can explore the [javadoc](https://frcteam3044.github.io/Oxplorer/)!
+
+Take a look at the [Roadmap](https://trello.com/b/DJ243CXC/oxplorer) for and idea of whats to come.
 
 ## Installation
 
@@ -25,27 +26,23 @@ maven {
 
 Then add this line to the dependencies section:
 ```gradle
-implementation 'me.nabdev.pathfinding:oxplorer:0.4.1'
+implementation 'me.nabdev.pathfinding:oxplorer:0.7.0'
 ```
 
 ## Usage
 
-Here's a basic example of usage (there are plenty of configuration options on the builder, while I am working on documentation you can use your IDE to see each available method and its javadoc):
+Here's a basic example of usage (see more options for the builder on it's [javadoc page](https://frcteam3044.github.io/Oxplorer/me/nabdev/pathfinding/PathfinderBuilder.html))
 
 ```java
-Pathfinder pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023).build();
+Pathfinder pathfinder = new PathfinderBuilder(Field.CRESCENDO_2024).build();
 
 try {
-  // You can also just use Pose2ds
-  Path path = pathfinder.generatePath(new Vertex(1, 1), new Vertex(8, 4));
+  TrajectoryConfig config = new TrajectoryConfig(3 /* Max vel */, 3 /* Max accel */);
+  Trajectory myPath = pathfinder.generateTrajectory(m_robotDrive.getPose(), new Pose2d(8, 4, new Rotation2d()), config);
 } catch (ImpossiblePathException e) {
   e.printStackTrace();
 }
 ```
-
-## Server
-
-The Server folder has the semi-broken code used to offload pathfinding to a processor. Hopefully with all the recent optimizations this won't be neccesary anymore.
 
 ## ExampleProj
 
@@ -61,6 +58,8 @@ Questions, Concerns, Suggestions, Bug reports, or anything of the sort? Feel fre
 
 Or open a github issue/pr if that's more suitable.
 
-### Credits
-Developer - [nab138](https://github.com/nab138)
-[WPILIB](https://github.com/wpilibsuite)
+## Links
+- Developer: [nab138](https://github.com/nab138)
+- [JSON-java](https://github.com/stleary/JSON-java)
+- [allwpilib](https://github.com/wpilibsuite/allwpilib)
+- [REV Lib](https://docs.revrobotics.com/sparkmax/software-resources/spark-max-api-information)
