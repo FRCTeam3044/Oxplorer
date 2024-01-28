@@ -6,7 +6,7 @@ Oxplorer is a realtime, dynamic, on-the-fly path generator designed for use with
 
 Oxplorer is not finished, and will continue to be updated (For those worried it is too slow, I have major optimiziations implemented that just need some polishing before a merge). You may have to play with the path settings a little to get them to look right. If there is a feature you want, please feel free to let me know!
 
-A wiki is on it's way, but in the meantime, you can explore the [javadoc](https://frcteam3044.github.io/Oxplorer/)!
+For more info, you can read the [wiki](https://github.com/FRCTeam3044/Oxplorer/wiki) and you can explore the [javadoc](https://frcteam3044.github.io/Oxplorer/)!
 
 Take a look at the [Roadmap](https://trello.com/b/DJ243CXC/oxplorer) for and idea of whats to come.
 

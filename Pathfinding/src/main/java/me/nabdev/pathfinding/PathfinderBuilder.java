@@ -100,8 +100,8 @@ public class PathfinderBuilder {
     }
 
     /**
-     * Sets the corner split percent (how far each corner should move towards the
-     * other point if the distance is too short to allow both corners the full
+     * Sets the corner split percent (how far each bezier curve should move towards
+     * the other point if the distance is too short to allow both corners the full
      * corner distance)
      * 
      * @param cornerSplitPercent The corner split percent, default 0.45 (max 0.5)
