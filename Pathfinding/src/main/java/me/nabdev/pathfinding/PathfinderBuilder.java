@@ -83,7 +83,7 @@ public class PathfinderBuilder {
      * @param robotWidth The clearance, default 0.7 (meters)
      * @return The builder
      */
-    public PathfinderBuilder setRobotWidthMeters(double robotWidth) {
+    public PathfinderBuilder setRobotWidth(double robotWidth) {
         this.robotWidth = robotWidth;
         return this;
     }
@@ -94,30 +94,8 @@ public class PathfinderBuilder {
      * @param robotHeight The clearance, default 0.7 (meters)
      * @return The builder
      */
-    public PathfinderBuilder setRobotHeightMeters(double robotHeight) {
+    public PathfinderBuilder setRobotHeight(double robotHeight) {
         this.robotHeight = robotHeight;
-        return this;
-    }
-
-    /**
-     * Sets the robot width in inches (used to calculate the clearance)
-     * 
-     * @param robotWidth The clearance, default ~27.56 (inches)
-     * @return The builder
-     */
-    public PathfinderBuilder setRobotWidthInches(double robotWidth) {
-        this.robotWidth = robotWidth * 0.0254;
-        return this;
-    }
-
-    /**
-     * Sets the robot height in inches (used to calculate the clearance)
-     * 
-     * @param robotHeight The clearance, default ~27.56 (inches)
-     * @return The builder
-     */
-    public PathfinderBuilder setRobotHeightInches(double robotHeight) {
-        this.robotHeight = robotHeight * 0.0254;
         return this;
     }
 
