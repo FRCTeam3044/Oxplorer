@@ -349,6 +349,12 @@ public class Path extends ArrayList<Vertex> {
      */
     public ArrayList<Pose2d> asPose2dList() {
         ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
+
+        if (this.size() > 0) {
+            start.rotation = new Rotation2d(Math.atan2(this.get(0).y - start.y, this.get(0).x - start.x));
+        } else {
+            start.rotation = new Rotation2d(Math.atan2(target.y - start.y, target.x - start.x));
+        }
         poses.add(start.asPose2d());
         for (Vertex v : this) {
             // Calculate the heading from this point to the next point
