@@ -2,6 +2,8 @@ package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
 
+import me.nabdev.pathfinding.modifiers.ModifierCollection;
+
 /**
  * Represents an obstacle on the map. An obstacle is a collection of vertices
  * and edges.
@@ -19,20 +21,35 @@ public class Obstacle {
      */
     public ArrayList<Vertex> myVertices = new ArrayList<Vertex>();
 
+    /**
+     * The id of the obstacle. This will be used to add special behavior to
+     * obstacles which may only be used in certain situations.
+     */
+    public String id;
+
     // ALL VERTICES FOR THE ENTIRE MAP! NOT JUST THE OBSTACLE!
     private ArrayList<Vertex> vertices;
     // Vectors along the edges of the obstacle
     private ArrayList<Vector> vectors = new ArrayList<Vector>();
 
     /**
+     * The modifiers on this obstacle.
+     */
+    public ModifierCollection modifiers;
+
+    /**
      * Creates a new obstacle.
      * 
-     * @param vertices All vertices on the map.
-     * @param edges    The edges that make up the obstacle.
+     * @param vertices  All vertices on the map.
+     * @param edges     The edges that make up the obstacle.
+     * @param id        The id of the obstacle.
+     * @param modifiers The modifiers on this obstacle.
      */
-    public Obstacle(ArrayList<Vertex> vertices, ArrayList<Edge> edges) {
+    public Obstacle(ArrayList<Vertex> vertices, ArrayList<Edge> edges, String id, ModifierCollection modifiers) {
         this.edges = edges;
         this.vertices = vertices;
+        this.id = id;
+        this.modifiers = modifiers;
         for (Edge edge : edges) {
             myVertices.add(vertices.get(edge.getVertexOne()));
         }

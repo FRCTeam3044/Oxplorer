@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.sim.SimDrive;
 import me.nabdev.pathfinding.Pathfinder;
 import me.nabdev.pathfinding.PathfinderBuilder;
-import me.nabdev.pathfinding.FieldLoader.Field;
+import me.nabdev.pathfinding.utilities.FieldLoader.Field;
 import me.nabdev.pathfinding.structures.Edge;
 import me.nabdev.pathfinding.structures.ImpossiblePathException;
 import me.nabdev.pathfinding.structures.Path;
@@ -44,7 +44,7 @@ public class Robot extends TimedRobot {
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
 
-        pathfinder = new PathfinderBuilder(Field.CHARGED_UP_2023).setCornerPointSpacing(0.2).build();
+        pathfinder = new PathfinderBuilder("/home/nicholas/coding/robotics/NEWSuperPathfindingBrosU/Pathfinding/src/main/resources/crescendo_2024.json").setCornerPointSpacing(0.2).build();
 
         ArrayList<Edge> field = pathfinder.visualizeEdges();
         DebugUtils.drawLines("Field Inflated", field, pathfinder.visualizeInflatedVertices());

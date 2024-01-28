@@ -1,12 +1,11 @@
 plugins {
     id 'java-library'
-    id "edu.wpi.first.GradleRIO" version "2024.1.1"
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id "edu.wpi.first.GradleRIO" version "2024.2.1"
     id 'maven-publish'
 }
 
 group 'me.nabdev.pathfinding'
-version '0.6.0-SNAPSHOT'
+version '0.6.8'
 
 java {
     withSourcesJar()
@@ -29,16 +28,10 @@ dependencies {
     implementation 'org.json:json:20231013'
 }
 
-shadowJar {
-    archiveClassifier.set('')
-    mergeServiceFiles()
-    zip64 true
-}
-
 publishing {
     publications {
         Oxplorer(MavenPublication) { publication ->
-            from project.shadow.component(publication)
+            from components.java
             artifactId = 'oxplorer'
         }
     }

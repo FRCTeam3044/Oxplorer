@@ -10,11 +10,11 @@ public class Map {
     /**
      * The x dimension of the field (meters)
      */
-    public static final double fieldx = 16.5;
+    public final double fieldx;
     /**
      * The y dimension of the field (meters)
      */
-    public static final double fieldy = 8;
+    public final double fieldy;
     /**
      * The x coordinate of the origin of the field (meters)
      * Used to compute if a point is inside of the field bounds.
@@ -86,11 +86,16 @@ public class Map {
      * @param obVertices The vertices of the obstacles.
      * @param obEdges    The edges of the obstacles.
      * @param clearance  The clearance parameter to inflate the obstacles by.
+     * @param fieldx     The x dimension of the field (meters)
+     * @param fieldy     The y dimension of the field (meters)
      */
-    public Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance) {
+    public Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance,
+            double fieldx, double fieldy) {
         obstacleEdges = obEdges;
         obstacleVertices = obVertices;
         obstacles = obs;
+        this.fieldx = fieldx;
+        this.fieldy = fieldy;
         for (int i = 0; i < obstacles.size(); i++) {
             Obstacle o = obstacles.get(i);
             if (!o.isConvexAndClockwise()) {
@@ -278,6 +283,8 @@ public class Map {
         boolean intersect = false;
 
         for (Edge e : validObstacleEdges) {
+            if (!e.isActive())
+                continue;
             if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
                     e.getVertexTwo(obstacleVertices))) {
                 intersect = true;
@@ -290,33 +297,37 @@ public class Map {
 
     /**
      * Get the uninflated vertices of the obstacles.
+     * 
      * @return The vertices of the obstacles.
      */
-    public ArrayList<Vertex> getPathVertices(){
+    public ArrayList<Vertex> getPathVertices() {
         return pathVertices;
     }
 
     /**
      * Get the inflated vertices of the obstacles.
+     * 
      * @return The inflated vertices of the obstacles.
      */
-    public ArrayList<Vertex> getPathVerticesStatic(){
+    public ArrayList<Vertex> getPathVerticesStatic() {
         return pathVerticesStatic;
     }
 
     /**
      * Get the neighbors of the vertices of the static obstacles.
+     * 
      * @return The neighbors of the vertices of the static obstacles.
      */
-    public ArrayList<Edge> getNeighbors(){
+    public ArrayList<Edge> getNeighbors() {
         return neighbors;
     }
 
     /**
      * Get the neighbors of the dynamic vertices.
+     * 
      * @return The neighbors of the dynamic vertices.
      */
-    public ArrayList<Edge> getNeighborsStatic(){
+    public ArrayList<Edge> getNeighborsStatic() {
         return neighborsStatic;
     }
 }
