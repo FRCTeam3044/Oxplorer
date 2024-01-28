@@ -11,11 +11,11 @@ import me.nabdev.pathfinding.utilities.FieldLoader.FieldData;
 public class PathfinderBuilder {
     private Field field;
     private String customFieldPath;
-    private double pointSpacing = 0.15;
+    private double pointSpacing = 0.25;
     private double cornerPointSpacing = 0.08;
     private double cornerDist = 0.6;
     private double cornerSplitPercent = 0.45;
-    private boolean injectPoints = false;
+    private boolean injectPoints = true;
     private boolean normalizeCorners = true;
     private SearchAlgorithmType searchAlgorithmType = SearchAlgorithmType.ASTAR;
     private double robotWidth = 0.7;
