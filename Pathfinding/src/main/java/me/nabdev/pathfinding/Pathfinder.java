@@ -219,6 +219,53 @@ public class Pathfinder {
     }
 
     /**
+     * Snaps the start and target vertices according to the snap mode and generates
+     * the best path a wpilib trajectory.
+     * 
+     * @param start    The starting pose
+     * @param target   The target pose
+     * @param snapMode The snap mode to use
+     * @param config   The trajectory config to use when generating the trajectory
+     * 
+     * @return A trajectory from the starting vertex to the target vertex that
+     *         does not intersect any obstacles
+     * 
+     * @throws ImpossiblePathException If no path can be found
+     */
+    public Trajectory generateTrajectory(Pose2d start, Pose2d target, PathfindSnapMode snapMode,
+            TrajectoryConfig config)
+            throws ImpossiblePathException {
+        Path path = generatePathInner(new Vertex(start), new Vertex(target), snapMode,
+                new ArrayList<Vertex>());
+        return path.asTrajectory(config);
+    }
+
+    /**
+     * Snaps the start and target vertices according to the snap mode, calculates
+     * visibility graph for dynamic elements, and generates the best path as a
+     * wpilib trajectory.
+     * 
+     * @param start           The starting pose
+     * @param target          The target pose
+     * @param snapMode        The snap mode to use
+     * @param dynamicVertices An ArrayList of dynamic vertices
+     * @param config          The trajectory config to use when generating the
+     *                        trajectory
+     * 
+     * @return A trajectory from the starting vertex to the target vertex that
+     *         does not intersect any obstacles
+     * 
+     * @throws ImpossiblePathException If no path can be found
+     */
+    public Trajectory generateTrajectory(Pose2d start, Pose2d target, PathfindSnapMode snapMode,
+            ArrayList<Vertex> dynamicVertices,
+            TrajectoryConfig config)
+            throws ImpossiblePathException {
+        Path path = generatePathInner(new Vertex(start), new Vertex(target), snapMode, dynamicVertices);
+        return path.asTrajectory(config);
+    }
+
+    /**
      * Snaps the start and target vertices to be outside of obstacles and generates
      * the best path as a wpilib trajectory.
      * Defaults to PathfindSnapMode.SNAP_ALL
