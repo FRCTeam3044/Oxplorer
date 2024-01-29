@@ -1,6 +1,6 @@
 # Oxplorer - The on-the-fly pathfinder for FRC!
 
-**Join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support, discussion, and more!**
+**Read the [FAQ](https://github.com/FRCTeam3044/Oxplorer/wiki/FAQ) and join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support, discussion, and more!**
 
 Oxplorer is a realtime, dynamic, on-the-fly path generator designed for use with FRC robots. It can avoid any obstacles on a given field map and generate the optimal path in an instant.
 
