@@ -133,6 +133,7 @@ public class Path extends ArrayList<Vertex> {
             injectPoints();
         updateFromSegments();
         createFullPath();
+        solveRotation();
     }
 
     // This probably needs to change in the future.
@@ -267,7 +268,11 @@ public class Path extends ArrayList<Vertex> {
         fullPath.clear();
         fullPath.add(start);
         fullPath.addAll(this);
-        fullPath.add(target);
+        if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
+            fullPath.add(unsnappedTarget);
+        } else {
+            fullPath.add(target);
+        }
     }
 
     // Adding points in the middle of straight segments to allow for pure pursuit to
@@ -350,26 +355,42 @@ public class Path extends ArrayList<Vertex> {
     public ArrayList<Pose2d> asPose2dList() {
         ArrayList<Pose2d> poses = new ArrayList<Pose2d>();
 
+        poses.add(start.asPose2d());
+        for (Vertex v : this) {
+            poses.add(v.asPose2d());
+        }
+        if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
+            poses.add(unsnappedTarget.asPose2d());
+        } else {
+            poses.add(target.asPose2d());
+        }
+        return poses;
+    }
+
+    /**
+     * Solve the rotation of the path.
+     */
+    public void solveRotation() {
         if (this.size() > 0) {
             start.rotation = new Rotation2d(Math.atan2(this.get(0).y - start.y, this.get(0).x - start.x));
         } else {
             start.rotation = new Rotation2d(Math.atan2(target.y - start.y, target.x - start.x));
         }
-        poses.add(start.asPose2d());
-        for (Vertex v : this) {
+
+        for (int i = 1; i < this.size(); i++) {
             // Calculate the heading from this point to the next point
-            Rotation2d rot = new Rotation2d(Math.atan2(v.y - poses.get(poses.size() - 1).getY(),
-                    v.x - poses.get(poses.size() - 1).getX()));
-            poses.add(new Pose2d(v.x, v.y, rot));
+            Vertex prev = i > 0 ? this.get(i - 1) : start;
+            Vertex v = this.get(i);
+            Rotation2d rot = new Rotation2d(Math.atan2(v.y - prev.y, v.x - prev.x));
+            v.rotation = rot;
         }
         if (snapMode == PathfindSnapMode.SNAP_ALL_THEN_LINE || snapMode == PathfindSnapMode.SNAP_TARGET_THEN_LINE) {
-            Rotation2d rot = new Rotation2d(Math.atan2(unsnappedTarget.y - poses.get(poses.size() - 1).getY(),
-                    unsnappedTarget.x - poses.get(poses.size() - 1).getX()));
-            poses.add(new Pose2d(unsnappedTarget.x, unsnappedTarget.y, rot));
+            Vertex last = end();
+            Rotation2d rot = new Rotation2d(Math.atan2(unsnappedTarget.y - last.y, unsnappedTarget.x - last.x));
+            unsnappedTarget.rotation = rot;
         } else {
-            poses.add(new Pose2d(target.x, target.y, getFinalRot()));
+            target.rotation = getFinalRot();
         }
-        return poses;
     }
 
     /**

@@ -2,10 +2,11 @@ plugins {
     id 'java-library'
     id "edu.wpi.first.GradleRIO" version "2024.2.1"
     id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 group 'me.nabdev.pathfinding'
-version '0.7.1'
+version '0.7.8'
 
 java {
     withSourcesJar()
@@ -22,8 +23,6 @@ repositories {
 dependencies {
     implementation wpi.java.deps.wpilib()
 
-    implementation 'edu.wpi.first.wpimath:wpimath-java:2024.+' // Needed for methods that convert Rotation2d and Pose2d to native pathfinding structures
-    implementation 'edu.wpi.first.wpilibj:wpilibj-java:2024.+'
     implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0'
     implementation 'org.json:json:20231013'
 }
@@ -46,3 +45,4 @@ publishing {
         }
     }
 }
+
