@@ -372,7 +372,8 @@ public class Path extends ArrayList<Vertex> {
      */
     public void solveRotation() {
         if (this.size() > 0) {
-            start.rotation = new Rotation2d(Math.atan2(this.get(0).y - start.y, this.get(0).x - start.x));
+            Vertex next = this.get(0);
+            start.rotation = new Rotation2d(Math.atan2(next.y - start.y, next.x - start.x));
         } else {
             start.rotation = new Rotation2d(Math.atan2(target.y - start.y, target.x - start.x));
         }
