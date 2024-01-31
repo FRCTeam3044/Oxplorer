@@ -21,11 +21,9 @@ repositories {
 
 dependencies {
     implementation wpi.java.deps.wpilib()
+    implementation wpi.java.vendor.java()
 
-    implementation 'edu.wpi.first.wpimath:wpimath-java:2024.+' // Needed for methods that convert Rotation2d and Pose2d to native pathfinding structures
-    implementation 'edu.wpi.first.wpilibj:wpilibj-java:2024.+'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.13.0'
-    implementation 'org.json:json:20231013'
+    implementation 'org.json:json:20231013' 
 }
 
 publishing {
