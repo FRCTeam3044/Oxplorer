@@ -1,8 +1,9 @@
 [
   {
-    "type": "simultanious_deadline",
+    "name": "Get To Note",
+    "type": "group",
     "id": "deadline",
-    "Get to Note": [
+    "children": [
       {
         "type": "command",
         "id": "wait_for_note",
@@ -22,7 +23,7 @@
     "name": "Pickup Note",
     "type": "group",
     "id": "simultanious_parallel",
-    "commands": [
+    "children": [
       {
         "type": "command",
         "id": "wait_for_note",

@@ -24,25 +24,28 @@ public class AutoParser {
         return null;
     }
 
-    public AutoStep parseStep(JSONObject step) {
+    public Command parseStep(JSONObject step) {
         String type = step.getString("type");
         String id = step.getString("id");
         JSONObject parameters = step.getJSONObject("parameters");
-        JSONArray children = step.getJSONArray("children");
 
-        ArrayList<AutoStep> parsedChildren = new ArrayList<AutoStep>();
-        for (int i = 0; i < children.length(); i++) {
-            parsedChildren.add(parseStep(children.getJSONObject(i)));
-        }
+        if (type.equalsIgnoreCase("group")) {
+            JSONArray children = step.getJSONArray("children");
 
-        if (type.equalsIgnoreCase("simultaneous")) {
-            return parseSimultaneous(parsedChildren, id);
+            ArrayList<Command> parsedChildren = new ArrayList<Command>();
+            for (int i = 0; i < children.length(); i++) {
+                parsedChildren.add(parseStep(children.getJSONObject(i)));
+            }
+            return parseGroup(parsedChildren, id);
+        } else if(type.equalsIgnoreCase("command")){
+            // Generate the command
         }
 
         return null;
     }
 
-    public AutoStep parseSimultaneous(ArrayList<AutoStep> commands, String id) {
+    public Command parseGroup(ArrayList<Command> children, String id) {
+        // Here, we create a command using the various sequence factories and return
         return null;
     }
 }
