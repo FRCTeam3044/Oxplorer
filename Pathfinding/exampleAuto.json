@@ -1,0 +1,41 @@
+[
+  {
+    "type": "simultanious_deadline",
+    "id": "deadline",
+    "Get to Note": [
+      {
+        "type": "command",
+        "id": "wait_for_note",
+        "paramters": {}
+      },
+      {
+        "type": "command",
+        "id": "follow_path",
+        "paramters": {
+          "targetX": "5",
+          "targetY": "5"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Pickup Note",
+    "type": "group",
+    "id": "simultanious_parallel",
+    "commands": [
+      {
+        "type": "command",
+        "id": "wait_for_note",
+        "paramters": {}
+      },
+      {
+        "type": "command",
+        "id": "follow_path",
+        "paramters": {
+          "targetX": "5",
+          "targetY": "5"
+        }
+      }
+    ]
+  }
+]
