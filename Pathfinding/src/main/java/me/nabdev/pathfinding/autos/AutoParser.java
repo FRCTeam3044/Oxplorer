@@ -17,21 +17,36 @@ public class AutoParser {
     private static HashMap<String, Function<JSONObject, Command>> commands = new HashMap<String, Function<JSONObject, Command>>();
     private static HashMap<String, AutoGroup> groups = new HashMap<String, AutoGroup>();
 
+    static {
+        registerGroupType("deadline", new DeadlineGroup());
+        registerGroupType("race", new RaceGroup());
+    }
     /**
      * Register a command which can be used in the autos.
      * 
      * @param id The id of the command, which will be used in the auto json file
-     * @param command a function that takes in a JSONObject of parameters and returns a Command.
+     * @param command A function that takes in a JSONObject of parameters and returns a Command.
      */
     public static void registerCommand(String id, Function<JSONObject, Command> command) {
         commands.put(id, command);
     }
 
-    
+    /**
+     * Add a group type to use in autos.
+     * 
+     * @param id The id of the group, which will be used in the auto json file
+     * @param group The autogroup instance to use
+     */
     public static void registerGroupType(String id, AutoGroup group){
         groups.put(id, group);
     }
 
+    /**
+     * Parse an auto from a JSONArray and return a command to run.
+     * 
+     * @param auto The auto to parse
+     * @return The auto command
+     */
     public static Command parseAuto(JSONArray auto) {
         ArrayList<Command> steps = new ArrayList<Command>();
         for (int i = 0; i < auto.length(); i++) {
@@ -46,7 +61,12 @@ public class AutoParser {
         return chainCommand;
     }
 
-    public static Command parseStep(JSONObject step) {
+    /**
+     * Parses one step of the auto (recursive)
+     * 
+     * @param step The step to parse 
+     */
+    static Command parseStep(JSONObject step) {
         String type = step.getString("type");
         String id = step.getString("id");
         JSONObject parameters = step.getJSONObject("parameters");

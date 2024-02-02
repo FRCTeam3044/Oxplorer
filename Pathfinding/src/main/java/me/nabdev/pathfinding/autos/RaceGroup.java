@@ -5,12 +5,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import java.util.ArrayList;
 
 /**
- * An auto group that only finishes when the first command in the array finishes.
+ * An AutoGroup that finishes when any command finishes.
  */
-public class DeadlineGroup implements AutoGroup {
+public class RaceGroup implements AutoGroup {
     public Command getCommand(ArrayList<Command> children){
-        Command deadline = children.remove(0);
         Command[] commandArray = children.toArray(new Command[children.size()]);
-        return Commands.deadline(deadline, commandArray);
+        return Commands.race(commandArray);
     }
 }
