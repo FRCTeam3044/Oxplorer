@@ -10,14 +10,24 @@ import org.json.JSONObject;
 
 import edu.wpi.first.wpilibj2.command.Command;
 
+/**
+ * Converts json autos to commands which can be scheduled.
+ */
 public class AutoParser {
     private static HashMap<String, Function<JSONObject, Command>> commands = new HashMap<String, Function<JSONObject, Command>>();
     private static HashMap<String, AutoGroup> groups = new HashMap<String, AutoGroup>();
 
-    public static void registerCommand(String name, Function<JSONObject, Command> command) {
-        commands.put(name, command);
+    /**
+     * Register a command which can be used in the autos.
+     * 
+     * @param id The id of the command, which will be used in the auto json file
+     * @param command a function that takes in a JSONObject of parameters and returns a Command.
+     */
+    public static void registerCommand(String id, Function<JSONObject, Command> command) {
+        commands.put(id, command);
     }
 
+    
     public static void registerGroupType(String id, AutoGroup group){
         groups.put(id, group);
     }
