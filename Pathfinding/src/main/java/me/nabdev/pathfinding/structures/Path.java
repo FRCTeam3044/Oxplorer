@@ -129,7 +129,7 @@ public class Path extends ArrayList<Vertex> {
         createFullPath();
         bezierSmoothing();
         addFinalSegment(snapMode);
-        if (pathfinder.injectPoints)
+        if (pathfinder.getInjectPoints())
             injectPoints();
         updateFromSegments();
         createFullPath();
@@ -160,36 +160,36 @@ public class Path extends ArrayList<Vertex> {
             // can garuntee that i + 2 will never be out of bounds.
             Vertex next = fullPath.get(i + 2);
 
-            double cornerDist = pathfinder.cornerDist;
+            double cornerDist = pathfinder.getCornerDist();
             // We are creating vectors from the current point to the previous and next
             // points to find the other two control points for our quadratic bezier curve.
             Vector prevVector = prev.createVectorFrom(p1);
             double prevMag = prevVector.magnitude();
-            if (prevMag < pathfinder.cornerDist * 2) {
+            if (prevMag < pathfinder.getCornerDist() * 2) {
                 if (i > 0) {
-                    prevVector = prevVector.scale(pathfinder.cornerSplitPercent);
-                    cornerDist = prevMag * pathfinder.cornerSplitPercent;
+                    prevVector = prevVector.scale(pathfinder.getCornerSplitPercent());
+                    cornerDist = prevMag * pathfinder.getCornerSplitPercent();
                 } else {
-                    prevVector = prevVector.normalize().scale(Math.min(pathfinder.cornerDist, prevMag));
-                    cornerDist = Math.min(pathfinder.cornerDist, prevMag);
+                    prevVector = prevVector.normalize().scale(Math.min(pathfinder.getCornerDist(), prevMag));
+                    cornerDist = Math.min(pathfinder.getCornerDist(), prevMag);
                 }
             } else {
-                prevVector = prevVector.normalize().scale(pathfinder.cornerDist);
+                prevVector = prevVector.normalize().scale(pathfinder.getCornerDist());
             }
 
             Vector nextVector = next.createVectorFrom(p1);
             double nextMag = nextVector.magnitude();
-            if (nextMag < pathfinder.cornerDist * 2) {
+            if (nextMag < pathfinder.getCornerDist() * 2) {
                 if (i < this.size() - 1) {
-                    nextVector = nextVector.scale(pathfinder.cornerSplitPercent);
-                    cornerDist += nextMag * pathfinder.cornerSplitPercent;
+                    nextVector = nextVector.scale(pathfinder.getCornerSplitPercent());
+                    cornerDist += nextMag * pathfinder.getCornerSplitPercent();
                 } else {
-                    nextVector = nextVector.normalize().scale(Math.min(pathfinder.cornerDist, nextMag));
-                    cornerDist += Math.min(pathfinder.cornerDist, nextMag);
+                    nextVector = nextVector.normalize().scale(Math.min(pathfinder.getCornerDist(), nextMag));
+                    cornerDist += Math.min(pathfinder.getCornerDist(), nextMag);
                 }
             } else {
-                nextVector = nextVector.normalize().scale(pathfinder.cornerDist);
-                cornerDist += pathfinder.cornerDist;
+                nextVector = nextVector.normalize().scale(pathfinder.getCornerDist());
+                cornerDist += pathfinder.getCornerDist();
             }
 
             // These are the two points that will be used as control points for the bezier
@@ -225,20 +225,20 @@ public class Path extends ArrayList<Vertex> {
         // I highly recomend checking out the visualization at
         // https://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves
         // It's a lot easier to understand when you can see it.
-        double realCornerDist = pathfinder.normalizeCorners ? cornerDist : 1;
-        for (double t = 0; t < realCornerDist; t += pathfinder.cornerPointSpacing) {
+        double realCornerDist = pathfinder.getNormalizeCorners() ? cornerDist : 1;
+        for (double t = 0; t < realCornerDist; t += pathfinder.getCornerPointSpacing()) {
             Vector v0 = p1.createVectorFrom(p0);
-            if (pathfinder.normalizeCorners)
+            if (pathfinder.getNormalizeCorners())
                 v0 = v0.normalize();
             Vertex q0 = p0.moveByVector(v0.scale(t));
 
             Vector v1 = p2.createVectorFrom(p1);
-            if (pathfinder.normalizeCorners)
+            if (pathfinder.getNormalizeCorners())
                 v1 = v1.normalize();
             Vertex q1 = p1.moveByVector(v1.scale(t));
 
             Vector v2 = q1.createVectorFrom(q0);
-            if (pathfinder.normalizeCorners)
+            if (pathfinder.getNormalizeCorners())
                 v2 = v2.normalize();
             Vertex pos = q0.moveByVector(v2.scale(t));
 
@@ -284,7 +284,7 @@ public class Path extends ArrayList<Vertex> {
             double dx = endPoint.x - startPoint.x;
             double dy = endPoint.y - startPoint.y;
             double length = Math.sqrt(dx * dx + dy * dy);
-            double numPoints = Math.round(length / pathfinder.pointSpacing);
+            double numPoints = Math.round(length / pathfinder.getPointSpacing());
             double stepX = dx / numPoints;
             double stepY = dy / numPoints;
 
