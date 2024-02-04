@@ -669,6 +669,8 @@ public class Pathfinder {
      * @param newCornerSplitPercent The new corner split percentage
      */
     public void setCornerSplitPercent(double newCornerSplitPercent) {
+        if (newCornerSplitPercent > 0.5)
+            throw new IllegalArgumentException("Corner split percent must be less than or equal to 0.5");
         cornerSplitPercent = newCornerSplitPercent;
     };
 
