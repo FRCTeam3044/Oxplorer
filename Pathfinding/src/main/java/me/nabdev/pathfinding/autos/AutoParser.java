@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.function.Function;
 import java.lang.IllegalArgumentException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 /**
  * Converts json autos to commands which can be scheduled.
@@ -20,7 +24,9 @@ public class AutoParser {
     static {
         registerGroupType("deadline", new DeadlineGroup());
         registerGroupType("race", new RaceGroup());
+        registerGroupType("parallel", new ParallelGroup());
     }
+
     /**
      * Register a command which can be used in the autos.
      * 
@@ -42,23 +48,35 @@ public class AutoParser {
     }
 
     /**
+     * Load an auto from a json file on disk
+     * 
+     * @param path The path of the json auto
+     * @return The autonomous command
+     * @throws FileNotFoundException if the file could not be found
+     */
+    public static Command loadAuto(String path) throws FileNotFoundException {
+        FileInputStream input = new FileInputStream(path);
+        JSONTokener tokener = new JSONTokener(input);
+        return parseAuto(new JSONArray(tokener));
+    }
+
+    /**
      * Parse an auto from a JSONArray and return a command to run.
      * 
      * @param auto The auto to parse
      * @return The auto command
      */
     public static Command parseAuto(JSONArray auto) {
+        if(auto.length() < 1){
+            throw new IllegalArgumentException("Given Empty Autonomous!");
+        }
         ArrayList<Command> steps = new ArrayList<Command>();
         for (int i = 0; i < auto.length(); i++) {
             JSONObject step = auto.getJSONObject(i);
             steps.add(parseStep(step));
         }
-        Command chainCommand = steps.get(0);
-        for(int i = 1; i < steps.size(); i++){
-            Command step = steps.get(i);
-            chainCommand = chainCommand.andThen(step);
-        }
-        return chainCommand;
+        Command[] commandArray = steps.toArray(new Command[steps.size()]);
+        return Commands.sequence(commandArray);
     }
 
     /**
@@ -69,7 +87,6 @@ public class AutoParser {
     static Command parseStep(JSONObject step) {
         String type = step.getString("type");
         String id = step.getString("id");
-        JSONObject parameters = step.getJSONObject("parameters");
 
         if (type.equalsIgnoreCase("group")) {
             JSONArray children = step.getJSONArray("children");
@@ -87,6 +104,7 @@ public class AutoParser {
             if(!commands.containsKey(id)){
                 throw new IllegalArgumentException("Invalid command id: " + id + ". Did you forget to register it?");
             }
+            JSONObject parameters = step.getJSONObject("parameters");
             return commands.get(id).apply(parameters);
         } else {
             throw new IllegalArgumentException("Invalid auto segment type: " + type);

@@ -7,12 +7,12 @@
       {
         "type": "command",
         "id": "wait_for_note",
-        "paramters": {}
+        "parameters": {}
       },
       {
         "type": "command",
         "id": "follow_path",
-        "paramters": {
+        "parameters": {
           "targetX": "5",
           "targetY": "5"
         }
@@ -27,12 +27,12 @@
       {
         "type": "command",
         "id": "wait_for_note",
-        "paramters": {}
+        "parameters": {}
       },
       {
         "type": "command",
         "id": "follow_path",
-        "paramters": {
+        "parameters": {
           "targetX": "5",
           "targetY": "5"
         }
