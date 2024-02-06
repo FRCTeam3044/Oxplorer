@@ -30,7 +30,12 @@ public class FieldLoader {
         /**
          * A debug field for testing
          */
-        DEBUG_FIELD
+        DEBUG_FIELD,
+
+        /**
+         * A field with no obstacles
+         */
+        EMPTY_FIELD
     }
 
     /**

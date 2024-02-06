@@ -96,6 +96,7 @@ public class Path extends ArrayList<Vertex> {
      */
     public void addPath(Path path) {
         this.addAll(path);
+        this.add(target);
         createFullPath();
         setUnsnappedTarget(path.getUnsnappedTarget());
         this.target = path.getTarget();
