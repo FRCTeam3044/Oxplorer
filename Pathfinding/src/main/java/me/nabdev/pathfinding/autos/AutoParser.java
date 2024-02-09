@@ -11,6 +11,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 
@@ -48,13 +49,27 @@ public class AutoParser {
     }
 
     /**
-     * Load an auto from a json file on disk
+     * Load an auto from a json file in the deploy directory
+     * 
+     * @param name The name of the json file
+     * @return The autonomous command
+     * @throws FileNotFoundException if the file could not be found
+     */
+    public static Command loadAuto(String name) throws FileNotFoundException {
+        String path = Filesystem.getDeployDirectory() + "/" + name;
+        FileInputStream input = new FileInputStream(path);
+        JSONTokener tokener = new JSONTokener(input);
+        return parseAuto(new JSONArray(tokener));
+    }
+
+    /**
+     * Load an auto from a json file at the given path
      * 
      * @param path The path of the json auto
      * @return The autonomous command
      * @throws FileNotFoundException if the file could not be found
      */
-    public static Command loadAuto(String path) throws FileNotFoundException {
+    public static Command loadAutoFromPath(String path) throws FileNotFoundException {
         FileInputStream input = new FileInputStream(path);
         JSONTokener tokener = new JSONTokener(input);
         return parseAuto(new JSONArray(tokener));
