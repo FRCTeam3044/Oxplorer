@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The main pathfinder class, and the only one you should need to interact with.
@@ -390,8 +391,8 @@ public class Pathfinder {
         // long visibilityTime = visibilityEndTime - snapEndTime;
         // long searchTime = searchEndTime - visibilityEndTime;
         // long processPathTime = endTime - searchEndTime;
-        System.out.println("Total Path generation time: " + totalTime / 1000000.0 +
-                "ms");
+        double pathGenTime = totalTime / 1000000.0;
+        SmartDashboard.putNumber("Pathfinding Time (ms)", pathGenTime);
         // System.out.println("Snapping time: " + snapTime / 1000000.0 + "ms ("
         // + Math.round((snapTime / (double) totalTime) * 100) + "%)");
         // System.out.println("Visibility graph time: " + visibilityTime / 1000000.0 +
