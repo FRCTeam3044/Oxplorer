@@ -32,7 +32,12 @@ public class FieldLoader {
         /**
          * A debug field for testing
          */
-        DEBUG_FIELD
+        DEBUG_FIELD,
+
+        /**
+         * A field with no obstacles
+         */
+        EMPTY_FIELD
     }
 
     /**
@@ -184,10 +189,14 @@ public class FieldLoader {
 
             // This creates the edge table, treating the vertices as a circular array
             JSONArray rawVerticies = rawObstacle.getJSONArray("vertices");
-            ArrayList<Double[]> myVerticies = new ArrayList<Double[]>();
+            ArrayList<Double[]> myVertices = new ArrayList<Double[]>();
+            ArrayList<Double[]> myProcessedVertices = new ArrayList<Double[]>();
             for (int j = 0; j < rawVerticies.length(); j++) {
                 JSONArray rawVertex = rawVerticies.getJSONArray(j);
                 Double[] vertex = new Double[] { rawVertex.getDouble(0), rawVertex.getDouble(1) };
+                myVertices.add(vertex);
+            }
+            for (int j = 0; j < myVertices.size(); j++) {
                 boolean cutCorners = false;
                 if(rawObstacle.has("cutCorners")){
                     cutCorners = rawObstacle.getBoolean("cutCorners");
@@ -197,16 +206,16 @@ public class FieldLoader {
                     Vertex prevVertex;
                     Vertex nextVertex;
                     if(j > 0){
-                        prevVertex = new Vertex(myVerticies.get(j-1)[0], myVerticies.get(j-1)[1]);
+                        prevVertex = new Vertex(myVertices.get(j-1)[0], myVertices.get(j-1)[1]);
                     } else {
-                        prevVertex = new Vertex(myVerticies.get(rawVerticies.length()-1)[0], myVerticies.get(rawVerticies.length()-1)[1]);
+                        prevVertex = new Vertex(myVertices.get(myVertices.size()-1)[0], myVertices.get(myVertices.size()-1)[1]);
                     }
-                    if(j < rawVerticies.length()-1){
-                        nextVertex = new Vertex(myVerticies.get(j+1)[0], myVerticies.get(j+1)[1]);
+                    if(j < myVertices.size()-1){
+                        nextVertex = new Vertex(myVertices.get(j+1)[0], myVertices.get(j+1)[1]);
                     } else {
-                        nextVertex = new Vertex(myVerticies.get(0)[0], myVerticies.get(0)[1]);
+                        nextVertex = new Vertex(myVertices.get(0)[0], myVertices.get(0)[1]);
                     }
-                    Vertex thisVertex = new Vertex(myVerticies.get(j)[0], myVerticies.get(j)[1]);
+                    Vertex thisVertex = new Vertex(myVertices.get(j)[0], myVertices.get(j)[1]);
 
                     Vector toPrev = thisVertex.createVectorTo(prevVertex).normalize().scale(cornerCutDist);
                     Vector toNext = thisVertex.createVectorTo(nextVertex).normalize().scale(cornerCutDist);
@@ -214,20 +223,20 @@ public class FieldLoader {
                     Vertex newPrev = thisVertex.moveByVector(toPrev);
                     Vertex newNext = thisVertex.moveByVector(toNext);
 
-                    myVerticies.add(new Double[] {newPrev.x, newPrev.y});
-                    myVerticies.add(new Double[] {newNext.x, newNext.y});
+                    myProcessedVertices.add(new Double[] {newPrev.x, newPrev.y});
+                    myProcessedVertices.add(new Double[] {newNext.x, newNext.y});
                 } else {
-                    myVerticies.add(vertex);
+                    myProcessedVertices.add(myVertices.get(j));
                 }
             }
-            for (int j = 0; j < myVerticies.size(); j++) {
-                Double[] vertex = myVerticies.get(j);
-                myVerticies.add(vertex);
+            for (int j = 0; j < myProcessedVertices.size(); j++) {
+                Double[] vertex = myProcessedVertices.get(j);
+                vertices.add(vertex);
 
-                if (j != rawVerticies.length() - 1) {
+                if (j != myProcessedVertices.size() - 1) {
                     edges.add(new Integer[] { vertices.size() - 1, vertices.size() });
                 } else {
-                    edges.add(new Integer[] { vertices.size() - 1, vertices.size() - rawVerticies.length() });
+                    edges.add(new Integer[] { vertices.size() - 1, vertices.size() - myProcessedVertices.size() });
                 }
             }
 

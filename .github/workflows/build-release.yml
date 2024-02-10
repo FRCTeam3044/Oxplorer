@@ -8,6 +8,11 @@
 name: Gradle Package
 
 on:
+  push:
+    branches:
+      - "*"
+    tags-ignore:
+      - "*"
   release:
     types: [created]
   workflow_dispatch:
@@ -35,7 +40,7 @@ jobs:
           server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
           settings-path: ${{ github.workspace }} # location for the settings.xml file
 
-      - name: Build with Gradle
+      - name: Build Oxplorer with Gradle
         uses: gradle/gradle-build-action@v2
         with:
           arguments: build
@@ -43,7 +48,7 @@ jobs:
 
       # The USERNAME and TOKEN need to correspond to the credentials environment variables used in
       # the publishing section of your build.gradle
-      - name: Publish to GitHub Packages
+      - name: Publish Oxplorer Publication to GitHub Packages
         uses: gradle/gradle-build-action@v2
         with:
           arguments: publish
@@ -52,11 +57,20 @@ jobs:
           USERNAME: ${{ github.actor }}
           TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Setup Pages
+        if: github.event_name == 'release'
         uses: actions/configure-pages@v4
       - name: Upload Javadoc artifact
+        if: github.event_name == 'release'
         uses: actions/upload-pages-artifact@v3
         with:
           path: "./Pathfinding/build/docs/javadoc"
-      - name: Deploy Javadoc to GitHub Pages
+      - name: Deploy Oxplorer Javadoc to GitHub Pages
+        if: github.event_name == 'release'
         id: deployment
         uses: actions/deploy-pages@v4
+      - name: Mark as latest
+        if: github.event_name == 'release'
+        run: |
+          gh api --method PATCH -H "Accept: application/vnd.github+json" -H "X-GitHub-Api-Version: 2022-11-28" /repos/FRCTeam3044/Oxplorer/releases/${{ github.event.release.id }} -f make_latest=true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

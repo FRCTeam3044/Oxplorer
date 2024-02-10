@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Get To Note",
+    "type": "group",
+    "id": "deadline",
+    "children": [
+      {
+        "type": "command",
+        "id": "wait_for_note",
+        "parameters": {}
+      },
+      {
+        "type": "command",
+        "id": "follow_path",
+        "parameters": {
+          "targetX": "5",
+          "targetY": "5"
+        }
+      }
+    ]
+  },
+  {
+    "name": "Pickup Note",
+    "type": "group",
+    "id": "simultanious_parallel",
+    "children": [
+      {
+        "type": "command",
+        "id": "wait_for_note",
+        "parameters": {}
+      },
+      {
+        "type": "command",
+        "id": "follow_path",
+        "parameters": {
+          "targetX": "5",
+          "targetY": "5"
+        }
+      }
+    ]
+  }
+]

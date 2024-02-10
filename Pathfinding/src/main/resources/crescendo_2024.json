@@ -32,6 +32,7 @@
     },
     {
       "id": "Far Left Stage Block",
+      "cutCorners": true,
       "vertices": [
         [3.6721, 4.4168],
         [3.6721, 3.8072],
@@ -41,6 +42,7 @@
     },
     {
       "id": "Upper Left Stage Block",
+      "cutCorners": true,
       "vertices": [
         [6.0172, 5.5135],
         [5.7124, 4.9856],
@@ -50,6 +52,7 @@
     },
     {
       "id": "Lower Left Stage Block",
+      "cutCorners": true,
       "vertices": [
         [6.0176, 2.7112],
         [5.4898, 2.4064],

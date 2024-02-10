@@ -1,5 +1,7 @@
 package me.nabdev.pathfinding;
 
+import java.io.FileNotFoundException;
+
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
 import me.nabdev.pathfinding.utilities.FieldLoader;
 import me.nabdev.pathfinding.utilities.FieldLoader.Field;
@@ -163,7 +165,7 @@ public class PathfinderBuilder {
         } else {
             try {
                 loadedField = FieldLoader.loadField(customFieldPath);
-            } catch (Exception e) {
+            } catch (FileNotFoundException e) {
                 throw new RuntimeException("Failed to load field from path " + customFieldPath);
             }
         }
