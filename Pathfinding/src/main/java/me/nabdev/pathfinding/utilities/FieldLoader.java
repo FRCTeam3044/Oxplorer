@@ -118,27 +118,29 @@ public class FieldLoader {
      * Load a field from the resources folder
      * 
      * @param field The field to load
+     * @param cornerCutDist The distance to cut corners by
      * @return The field JSON
      */
-    public static FieldData loadField(Field field) {
+    public static FieldData loadField(Field field, double cornerCutDist) {
         JSONTokener tokener = new JSONTokener(
                 FieldLoader.class.getClassLoader().getResourceAsStream(field.name().toLowerCase() + ".json"));
-        return processField(new JSONObject(tokener));
+        return processField(new JSONObject(tokener), cornerCutDist);
     }
 
     /**
      * Load a field from a file
      * 
      * @param fieldPath The path to the field JSON file
+     * @param cornerCutDist The distance to cut corners by
      * @return The field JSON
      * @throws FileNotFoundException If the file does not exist
      */
-    public static FieldData loadField(String fieldPath) throws FileNotFoundException {
+    public static FieldData loadField(String fieldPath, double cornerCutDist) throws FileNotFoundException {
         // Load like a normal file, not a resource
         JSONTokener tokener;
         FileInputStream input = new FileInputStream(fieldPath);
         tokener = new JSONTokener(input);
-        return processField(new JSONObject(tokener));
+        return processField(new JSONObject(tokener), cornerCutDist);
     }
 
     /**
@@ -147,9 +149,10 @@ public class FieldLoader {
      * edge table.
      * 
      * @param rawField The raw field JSON
+     * @param cornerCutDist The distance to cut corners by
      * @return The processed field
      */
-    private static FieldData processField(JSONObject rawField) {
+    private static FieldData processField(JSONObject rawField, double cornerCutDist) {
         if (!rawField.has("formatVersion")) {
             throw new IllegalArgumentException("Field does not have formatVersion");
         }
@@ -202,7 +205,6 @@ public class FieldLoader {
                     cutCorners = rawObstacle.getBoolean("cutCorners");
                 }
                 if(cutCorners){
-                    double cornerCutDist = 0.1;
                     Vertex prevVertex;
                     Vertex nextVertex;
                     if(j > 0){

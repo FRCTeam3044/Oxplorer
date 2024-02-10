@@ -22,6 +22,7 @@ public class PathfinderBuilder {
     private SearchAlgorithmType searchAlgorithmType = SearchAlgorithmType.ASTAR;
     private double robotWidth = 0.7;
     private double robotLength = 0.7;
+    private double cornerCutDist = 0.04;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -154,6 +155,17 @@ public class PathfinderBuilder {
     }
 
     /**
+     * Sets the corner cut distance
+     * 
+     * @param cornerCutDist The corner cut distance, default 0.04 (meters)
+     * @return The builder
+     */
+    public PathfinderBuilder setCornerCutDist(double cornerCutDist) {
+        this.cornerCutDist = cornerCutDist;
+        return this;
+    }
+
+    /**
      * Builds the {@link Pathfinder}
      * 
      * @return The {@link Pathfinder}
@@ -161,10 +173,10 @@ public class PathfinderBuilder {
     public Pathfinder build() {
         FieldData loadedField;
         if (field != null) {
-            loadedField = FieldLoader.loadField(field);
+            loadedField = FieldLoader.loadField(field, cornerCutDist);
         } else {
             try {
-                loadedField = FieldLoader.loadField(customFieldPath);
+                loadedField = FieldLoader.loadField(customFieldPath, cornerCutDist);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException("Failed to load field from path " + customFieldPath);
             }
