@@ -169,7 +169,7 @@ public class PathfinderBuilder {
         }
 
         // clearance is the circumcircle radius of the robot
-        double clearance = Math.sqrt(Math.pow(robotWidth / 2, 2) + Math.pow(robotLength / 2, 2));
+        double clearance = Math.sqrt(Math.pow(robotWidth, 2) + Math.pow(robotLength, 2)) / 2;
         return new Pathfinder(loadedField, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
                 injectPoints, normalizeCorners, searchAlgorithmType);
     }

@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import me.nabdev.pathfinding.modifiers.ModifierCollection;
+import me.nabdev.pathfinding.structures.Vector;
+import me.nabdev.pathfinding.structures.Vertex;
 
 /**
  * Loads a field from a JSON file
@@ -182,10 +184,45 @@ public class FieldLoader {
 
             // This creates the edge table, treating the vertices as a circular array
             JSONArray rawVerticies = rawObstacle.getJSONArray("vertices");
+            ArrayList<Double[]> myVerticies = new ArrayList<Double[]>();
             for (int j = 0; j < rawVerticies.length(); j++) {
                 JSONArray rawVertex = rawVerticies.getJSONArray(j);
                 Double[] vertex = new Double[] { rawVertex.getDouble(0), rawVertex.getDouble(1) };
-                vertices.add(vertex);
+                boolean cutCorners = false;
+                if(rawObstacle.has("cutCorners")){
+                    cutCorners = rawObstacle.getBoolean("cutCorners");
+                }
+                if(cutCorners){
+                    double cornerCutDist = 0.1;
+                    Vertex prevVertex;
+                    Vertex nextVertex;
+                    if(j > 0){
+                        prevVertex = new Vertex(myVerticies.get(j-1)[0], myVerticies.get(j-1)[1]);
+                    } else {
+                        prevVertex = new Vertex(myVerticies.get(rawVerticies.length()-1)[0], myVerticies.get(rawVerticies.length()-1)[1]);
+                    }
+                    if(j < rawVerticies.length()-1){
+                        nextVertex = new Vertex(myVerticies.get(j+1)[0], myVerticies.get(j+1)[1]);
+                    } else {
+                        nextVertex = new Vertex(myVerticies.get(0)[0], myVerticies.get(0)[1]);
+                    }
+                    Vertex thisVertex = new Vertex(myVerticies.get(j)[0], myVerticies.get(j)[1]);
+
+                    Vector toPrev = thisVertex.createVectorTo(prevVertex).normalize().scale(cornerCutDist);
+                    Vector toNext = thisVertex.createVectorTo(nextVertex).normalize().scale(cornerCutDist);
+
+                    Vertex newPrev = thisVertex.moveByVector(toPrev);
+                    Vertex newNext = thisVertex.moveByVector(toNext);
+
+                    myVerticies.add(new Double[] {newPrev.x, newPrev.y});
+                    myVerticies.add(new Double[] {newNext.x, newNext.y});
+                } else {
+                    myVerticies.add(vertex);
+                }
+            }
+            for (int j = 0; j < myVerticies.size(); j++) {
+                Double[] vertex = myVerticies.get(j);
+                myVerticies.add(vertex);
 
                 if (j != rawVerticies.length() - 1) {
                     edges.add(new Integer[] { vertices.size() - 1, vertices.size() });
