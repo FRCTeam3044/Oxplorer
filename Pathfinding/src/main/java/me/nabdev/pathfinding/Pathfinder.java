@@ -59,6 +59,10 @@ public class Pathfinder {
     private double cornerSplitPercent;
 
     /**
+     * Whether or not to profile the pathfinding process
+     */
+    private boolean profiling;
+    /**
      * The search algorithm to use
      */
     private SearchAlgorithmType searchAlgorithmType;
@@ -91,7 +95,7 @@ public class Pathfinder {
      */
     public Pathfinder(FieldData field, double pointSpacing, double cornerPointSpacing, double cornerDist,
             double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners,
-            SearchAlgorithmType searchAlgorithmType) {
+            SearchAlgorithmType searchAlgorithmType, boolean profiling) {
         this.pointSpacing = pointSpacing;
         this.cornerPointSpacing = cornerPointSpacing;
         this.cornerDist = cornerDist;
@@ -100,6 +104,7 @@ public class Pathfinder {
         this.injectPoints = injectPoints;
         this.normalizeCorners = normalizeCorners;
         this.searchAlgorithmType = searchAlgorithmType;
+        this.profiling = profiling;
 
         // This is essentially a vertex and edge table, with some extra information.
         // Vertices are stored as an array [x, y]
@@ -631,12 +636,23 @@ public class Pathfinder {
     };
 
     /**
+     * Whether or not to profile the pathfinding process
+     * 
+     * @return Whether or not to profile the pathfinding process
+     */
+    public boolean getProfiling() {
+        return profiling;
+    };
+
+    /**
      * Space between injected points on straightaways in the path (meters)
      * 
      * @param newPointSpacing The new space between injected points on straightaways
      *                        (meters)
      */
     public void setPointSpacing(double newPointSpacing) {
+        if (pointSpacing <= 0)
+            throw new IllegalArgumentException("Point spacing must be greater than 0");
         pointSpacing = newPointSpacing;
     };
 
@@ -647,6 +663,8 @@ public class Pathfinder {
      *                              path (percent of the curve length)
      */
     public void setCornerPointSpacing(double newCornerPointSpacing) {
+        if (cornerPointSpacing <= 0)
+            throw new IllegalArgumentException("Corner point spacing must be greater than 0");
         cornerPointSpacing = newCornerPointSpacing;
     };
 
@@ -657,6 +675,8 @@ public class Pathfinder {
      *                      to making corners
      */
     public void setCornerDist(double newCornerDist) {
+        if (cornerDist < 0)
+            throw new IllegalArgumentException("Corner distance must be positive");
         cornerDist = newCornerDist;
     };
 
@@ -698,5 +718,14 @@ public class Pathfinder {
      */
     public void setSearchAlgorithmType(SearchAlgorithmType newSearchAlgorithm) {
         searchAlgorithmType = newSearchAlgorithm;
+    };
+
+    /**
+     * Whether or not to profile the pathfinding process
+     * 
+     * @param newProfiling Whether or not to profile the pathfinding process
+     */
+    public void setProfiling(boolean newProfiling) {
+        profiling = newProfiling;
     };
 }
