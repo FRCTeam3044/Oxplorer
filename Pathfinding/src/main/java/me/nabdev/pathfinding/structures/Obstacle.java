@@ -50,9 +50,9 @@ public class Obstacle {
         this.vertices = vertices;
         this.id = id;
         this.modifiers = modifiers;
-        for (Edge edge : edges) {
-            myVertices.add(vertices.get(edge.getVertexOne()));
-        }
+            for (Edge edge : edges) {
+                myVertices.add(vertices.get(edge.getVertexOne()));
+            }
     }
 
     /**
