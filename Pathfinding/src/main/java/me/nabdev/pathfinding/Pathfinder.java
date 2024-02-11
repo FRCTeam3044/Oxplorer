@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The main pathfinder class, and the only one you should need to interact with.
@@ -29,39 +30,38 @@ public class Pathfinder {
     /**
      * Space between injected points on straightaways in the path (meters)
      */
-    public final double pointSpacing;
+    private double pointSpacing;
     /**
      * Space between points on corners of the path (percent of the curve length)
      */
-    public final double cornerPointSpacing;
+    private double cornerPointSpacing;
     /**
      * How far back along the straightaway to dedicate to making corners
      */
-    public final double cornerDist;
+    private double cornerDist;
     /**
      * How far to inflate obstacles
      */
-    public final double clearance;
+    private final double clearance;
     /**
      * Whether or not to inject points on straightaways
      */
-    public final boolean injectPoints;
+    private boolean injectPoints;
     /**
      * Whether or not to normalize distance between corner points
      */
-    public final boolean normalizeCorners;
-
+    private boolean normalizeCorners;
     /**
      * How far each corner should move towards the
      * other point if the distance is too short to allow both corners the full
      * corner distance
      */
-    public final double cornerSplitPercent;
+    private double cornerSplitPercent;
 
     /**
      * The search algorithm to use
      */
-    public final SearchAlgorithmType searchAlgorithmType;
+    private SearchAlgorithmType searchAlgorithmType;
 
     /**
      * How many cells to use on the x axis of the grid when precomputing the edges
@@ -143,8 +143,8 @@ public class Pathfinder {
         }
 
         // Create the map object
-        map = new Map(obstacles, obstacleVertices, edges, this);
-        map = new Map(obstacles, obstacleVertices, edges, clearance, this, field.fieldX, field.fieldY);
+        map = new Map(obstacles, obstacleVertices, edges, clearance, field.fieldX, field.fieldY, precomputeGridX,
+                precomputeGridY);
 
         for (Obstacle obs : obstacles) {
             obs.initialize(map.getPathVerticesStatic());
@@ -328,6 +328,29 @@ public class Pathfinder {
         return path.asTrajectory(config);
     }
 
+    /**
+     * Snaps the start and target vertices accoridng to the snap mode
+     * the best path that passes through all waypoints as a wpilib trajectory.
+     * 
+     * @param start    The starting pose
+     * @param target   The target pose
+     * @param snapMode The snap mode to use
+     * @param config   The trajectory config to use when generating the
+     *                 trajectory
+     * 
+     * @return A trajectory from the starting vertex passing through all waypoints
+     *         that does not intersect any obstacles
+     * 
+     * @throws ImpossiblePathException If no path can be found
+     */
+    public Trajectory generateTrajectory(Pose2d start, ArrayList<Pose2d> target, PathfindSnapMode snapMode,
+            TrajectoryConfig config)
+            throws ImpossiblePathException {
+        Path path = generatePathInner(new Vertex(start), Vertex.fromPose2dArray(target), snapMode,
+                new ArrayList<Vertex>());
+        return path.asTrajectory(config);
+    }
+
     private Path generatePathInner(Vertex start, ArrayList<Vertex> waypoints, PathfindSnapMode snapMode,
             ArrayList<Vertex> dynamicVertices) throws ImpossiblePathException {
         Path path = generatePathInner(start, waypoints.get(0), snapMode, dynamicVertices, false);
@@ -389,8 +412,8 @@ public class Pathfinder {
         // long visibilityTime = visibilityEndTime - snapEndTime;
         // long searchTime = searchEndTime - visibilityEndTime;
         // long processPathTime = endTime - searchEndTime;
-        // System.out.println("Total Path generation time: " + totalTime / 1000000.0 +
-        // "ms");
+        double pathGenTime = totalTime / 1000000.0;
+        SmartDashboard.putNumber("Pathfinding Time (ms)", pathGenTime);
         // System.out.println("Snapping time: " + snapTime / 1000000.0 + "ms ("
         // + Math.round((snapTime / (double) totalTime) * 100) + "%)");
         // System.out.println("Visibility graph time: " + visibilityTime / 1000000.0 +
@@ -553,4 +576,148 @@ public class Pathfinder {
         list.addAll(map.getPathVerticesStatic());
         return list;
     }
+
+    /**
+     * Space between injected points on straightaways in the path (meters)
+     * 
+     * @return The space between injected points on straightaways (meters)
+     */
+    public double getPointSpacing() {
+        return pointSpacing;
+    };
+
+    /**
+     * Space between points on corners of the path (percent of the curve length)
+     * 
+     * @return The space between points on corners of the path (percent of the curve
+     */
+    public double getCornerPointSpacing() {
+        return cornerPointSpacing;
+    };
+
+    /**
+     * How far back along the straightaway to dedicate to making corners
+     * 
+     * @return The distance back along the straightaway dedicated to making corners
+     */
+    public double getCornerDist() {
+        return cornerDist;
+    };
+
+    /**
+     * How far to inflate obstacles
+     * 
+     * @return The clearance to use when inflating obstacles
+     */
+    public final double clearance() {
+        return clearance;
+    };
+
+    /**
+     * Whether or not to inject points on straightaways
+     * 
+     * @return Whether or not to inject points on straightaways
+     */
+    public boolean getInjectPoints() {
+        return injectPoints;
+    };
+
+    /**
+     * Whether or not to normalize distance between corner points
+     * 
+     * @return Whether or not to normalize distance between corner points
+     */
+    public boolean getNormalizeCorners() {
+        return normalizeCorners;
+    };
+
+    /**
+     * How far each corner should move towards the
+     * other point if the distance is too short to allow both corners the full
+     * corner distance
+     * 
+     * @return The corner split percentage
+     */
+    public double getCornerSplitPercent() {
+        return cornerSplitPercent;
+    };
+
+    /**
+     * The search algorithm to use
+     * 
+     * @return The search algorithm to use
+     */
+    public SearchAlgorithmType getSearchAlgorithmType() {
+        return searchAlgorithmType;
+    };
+
+    /**
+     * Space between injected points on straightaways in the path (meters)
+     * 
+     * @param newPointSpacing The new space between injected points on straightaways
+     *                        (meters)
+     */
+    public void setPointSpacing(double newPointSpacing) {
+        pointSpacing = newPointSpacing;
+    };
+
+    /**
+     * Space between points on corners of the path (percent of the curve length)
+     * 
+     * @param newCornerPointSpacing The new space between points on corners of the
+     *                              path (percent of the curve length)
+     */
+    public void setCornerPointSpacing(double newCornerPointSpacing) {
+        cornerPointSpacing = newCornerPointSpacing;
+    };
+
+    /**
+     * How far back along the straightaway to dedicate to making corners
+     * 
+     * @param newCornerDist The new distance back along the straightaway dedicated
+     *                      to making corners
+     */
+    public void setCornerDist(double newCornerDist) {
+        cornerDist = newCornerDist;
+    };
+
+    /**
+     * Whether or not to inject points on straightaways
+     * 
+     * @param newInjectPoints Whether or not to inject points on straightaways
+     */
+    public void setInjectPoints(boolean newInjectPoints) {
+        injectPoints = newInjectPoints;
+    };
+
+    /**
+     * Whether or not to normalize distance between corner points
+     * 
+     * @param newNormalizeCorners Whether or not to normalize distance between
+     *                            corner points
+     */
+    public void setNormalizeCorners(boolean newNormalizeCorners) {
+        normalizeCorners = newNormalizeCorners;
+    };
+
+    /**
+     * How far each corner should move towards the other point if the distance is
+     * too short to allow both corners the full corner distance
+     * 
+     * @param newCornerSplitPercent The new corner split percentage
+     */
+    public void setCornerSplitPercent(double newCornerSplitPercent) {
+        if (newCornerSplitPercent > 0.5)
+            throw new IllegalArgumentException("Corner split percent must be less than or equal to 0.5");
+        cornerSplitPercent = newCornerSplitPercent;
+    };
+
+    /**
+     * The search algorithm to use
+     * 
+     * @param newSearchAlgorithm The new search algorithm to use
+     */
+    public void setSearchAlgorithmType(SearchAlgorithmType newSearchAlgorithm) {
+        searchAlgorithmType = newSearchAlgorithm;
+    };
 }

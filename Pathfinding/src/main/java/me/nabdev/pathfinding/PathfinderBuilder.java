@@ -1,5 +1,7 @@
 package me.nabdev.pathfinding;
 
+import java.io.FileNotFoundException;
+
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
 import me.nabdev.pathfinding.utilities.FieldLoader;
 import me.nabdev.pathfinding.utilities.FieldLoader.Field;
@@ -11,17 +13,18 @@ import me.nabdev.pathfinding.utilities.FieldLoader.FieldData;
 public class PathfinderBuilder {
     private Field field;
     private String customFieldPath;
-    private double pointSpacing = 0.15;
+    private double pointSpacing = 0.25;
     private double cornerPointSpacing = 0.08;
     private double cornerDist = 0.6;
     private double cornerSplitPercent = 0.45;
-    private boolean injectPoints = false;
+    private boolean injectPoints = true;
     private boolean normalizeCorners = true;
     private SearchAlgorithmType searchAlgorithmType = SearchAlgorithmType.ASTAR;
     private int precomputeGridX = 8;
     private int precomputeGridY = 4;
     private double robotWidth = 0.7;
     private double robotLength = 0.7;
+    private double cornerCutDist = 0.01;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -47,10 +50,12 @@ public class PathfinderBuilder {
      * Sets the point spacing (space between injected points on straightaways when
      * generating paths)
      * 
-     * @param pointSpacing The point spacing, default 0.15 (meters)
+     * @param pointSpacing The point spacing, default 0.25 (meters)
      * @return The builder
      */
     public PathfinderBuilder setPointSpacing(double pointSpacing) {
+        if (pointSpacing <= 0)
+            throw new IllegalArgumentException("Point spacing must be greater than 0");
         this.pointSpacing = pointSpacing;
         return this;
     }
@@ -63,6 +68,8 @@ public class PathfinderBuilder {
      * @return The builder
      */
     public PathfinderBuilder setCornerPointSpacing(double cornerPointSpacing) {
+        if (cornerPointSpacing <= 0)
+            throw new IllegalArgumentException("Corner point spacing must be greater than 0");
         this.cornerPointSpacing = cornerPointSpacing;
         return this;
     }
@@ -75,6 +82,8 @@ public class PathfinderBuilder {
      * @return The builder
      */
     public PathfinderBuilder setCornerDist(double cornerDist) {
+        if (cornerDist < 0)
+            throw new IllegalArgumentException("Corner distance must be positive");
         this.cornerDist = cornerDist;
         return this;
     }
@@ -86,6 +95,8 @@ public class PathfinderBuilder {
      * @return The builder
      */
     public PathfinderBuilder setRobotWidth(double robotWidth) {
+        if (robotWidth <= 0)
+            throw new IllegalArgumentException("Robot width must be greater than 0");
         this.robotWidth = robotWidth;
         return this;
     }
@@ -97,13 +108,15 @@ public class PathfinderBuilder {
      * @return The builder
      */
     public PathfinderBuilder setRobotLength(double robotLength) {
+        if (robotWidth <= 0)
+            throw new IllegalArgumentException("Robot width must be greater than 0");
         this.robotLength = robotLength;
         return this;
     }
 
     /**
-     * Sets the corner split percent (how far each corner should move towards the
-     * other point if the distance is too short to allow both corners the full
+     * Sets the corner split percent (how far each bezier curve should move towards
+     * the other point if the distance is too short to allow both corners the full
      * corner distance)
      * 
      * @param cornerSplitPercent The corner split percent, default 0.45 (max 0.5)
@@ -176,6 +189,17 @@ public class PathfinderBuilder {
     }
 
     /**
+     * Sets the corner cut distance
+     * 
+     * @param cornerCutDist The corner cut distance, default 0.01 (meters)
+     * @return The builder
+     */
+    public PathfinderBuilder setCornerCutDist(double cornerCutDist) {
+        this.cornerCutDist = cornerCutDist;
+        return this;
+    }
+
+    /**
      * Builds the {@link Pathfinder}
      * 
      * @return The {@link Pathfinder}
@@ -183,17 +207,17 @@ public class PathfinderBuilder {
     public Pathfinder build() {
         FieldData loadedField;
         if (field != null) {
-            loadedField = FieldLoader.loadField(field);
+            loadedField = FieldLoader.loadField(field, cornerCutDist);
         } else {
             try {
-                loadedField = FieldLoader.loadField(customFieldPath);
-            } catch (Exception e) {
+                loadedField = FieldLoader.loadField(customFieldPath, cornerCutDist);
+            } catch (FileNotFoundException e) {
                 throw new RuntimeException("Failed to load field from path " + customFieldPath);
             }
         }
 
         // clearance is the circumcircle radius of the robot
-        double clearance = Math.sqrt(Math.pow(robotWidth / 2, 2) + Math.pow(robotLength / 2, 2));
+        double clearance = Math.sqrt(Math.pow(robotWidth, 2) + Math.pow(robotLength, 2)) / 2;
         return new Pathfinder(loadedField, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
                 injectPoints, normalizeCorners, searchAlgorithmType, precomputeGridX, precomputeGridY);
     }

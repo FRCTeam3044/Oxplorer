@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 
 import me.nabdev.pathfinding.modifiers.ModifierCollection;
+import me.nabdev.pathfinding.structures.Vector;
+import me.nabdev.pathfinding.structures.Vertex;
 
 /**
  * Loads a field from a JSON file
@@ -30,7 +32,12 @@ public class FieldLoader {
         /**
          * A debug field for testing
          */
-        DEBUG_FIELD
+        DEBUG_FIELD,
+
+        /**
+         * A field with no obstacles
+         */
+        EMPTY_FIELD
     }
 
     /**
@@ -110,28 +117,30 @@ public class FieldLoader {
     /**
      * Load a field from the resources folder
      * 
-     * @param field The field to load
+     * @param field         The field to load
+     * @param cornerCutDist The distance to cut corners by
      * @return The field JSON
      */
-    public static FieldData loadField(Field field) {
+    public static FieldData loadField(Field field, double cornerCutDist) {
         JSONTokener tokener = new JSONTokener(
                 FieldLoader.class.getClassLoader().getResourceAsStream(field.name().toLowerCase() + ".json"));
-        return processField(new JSONObject(tokener));
+        return processField(new JSONObject(tokener), cornerCutDist);
     }
 
     /**
      * Load a field from a file
      * 
-     * @param fieldPath The path to the field JSON file
+     * @param fieldPath     The path to the field JSON file
+     * @param cornerCutDist The distance to cut corners by
      * @return The field JSON
      * @throws FileNotFoundException If the file does not exist
      */
-    public static FieldData loadField(String fieldPath) throws FileNotFoundException {
+    public static FieldData loadField(String fieldPath, double cornerCutDist) throws FileNotFoundException {
         // Load like a normal file, not a resource
         JSONTokener tokener;
         FileInputStream input = new FileInputStream(fieldPath);
         tokener = new JSONTokener(input);
-        return processField(new JSONObject(tokener));
+        return processField(new JSONObject(tokener), cornerCutDist);
     }
 
     /**
@@ -139,10 +148,11 @@ public class FieldLoader {
      * This method processes the raw field into a more usable format by adding the
      * edge table.
      * 
-     * @param rawField The raw field JSON
+     * @param rawField      The raw field JSON
+     * @param cornerCutDist The distance to cut corners by
      * @return The processed field
      */
-    private static FieldData processField(JSONObject rawField) {
+    private static FieldData processField(JSONObject rawField, double cornerCutDist) {
         if (!rawField.has("formatVersion")) {
             throw new IllegalArgumentException("Field does not have formatVersion");
         }
@@ -182,15 +192,54 @@ public class FieldLoader {
 
             // This creates the edge table, treating the vertices as a circular array
             JSONArray rawVerticies = rawObstacle.getJSONArray("vertices");
+            ArrayList<Double[]> myVertices = new ArrayList<Double[]>();
+            ArrayList<Double[]> myProcessedVertices = new ArrayList<Double[]>();
             for (int j = 0; j < rawVerticies.length(); j++) {
                 JSONArray rawVertex = rawVerticies.getJSONArray(j);
                 Double[] vertex = new Double[] { rawVertex.getDouble(0), rawVertex.getDouble(1) };
+                myVertices.add(vertex);
+            }
+            for (int j = 0; j < myVertices.size(); j++) {
+                boolean cutCorners = false;
+                if (rawObstacle.has("cutCorners") && (cornerCutDist > 0)) {
+                    cutCorners = rawObstacle.getBoolean("cutCorners");
+                }
+                if (cutCorners) {
+                    Vertex prevVertex;
+                    Vertex nextVertex;
+                    if (j > 0) {
+                        prevVertex = new Vertex(myVertices.get(j - 1)[0], myVertices.get(j - 1)[1]);
+                    } else {
+                        prevVertex = new Vertex(myVertices.get(myVertices.size() - 1)[0],
+                                myVertices.get(myVertices.size() - 1)[1]);
+                    }
+                    if (j < myVertices.size() - 1) {
+                        nextVertex = new Vertex(myVertices.get(j + 1)[0], myVertices.get(j + 1)[1]);
+                    } else {
+                        nextVertex = new Vertex(myVertices.get(0)[0], myVertices.get(0)[1]);
+                    }
+                    Vertex thisVertex = new Vertex(myVertices.get(j)[0], myVertices.get(j)[1]);
+
+                    Vector toPrev = thisVertex.createVectorTo(prevVertex).normalize().scale(cornerCutDist);
+                    Vector toNext = thisVertex.createVectorTo(nextVertex).normalize().scale(cornerCutDist);
+
+                    Vertex newPrev = thisVertex.moveByVector(toPrev);
+                    Vertex newNext = thisVertex.moveByVector(toNext);
+
+                    myProcessedVertices.add(new Double[] { newPrev.x, newPrev.y });
+                    myProcessedVertices.add(new Double[] { newNext.x, newNext.y });
+                } else {
+                    myProcessedVertices.add(myVertices.get(j));
+                }
+            }
+            for (int j = 0; j < myProcessedVertices.size(); j++) {
+                Double[] vertex = myProcessedVertices.get(j);
                 vertices.add(vertex);
 
-                if (j != rawVerticies.length() - 1) {
+                if (j != myProcessedVertices.size() - 1) {
                     edges.add(new Integer[] { vertices.size() - 1, vertices.size() });
                 } else {
-                    edges.add(new Integer[] { vertices.size() - 1, vertices.size() - rawVerticies.length() });
+                    edges.add(new Integer[] { vertices.size() - 1, vertices.size() - myProcessedVertices.size() });
                 }
             }
 
