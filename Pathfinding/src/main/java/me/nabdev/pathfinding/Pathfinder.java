@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The main pathfinder class, and the only one you should need to interact with.
@@ -390,8 +391,8 @@ public class Pathfinder {
         // long visibilityTime = visibilityEndTime - snapEndTime;
         // long searchTime = searchEndTime - visibilityEndTime;
         // long processPathTime = endTime - searchEndTime;
-        System.out.println("Total Path generation time: " + totalTime / 1000000.0 +
-                "ms");
+        double pathGenTime = totalTime / 1000000.0;
+        SmartDashboard.putNumber("Pathfinding Time (ms)", pathGenTime);
         // System.out.println("Snapping time: " + snapTime / 1000000.0 + "ms ("
         // + Math.round((snapTime / (double) totalTime) * 100) + "%)");
         // System.out.println("Visibility graph time: " + visibilityTime / 1000000.0 +
@@ -557,6 +558,8 @@ public class Pathfinder {
 
     /**
      * Space between injected points on straightaways in the path (meters)
+     * 
+     * @return The space between injected points on straightaways (meters)
      */
     public double getPointSpacing() {
         return pointSpacing;
@@ -564,6 +567,8 @@ public class Pathfinder {
 
     /**
      * Space between points on corners of the path (percent of the curve length)
+     * 
+     * @return The space between points on corners of the path (percent of the curve
      */
     public double getCornerPointSpacing() {
         return cornerPointSpacing;
@@ -571,6 +576,8 @@ public class Pathfinder {
 
     /**
      * How far back along the straightaway to dedicate to making corners
+     * 
+     * @return The distance back along the straightaway dedicated to making corners
      */
     public double getCornerDist() {
         return cornerDist;
@@ -578,6 +585,8 @@ public class Pathfinder {
 
     /**
      * How far to inflate obstacles
+     * 
+     * @return The clearance to use when inflating obstacles
      */
     public final double clearance() {
         return clearance;
@@ -585,6 +594,8 @@ public class Pathfinder {
 
     /**
      * Whether or not to inject points on straightaways
+     * 
+     * @return Whether or not to inject points on straightaways
      */
     public boolean getInjectPoints() {
         return injectPoints;
@@ -592,6 +603,8 @@ public class Pathfinder {
 
     /**
      * Whether or not to normalize distance between corner points
+     * 
+     * @return Whether or not to normalize distance between corner points
      */
     public boolean getNormalizeCorners() {
         return normalizeCorners;
@@ -601,6 +614,8 @@ public class Pathfinder {
      * How far each corner should move towards the
      * other point if the distance is too short to allow both corners the full
      * corner distance
+     * 
+     * @return The corner split percentage
      */
     public double getCornerSplitPercent() {
         return cornerSplitPercent;
@@ -608,6 +623,8 @@ public class Pathfinder {
 
     /**
      * The search algorithm to use
+     * 
+     * @return The search algorithm to use
      */
     public SearchAlgorithmType getSearchAlgorithmType() {
         return searchAlgorithmType;

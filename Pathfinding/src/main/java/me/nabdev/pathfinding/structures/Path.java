@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.math.trajectory.TrajectoryParameterizer.TrajectoryGenerationException;
 import me.nabdev.pathfinding.Pathfinder;
 import me.nabdev.pathfinding.Pathfinder.PathfindSnapMode;
 
@@ -96,6 +97,7 @@ public class Path extends ArrayList<Vertex> {
      */
     public void addPath(Path path) {
         this.addAll(path);
+        this.add(target);
         createFullPath();
         setUnsnappedTarget(path.getUnsnappedTarget());
         this.target = path.getTarget();
@@ -377,9 +379,14 @@ public class Path extends ArrayList<Vertex> {
      * 
      * @param config The TrajectoryConfig to use.
      * @return The path as a Trajectory.
+     * @throws ImpossiblePathException if the trajectory could not be generated.
      */
-    public Trajectory asTrajectory(TrajectoryConfig config) {
+    public Trajectory asTrajectory(TrajectoryConfig config) throws ImpossiblePathException {
+        try {
         return TrajectoryGenerator.generateTrajectory(asPose2dList(), config);
+        } catch (TrajectoryGenerationException e){
+            throw new ImpossiblePathException("Failed to generate trajectory for path. Error: " + e.getMessage());
+        }
     }
 
     /**
