@@ -2,6 +2,8 @@ package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.math.MathUtil;
+
 /**
  * Represents a grid used to speed up the visibility graph generation. It
  * generates a big list of possible edges that could be in the way between any
@@ -11,19 +13,22 @@ import java.util.ArrayList;
 public class Grid {
     private GridCell[][] cells;
     private GridCellPair[][][][] cellPairs;
+    private boolean snapInField = false;
 
     /**
      * Creates a new grid with the given number of cells on each dimension.
      * 
-     * @param xCells   The number of cells on the x axis
-     * @param yCells   The number of cells on the y axis
-     * @param edges    The edges to use when generating the possible edges
-     * @param vertices The vertices to use when generating the possible edges
-     * @param fieldx   The field's x dimension (meters)
-     * @param fieldy   The field's y dimension (meters)
+     * @param xCells      The number of cells on the x axis
+     * @param yCells      The number of cells on the y axis
+     * @param edges       The edges to use when generating the possible edges
+     * @param vertices    The vertices to use when generating the possible edges
+     * @param fieldx      The field's x dimension (meters)
+     * @param fieldy      The field's y dimension (meters)
+     * @param snapInField Whether to snap the vertices to inside the field
      */
     public Grid(int xCells, int yCells, ArrayList<Edge> edges, ArrayList<Vertex> vertices, double fieldx,
-            double fieldy) {
+            double fieldy, boolean snapInField) {
+        this.snapInField = snapInField;
         GridCell.xSize = (fieldx - Map.originx) / (double) xCells;
         GridCell.ySize = (fieldy - Map.originy) / (double) yCells;
         GridCell.recomputeVectors();
@@ -60,15 +65,28 @@ public class Grid {
     // long totalTimeAverage = 0;
     // int iterations = 0;
 
-    // TODO: Clamp the x and y values to the grid size
     /**
      * Gets the {@link GridCellPair} for the given vertices and caches it
      * 
      * @param a The first vertex
      * @param b The second vertex
      * @return The {@link GridCellPair} for the given vertices
+     * @throws ImpossiblePathException If the vertices are not in the field
      */
-    public GridCellPair getCellPairOf(Vertex a, Vertex b) {
+    public GridCellPair getCellPairOf(Vertex a, Vertex b) throws ImpossiblePathException {
+        return getCellPairOf(a, b, false);
+    }
+
+    /**
+     * Gets the {@link GridCellPair} for the given vertices and caches it
+     * 
+     * @param a                The first vertex
+     * @param b                The second vertex
+     * @param forceSnapInField Whether to force the vertices to snap to the grid
+     * @return The {@link GridCellPair} for the given vertices
+     * @throws ImpossiblePathException If the vertices are not in the field
+     */
+    public GridCellPair getCellPairOf(Vertex a, Vertex b, boolean forceSnapInField) throws ImpossiblePathException {
         // iterations++;
         // long startTime = System.nanoTime();
         int x = a.gridX;
@@ -78,6 +96,11 @@ public class Grid {
         if (a.gridX == -1) {
             x = (int) Math.floor(a.x * GridCell.xSizeDividend);
             y = (int) Math.floor(a.y * GridCell.ySizeDividend);
+            int clampedX = MathUtil.clamp(x, 0, cells.length - 1);
+            int clampedY = MathUtil.clamp(y, 0, cells[0].length - 1);
+            if ((!snapInField && !forceSnapInField) && clampedX != x || clampedY != y) {
+                throw new ImpossiblePathException("Vertex " + a + " is not in the field");
+            }
             a.gridX = x;
             a.gridY = y;
         }

@@ -26,6 +26,7 @@ public class PathfinderBuilder {
     private double robotLength = 0.7;
     private double cornerCutDist = 0.01;
     private boolean profiling = false;
+    private boolean snapInField = false;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -213,6 +214,18 @@ public class PathfinderBuilder {
     }
 
     /**
+     * Sets whether or not to snap given points inside the field grid if they are
+     * outside of field bounds
+     * 
+     * @param snapInField Whether or not to snap in field, default false
+     * @return The builder
+     */
+    public PathfinderBuilder setSnapInField(boolean snapInField) {
+        this.snapInField = snapInField;
+        return this;
+    }
+
+    /**
      * Builds the {@link Pathfinder}
      * 
      * @return The {@link Pathfinder}
@@ -232,6 +245,7 @@ public class PathfinderBuilder {
         // clearance is the circumcircle radius of the robot
         double clearance = Math.sqrt(Math.pow(robotWidth, 2) + Math.pow(robotLength, 2)) / 2;
         return new Pathfinder(loadedField, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
-                injectPoints, normalizeCorners, searchAlgorithmType, precomputeGridX, precomputeGridY, profiling);
+                injectPoints, normalizeCorners, searchAlgorithmType, precomputeGridX, precomputeGridY, snapInField,
+                profiling);
     }
 }
