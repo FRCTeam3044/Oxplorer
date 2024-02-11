@@ -391,14 +391,16 @@ public class Pathfinder {
         path.setUnsnappedTarget(unsnappedTarget);
         if (processPath)
             path.processPath(snapMode);
-        long endTime = System.nanoTime();
-        long totalTime = endTime - startTime;
+        if (profiling) {
+            long endTime = System.nanoTime();
+            long totalTime = endTime - startTime;
+            double pathGenTime = totalTime / 1000000.0;
+            SmartDashboard.putNumber("Pathfinding Time (ms)", pathGenTime);
+        }
         // long snapTime = snapEndTime - startTime;
         // long visibilityTime = visibilityEndTime - snapEndTime;
         // long searchTime = searchEndTime - visibilityEndTime;
         // long processPathTime = endTime - searchEndTime;
-        double pathGenTime = totalTime / 1000000.0;
-        SmartDashboard.putNumber("Pathfinding Time (ms)", pathGenTime);
         // System.out.println("Snapping time: " + snapTime / 1000000.0 + "ms ("
         // + Math.round((snapTime / (double) totalTime) * 100) + "%)");
         // System.out.println("Visibility graph time: " + visibilityTime / 1000000.0 +
