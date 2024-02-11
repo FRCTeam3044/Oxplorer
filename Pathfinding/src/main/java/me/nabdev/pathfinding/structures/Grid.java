@@ -19,10 +19,13 @@ public class Grid {
      * @param yCells   The number of cells on the y axis
      * @param edges    The edges to use when generating the possible edges
      * @param vertices The vertices to use when generating the possible edges
+     * @param fieldx   The field's x dimension (meters)
+     * @param fieldy   The field's y dimension (meters)
      */
-    public Grid(int xCells, int yCells, ArrayList<Edge> edges, ArrayList<Vertex> vertices) {
-        GridCell.xSize = (Map.fieldx - Map.originx) / (double) xCells;
-        GridCell.ySize = (Map.fieldy - Map.originy) / (double) yCells;
+    public Grid(int xCells, int yCells, ArrayList<Edge> edges, ArrayList<Vertex> vertices, double fieldx,
+            double fieldy) {
+        GridCell.xSize = (fieldx - Map.originx) / (double) xCells;
+        GridCell.ySize = (fieldy - Map.originy) / (double) yCells;
         GridCell.recomputeVectors();
         cells = new GridCell[xCells][yCells];
         cellPairs = new GridCellPair[xCells][yCells][xCells][yCells];

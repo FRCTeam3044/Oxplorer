@@ -82,16 +82,19 @@ public class Map {
     /**
      * Create a new map with the given obstacles, vertices, and clearance parameter.
      * 
-     * @param obs        The obstacles.
-     * @param obVertices The vertices of the obstacles.
-     * @param obEdges    The edges of the obstacles.
-     * @param clearance  The clearance parameter to inflate the obstacles by.
-     * @param fieldx     The x dimension of the field (meters)
-     * @param fieldy     The y dimension of the field (meters)
+     * @param obs             The obstacles.
+     * @param obVertices      The vertices of the obstacles.
+     * @param obEdges         The edges of the obstacles.
+     * @param clearance       The clearance parameter to inflate the obstacles by.
+     * @param fieldx          The x dimension of the field (meters)
+     * @param fieldy          The y dimension of the field (meters)
+     * @param precomputeGridX The number of cells on the x axis for the precompute
+     *                        grid
+     * @param precomputeGridY The number of cells on the y axis for the precompute
+     *                        grid
      */
-    public Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, Pathfinder pathfinder,
-            double clearance,
-            double fieldx, double fieldy) {
+    public Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance,
+            double fieldx, double fieldy, int precomputeGridX, int precomputeGridY) {
         obstacleEdges = obEdges;
         obstacleVertices = obVertices;
         obstacles = obs;
@@ -106,10 +109,11 @@ public class Map {
         }
         // Uses vectors to make a list of points around the vertices of obstacles,
         // offset by the clearance parameter.
-        pathVerticesStatic = calculateStaticPathVertices(pathfinder.clearance);
+        pathVerticesStatic = calculateStaticPathVertices(clearance);
         checkPathVertices();
         ArrayList<Edge> validEdges = validObstacleEdges();
-        precomputeGrid = new Grid(pathfinder.precomputeGridX, pathfinder.precomputeGridY, validEdges, obstacleVertices);
+        precomputeGrid = new Grid(precomputeGridX, precomputeGridY, validEdges, obstacleVertices,
+                fieldx, fieldy);
         for (Vertex v : pathVerticesStatic) {
             v.gridX = (int) Math.floor(v.x / GridCell.xSize);
             v.gridY = (int) Math.floor(v.y / GridCell.ySize);
