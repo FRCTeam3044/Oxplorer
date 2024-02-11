@@ -117,7 +117,7 @@ public class FieldLoader {
     /**
      * Load a field from the resources folder
      * 
-     * @param field The field to load
+     * @param field         The field to load
      * @param cornerCutDist The distance to cut corners by
      * @return The field JSON
      */
@@ -130,7 +130,7 @@ public class FieldLoader {
     /**
      * Load a field from a file
      * 
-     * @param fieldPath The path to the field JSON file
+     * @param fieldPath     The path to the field JSON file
      * @param cornerCutDist The distance to cut corners by
      * @return The field JSON
      * @throws FileNotFoundException If the file does not exist
@@ -148,7 +148,7 @@ public class FieldLoader {
      * This method processes the raw field into a more usable format by adding the
      * edge table.
      * 
-     * @param rawField The raw field JSON
+     * @param rawField      The raw field JSON
      * @param cornerCutDist The distance to cut corners by
      * @return The processed field
      */
@@ -201,19 +201,20 @@ public class FieldLoader {
             }
             for (int j = 0; j < myVertices.size(); j++) {
                 boolean cutCorners = false;
-                if(rawObstacle.has("cutCorners")){
+                if (rawObstacle.has("cutCorners") && (cornerCutDist > 0)) {
                     cutCorners = rawObstacle.getBoolean("cutCorners");
                 }
-                if(cutCorners){
+                if (cutCorners) {
                     Vertex prevVertex;
                     Vertex nextVertex;
-                    if(j > 0){
-                        prevVertex = new Vertex(myVertices.get(j-1)[0], myVertices.get(j-1)[1]);
+                    if (j > 0) {
+                        prevVertex = new Vertex(myVertices.get(j - 1)[0], myVertices.get(j - 1)[1]);
                     } else {
-                        prevVertex = new Vertex(myVertices.get(myVertices.size()-1)[0], myVertices.get(myVertices.size()-1)[1]);
+                        prevVertex = new Vertex(myVertices.get(myVertices.size() - 1)[0],
+                                myVertices.get(myVertices.size() - 1)[1]);
                     }
-                    if(j < myVertices.size()-1){
-                        nextVertex = new Vertex(myVertices.get(j+1)[0], myVertices.get(j+1)[1]);
+                    if (j < myVertices.size() - 1) {
+                        nextVertex = new Vertex(myVertices.get(j + 1)[0], myVertices.get(j + 1)[1]);
                     } else {
                         nextVertex = new Vertex(myVertices.get(0)[0], myVertices.get(0)[1]);
                     }
@@ -225,8 +226,8 @@ public class FieldLoader {
                     Vertex newPrev = thisVertex.moveByVector(toPrev);
                     Vertex newNext = thisVertex.moveByVector(toNext);
 
-                    myProcessedVertices.add(new Double[] {newPrev.x, newPrev.y});
-                    myProcessedVertices.add(new Double[] {newNext.x, newNext.y});
+                    myProcessedVertices.add(new Double[] { newPrev.x, newPrev.y });
+                    myProcessedVertices.add(new Double[] { newNext.x, newNext.y });
                 } else {
                     myProcessedVertices.add(myVertices.get(j));
                 }
