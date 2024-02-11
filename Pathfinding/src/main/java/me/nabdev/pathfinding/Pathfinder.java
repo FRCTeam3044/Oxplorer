@@ -92,6 +92,7 @@ public class Pathfinder {
      * @param normalizeCorners    Whether or not to normalize distance between
      *                            corner points
      * @param searchAlgorithmType The search algorithm to use
+     * @param profiling           Whether or not to profile the pathfinding process
      */
     public Pathfinder(FieldData field, double pointSpacing, double cornerPointSpacing, double cornerDist,
             double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners,
