@@ -101,8 +101,10 @@ public class Grid {
             if ((!snapInField && !forceSnapInField) && clampedX != x || clampedY != y) {
                 throw new ImpossiblePathException("Vertex " + a + " is not in the field");
             }
-            a.gridX = clampedX;
-            a.gridY = clampedY;
+            x = clampedX;
+            y = clampedY;
+            a.gridX = x;
+            a.gridY = y;
         }
         if (b.gridX == -1) {
             x2 = (int) Math.floor(b.x * GridCell.xSizeDividend);
@@ -112,8 +114,10 @@ public class Grid {
             if ((!snapInField && !forceSnapInField) && clampedX2 != x || clampedY2 != y) {
                 throw new ImpossiblePathException("Vertex " + a + " is not in the field");
             }
-            b.gridX = clampedX2;
-            b.gridY = clampedY2;
+            x2 = clampedX2;
+            y2 = clampedY2;
+            b.gridX = x2;
+            b.gridY = y2;
         }
         // long endTime = System.nanoTime();
         // long arrayLookupStart = System.nanoTime();

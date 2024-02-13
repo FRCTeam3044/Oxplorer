@@ -2,6 +2,8 @@ package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /**
  * Represents all the obstacles on the map as well as the visibility graph that
  * the robot can use to navigate.
@@ -310,6 +312,7 @@ public class Map {
                 continue;
             if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
                     e.getVertexTwo(obstacleVertices))) {
+                SmartDashboard.putNumberArray("intersect edge", new Double[]{e.getVertexOne(obstacleVertices).x, e.getVertexOne(obstacleVertices).y, 0.0, e.getVertexTwo(obstacleVertices).x, e.getVertexTwo(obstacleVertices).y, 0.0});
                 intersect = true;
                 break;
             }
