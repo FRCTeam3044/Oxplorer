@@ -26,7 +26,7 @@ public class PathfinderBuilder {
     private double robotLength = 0.7;
     private double cornerCutDist = 0.01;
     private boolean profiling = false;
-    private boolean snapInField = false;
+    private boolean snapInField = true;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -217,7 +217,7 @@ public class PathfinderBuilder {
      * Sets whether or not to snap given points inside the field grid if they are
      * outside of field bounds
      * 
-     * @param snapInField Whether or not to snap in field, default false
+     * @param snapInField Whether or not to snap in field, default true
      * @return The builder
      */
     public PathfinderBuilder setSnapInField(boolean snapInField) {

@@ -101,14 +101,19 @@ public class Grid {
             if ((!snapInField && !forceSnapInField) && clampedX != x || clampedY != y) {
                 throw new ImpossiblePathException("Vertex " + a + " is not in the field");
             }
-            a.gridX = x;
-            a.gridY = y;
+            a.gridX = clampedX;
+            a.gridY = clampedY;
         }
         if (b.gridX == -1) {
             x2 = (int) Math.floor(b.x * GridCell.xSizeDividend);
             y2 = (int) Math.floor(b.y * GridCell.ySizeDividend);
-            b.gridX = x2;
-            b.gridY = y2;
+            int clampedX2 = MathUtil.clamp(x2, 0, cells.length - 1);
+            int clampedY2 = MathUtil.clamp(y2, 0, cells[0].length - 1);
+            if ((!snapInField && !forceSnapInField) && clampedX2 != x || clampedY2 != y) {
+                throw new ImpossiblePathException("Vertex " + a + " is not in the field");
+            }
+            b.gridX = clampedX2;
+            b.gridY = clampedY2;
         }
         // long endTime = System.nanoTime();
         // long arrayLookupStart = System.nanoTime();
