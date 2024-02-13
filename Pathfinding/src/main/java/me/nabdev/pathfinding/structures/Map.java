@@ -2,6 +2,8 @@ package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /**
  * Represents all the obstacles on the map as well as the visibility graph that
  * the robot can use to navigate.
@@ -45,10 +47,6 @@ public class Map {
     ArrayList<Edge> obstacleEdges;
 
     /**
-     * The edges of obstacles that are inside of the field bounds.
-     */
-    ArrayList<Edge> validObstacleEdges = new ArrayList<>();
-    /**
      * The obstacles themselves.
      */
     ArrayList<Obstacle> obstacles;
@@ -79,18 +77,25 @@ public class Map {
      */
     ArrayList<Edge> neighbors;
 
+    Grid precomputeGrid;
+
     /**
      * Create a new map with the given obstacles, vertices, and clearance parameter.
      * 
-     * @param obs        The obstacles.
-     * @param obVertices The vertices of the obstacles.
-     * @param obEdges    The edges of the obstacles.
-     * @param clearance  The clearance parameter to inflate the obstacles by.
-     * @param fieldx     The x dimension of the field (meters)
-     * @param fieldy     The y dimension of the field (meters)
+     * @param obs             The obstacles.
+     * @param obVertices      The vertices of the obstacles.
+     * @param obEdges         The edges of the obstacles.
+     * @param clearance       The clearance parameter to inflate the obstacles by.
+     * @param fieldx          The x dimension of the field (meters)
+     * @param fieldy          The y dimension of the field (meters)
+     * @param precomputeGridX The number of cells on the x axis for the precompute
+     *                        grid
+     * @param precomputeGridY The number of cells on the y axis for the precompute
+     *                        grid
+     * @param snapInField     Whether or not to snap the grid to the field bounds
      */
     public Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance,
-            double fieldx, double fieldy) {
+            double fieldx, double fieldy, int precomputeGridX, int precomputeGridY, boolean snapInField) {
         obstacleEdges = obEdges;
         obstacleVertices = obVertices;
         obstacles = obs;
@@ -107,7 +112,13 @@ public class Map {
         // offset by the clearance parameter.
         pathVerticesStatic = calculateStaticPathVertices(clearance);
         checkPathVertices();
-        checkObstacleEdges();
+        ArrayList<Edge> validEdges = validObstacleEdges();
+        precomputeGrid = new Grid(precomputeGridX, precomputeGridY, validEdges, obstacleVertices,
+                fieldx, fieldy, snapInField);
+        for (Vertex v : pathVerticesStatic) {
+            v.gridX = (int) Math.floor(v.x / GridCell.xSize);
+            v.gridY = (int) Math.floor(v.y / GridCell.ySize);
+        }
         // Calculate the edges between these path vertices, so that the robot can't
         // phase through obstacles.
         calculateStaticNeighbors();
@@ -133,15 +144,19 @@ public class Map {
      * bounds, and if they aren't add them to the validObstacleEdges list.
      * This currently only covers some cases, but is good enough for now.
      */
-    private void checkObstacleEdges() {
+    private ArrayList<Edge> validObstacleEdges() {
+        // We remove edges that are completely outside of the field bounds.
+        ArrayList<Edge> validObstacleEdges = new ArrayList<>();
         for (Edge e : obstacleEdges) {
-            Vertex v1 = obstacleVertices.get(e.getVertexOne());
-            Vertex v2 = obstacleVertices.get(e.getVertexTwo());
+            Vertex v1 = e.getVertexOne(obstacleVertices);
+            Vertex v2 = e.getVertexTwo(obstacleVertices);
             if (!((v1.x < originx && v2.x < originx) || (v1.x > fieldx && v2.x > fieldx)
                     || (v1.y < originy && v2.y < originy) || (v1.y > fieldy && v2.y > fieldy))) {
                 validObstacleEdges.add(e);
             }
         }
+        return validObstacleEdges;
+
     }
 
     /**
@@ -222,7 +237,11 @@ public class Map {
     private void calculateStaticNeighbors() {
         for (int cur = 0; cur < pathVerticesStatic.size(); cur++) {
             for (int i = cur; i < pathVerticesStatic.size(); i++) {
-                lineOfSight(cur, i, neighborsStatic, pathVerticesStatic);
+                try {
+                    lineOfSight(cur, i, neighborsStatic, pathVerticesStatic, true);
+                } catch (ImpossiblePathException e) {
+                    e.printStackTrace();
+                }
             }
         }
         for (Edge e : neighborsStatic) {
@@ -240,8 +259,10 @@ public class Map {
      * @param reset              Whether or not to reset the path vertices and
      *                           neighbors to their static values (For when
      *                           generating a new path)
+     * @throws ImpossiblePathException If a path is impossible to generate.
      */
-    public void calculateDynamicNeighbors(ArrayList<Vertex> additionalVertices, boolean reset) {
+    public void calculateDynamicNeighbors(ArrayList<Vertex> additionalVertices, boolean reset)
+            throws ImpossiblePathException {
         if (reset || pathVertices == null)
             pathVertices = new ArrayList<>(pathVerticesStatic);
         if (reset || neighbors == null)
@@ -258,7 +279,7 @@ public class Map {
 
         for (int cur = pathVertices.size() - additionalVertices.size(); cur < pathVertices.size(); cur++) {
             for (int i = 0; i < pathVertices.size(); i++) {
-                lineOfSight(cur, i, dynamicNeighbors, pathVertices);
+                lineOfSight(cur, i, dynamicNeighbors, pathVertices, false);
             }
         }
         for (Edge e : dynamicNeighbors) {
@@ -270,7 +291,9 @@ public class Map {
         neighbors.addAll(dynamicNeighbors);
     }
 
-    private void lineOfSight(int cur, int i, ArrayList<Edge> neighborArray, ArrayList<Vertex> pathVerticesArray) {
+    private void lineOfSight(int cur, int i, ArrayList<Edge> neighborArray, ArrayList<Vertex> pathVerticesArray,
+            boolean forceSnapInField)
+            throws ImpossiblePathException {
         if (cur == i)
             return;
 
@@ -281,12 +304,15 @@ public class Map {
             return;
 
         boolean intersect = false;
+        ArrayList<Edge> possibleEdges = precomputeGrid.getCellPairOf(curVertex, iVertex,
+                forceSnapInField).possibleEdges;
 
-        for (Edge e : validObstacleEdges) {
+        for (Edge e : possibleEdges) {
             if (!e.isActive())
                 continue;
             if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
                     e.getVertexTwo(obstacleVertices))) {
+                SmartDashboard.putNumberArray("intersect edge", new Double[]{e.getVertexOne(obstacleVertices).x, e.getVertexOne(obstacleVertices).y, 0.0, e.getVertexTwo(obstacleVertices).x, e.getVertexTwo(obstacleVertices).y, 0.0});
                 intersect = true;
                 break;
             }

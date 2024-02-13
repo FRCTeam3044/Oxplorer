@@ -20,10 +20,13 @@ public class PathfinderBuilder {
     private boolean injectPoints = true;
     private boolean normalizeCorners = true;
     private SearchAlgorithmType searchAlgorithmType = SearchAlgorithmType.ASTAR;
+    private int precomputeGridX = 8;
+    private int precomputeGridY = 4;
     private double robotWidth = 0.7;
     private double robotLength = 0.7;
     private double cornerCutDist = 0.01;
     private boolean profiling = false;
+    private boolean snapInField = true;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -166,6 +169,28 @@ public class PathfinderBuilder {
     }
 
     /**
+     * Sets the number of cells on the x axis to use when precomputing the grid
+     * 
+     * @param precomputeGridX The number of cells on the x axis, default 8
+     * @return The builder
+     */
+    public PathfinderBuilder setPrecomputeGridX(int precomputeGridX) {
+        this.precomputeGridX = precomputeGridX;
+        return this;
+    }
+
+    /**
+     * Sets the number of cells on the y axis to use when precomputing the grid
+     * 
+     * @param precomputeGridY The number of cells on the y axis, default 4
+     * @return The builder
+     */
+    public PathfinderBuilder setPrecomputeGridY(int precomputeGridY) {
+        this.precomputeGridY = precomputeGridY;
+        return this;
+    }
+
+    /**
      * Sets the corner cut distance
      * 
      * @param cornerCutDist The corner cut distance, default 0.01 (meters)
@@ -189,6 +214,18 @@ public class PathfinderBuilder {
     }
 
     /**
+     * Sets whether or not to snap given points inside the field grid if they are
+     * outside of field bounds
+     * 
+     * @param snapInField Whether or not to snap in field, default true
+     * @return The builder
+     */
+    public PathfinderBuilder setSnapInField(boolean snapInField) {
+        this.snapInField = snapInField;
+        return this;
+    }
+
+    /**
      * Builds the {@link Pathfinder}
      * 
      * @return The {@link Pathfinder}
@@ -208,6 +245,7 @@ public class PathfinderBuilder {
         // clearance is the circumcircle radius of the robot
         double clearance = Math.sqrt(Math.pow(robotWidth, 2) + Math.pow(robotLength, 2)) / 2;
         return new Pathfinder(loadedField, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
-                injectPoints, normalizeCorners, searchAlgorithmType, profiling);
+                injectPoints, normalizeCorners, searchAlgorithmType, precomputeGridX, precomputeGridY, snapInField,
+                profiling);
     }
 }
