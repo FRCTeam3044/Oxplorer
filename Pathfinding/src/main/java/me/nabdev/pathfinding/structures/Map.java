@@ -162,19 +162,19 @@ public class Map {
             // Calculate the center of the obstacle.
             double avgX = 0;
             double avgY = 0;
-            for (Vertex v : obs.myVertices) {
+            for (Vertex v : obs.getVertices()) {
                 avgX += v.x;
                 avgY += v.y;
             }
-            avgX /= obs.myVertices.size();
-            avgY /= obs.myVertices.size();
+            avgX /= obs.getVertices().size();
+            avgY /= obs.getVertices().size();
             Vertex center = new Vertex(avgX, avgY);
 
-            for (Vertex v : obs.myVertices) {
+            for (Vertex v : obs.getVertices()) {
                 // Get the two vertices connected to the current vertex.
                 Vertex connection1 = null;
                 Vertex connection2 = null;
-                for (Edge e : obs.edges) {
+                for (Edge e : obs.getEdges()) {
                     int contains = e.containsVertex(v, obstacleVertices);
                     if (contains != -1) {
                         if (connection1 == null) {

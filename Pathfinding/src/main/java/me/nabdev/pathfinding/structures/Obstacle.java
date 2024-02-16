@@ -2,6 +2,8 @@ package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
 
+import org.json.JSONArray;
+
 import me.nabdev.pathfinding.modifiers.ModifierCollection;
 
 /**
@@ -14,12 +16,12 @@ public class Obstacle {
      * vertices array.
      * MUST BE IN CLOCKWISE ORDER! (This is important for the isInside method)
      */
-    public ArrayList<Edge> edges;
+    private ArrayList<Edge> edges;
     /**
      * The vertices that make up the obstacle.
      * MUST BE IN CLOCKWISE ORDER! (This is important for the isInside method)
      */
-    public ArrayList<Vertex> myVertices = new ArrayList<Vertex>();
+    private ArrayList<Vertex> myVertices = new ArrayList<Vertex>();
 
     /**
      * The id of the obstacle. This will be used to add special behavior to
@@ -50,6 +52,25 @@ public class Obstacle {
         this.vertices = vertices;
         this.id = id;
         this.modifiers = modifiers;
+        for (Edge edge : edges) {
+            myVertices.add(vertices.get(edge.getVertexOne()));
+        }
+    }
+
+    /**
+     * Creates a new obstacle with the always active modifier.
+     * 
+     * @param vertices  All vertices on the map.
+     * @param edges     The edges that make up the obstacle.
+     * @param id        The id of the obstacle.
+     */
+    public Obstacle(ArrayList<Vertex> vertices, ArrayList<Edge> edges, String id) {
+        this.edges = edges;
+        this.vertices = vertices;
+        this.id = id;
+        JSONArray modifiersArr = new JSONArray();
+        modifiersArr.put("ALWAYS_ACTIVE");
+        this.modifiers = new ModifierCollection(modifiersArr);
         for (Edge edge : edges) {
             myVertices.add(vertices.get(edge.getVertexOne()));
         }
@@ -209,5 +230,54 @@ public class Obstacle {
             }
         }
         return true;
+    }
+
+    /**
+     * Create and initializes a new obstacle from the given vertices with the
+     * AlWAYS_ACTIVE modifier. Generates the edge table automatically.
+     * 
+     * @param vertices The list of vertices in the obstacle.
+     * @return The new obstacle.
+     */
+    public static Obstacle createObstacle(Vertex... vertices) {
+        ArrayList<Vertex> vertexList = new ArrayList<Vertex>();
+        ArrayList<Edge> edges = new ArrayList<Edge>();
+        for (int j = 0; j < vertices.length; j++) {
+            Vertex vertex = vertices[j];
+            vertexList.add(vertex);
+
+            if (j != vertices.length - 1) {
+                edges.add(new Edge(vertexList.size() - 1, vertexList.size()));
+            } else {
+                edges.add(new Edge(vertexList.size() - 1, vertexList.size() - vertices.length));
+            }
+        }
+        Obstacle obs = new Obstacle(vertexList, edges, "test");
+        obs.initialize(vertexList);
+        return obs;
+    }
+
+    /**
+     * Get all vertices this obstacle knows about. (The entire field, if it is a field obstacle)
+     * @return The master list of vertices.
+     */
+    public ArrayList<Vertex> getMasterVertices() {
+        return vertices;
+    }
+
+    /**
+     * Get all vertices in this obstacle.
+     * @return The list of vertices.
+     */
+    public ArrayList<Vertex> getVertices() {
+        return myVertices;
+    }
+
+    /**
+     * Get all edges in this obstacle.
+     * @return
+     */
+    public ArrayList<Edge> getEdges() {
+        return edges;
     }
 }
