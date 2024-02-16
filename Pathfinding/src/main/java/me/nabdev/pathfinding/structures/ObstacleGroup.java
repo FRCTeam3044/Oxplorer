@@ -41,7 +41,7 @@ public class ObstacleGroup {
      * @param pos The vertex to calculate the nearest point to.
      * @return The nearest point on the obstacles to the given vertex.
      */
-    public Vertex getClosestPoint(Vertex pos) {
+    public Vertex calculateNearestPoint(Vertex pos) {
         Vertex closest = null;
         double minDistance = Double.MAX_VALUE;
         for (Obstacle obstacle : obstacles) {
@@ -53,5 +53,14 @@ public class ObstacleGroup {
             }
         }
         return closest;
+    }
+
+    /**
+     * Returns the obstacles in the group.
+     * 
+     * @return The obstacles in the group.
+     */
+    public ArrayList<Obstacle> getObstacles() {
+        return obstacles;
     }
 }
