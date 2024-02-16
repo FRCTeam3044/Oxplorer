@@ -50,9 +50,9 @@ public class Obstacle {
         this.vertices = vertices;
         this.id = id;
         this.modifiers = modifiers;
-            for (Edge edge : edges) {
-                myVertices.add(vertices.get(edge.getVertexOne()));
-            }
+        for (Edge edge : edges) {
+            myVertices.add(vertices.get(edge.getVertexOne()));
+        }
     }
 
     /**
@@ -120,12 +120,13 @@ public class Obstacle {
     }
 
     /**
-     * Calculates the nearest point on the obstacle to the given vertex.
+     * Calculates the nearest point on the obstacle to the given vertex, assuming
+     * the given vertex is inside the obstacle
      * 
      * @param v The vertex to calculate the nearest point to.
      * @return The nearest point on the obstacle to the given vertex.
      */
-    public Vertex calculateNearestPoint(Vertex v) {
+    public Vertex calculateNearestPointFromInside(Vertex v) {
         double[] distances = new double[edges.size()];
         Vertex[] closestPoints = new Vertex[edges.size()];
         for (int i = 0; i < edges.size(); i++) {
@@ -148,6 +149,44 @@ public class Obstacle {
         Vector normalizedFinalVector = finalVector.normalize().scale(0.001);
 
         return v.moveByVector(finalVector.add(normalizedFinalVector));
+    }
+
+    /**
+     * Calculates the nearest point on the obstacle to the given vertex.
+     * 
+     * @param v The vertex to calculate the nearest point to.
+     * @return The nearest point on the obstacle to the given vertex.
+     */
+    public Vertex calculateNearestPoint(Vertex v) {
+        double[] distances = new double[edges.size()];
+        Vertex[] closestPoints = new Vertex[edges.size()];
+        for (int i = 0; i < edges.size(); i++) {
+            Edge edge = edges.get(i);
+            Vertex vertexOne = vertices.get(edge.getVertexOne());
+            Vertex vertexTwo = vertices.get(edge.getVertexTwo());
+            Vector edgeVector = vertexTwo.createVectorFrom(vertexOne);
+            Vector vect = v.createVectorFrom(vertexOne);
+            double dot = vect.dotProduct(edgeVector.normalize());
+
+            if (dot < 0) {
+                closestPoints[i] = vertexOne;
+            } else if (dot > edgeVector.magnitude()) {
+                closestPoints[i] = vertexTwo;
+            } else {
+                closestPoints[i] = vertexOne.moveByVector(edgeVector.normalize().scale(dot));
+            }
+
+            distances[i] = v.distance(closestPoints[i]);
+        }
+
+        int lowest = 0;
+        for (int i = 1; i < edges.size(); i++) {
+            if (distances[i] < distances[lowest]) {
+                lowest = i;
+            }
+        }
+
+        return closestPoints[lowest];
     }
 
     /**

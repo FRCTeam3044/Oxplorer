@@ -432,7 +432,7 @@ public class Pathfinder {
                 throw new ImpossiblePathException("Failed to snap point " + point);
             }
             for (Obstacle obs : targetObs) {
-                tempNearestVertex = obs.calculateNearestPoint(tempNearestVertex);
+                tempNearestVertex = obs.calculateNearestPointFromInside(tempNearestVertex);
             }
             targetObs = Obstacle.isRobotInObstacle(obstacles, tempNearestVertex);
             i++;
