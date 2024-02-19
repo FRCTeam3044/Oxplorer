@@ -191,6 +191,8 @@ public class Pathfinder {
                 new ArrayList<Vertex>(), true);
     }
 
+    
+
     /**
      * Snaps the start and target vertices according to the snap mode and generates
      * the best path.
@@ -223,6 +225,25 @@ public class Pathfinder {
      */
     public Path generatePath(Pose2d start, Pose2d target, PathfindSnapMode snapMode) throws ImpossiblePathException {
         return generatePathInner(new Vertex(start), new Vertex(target), snapMode, new ArrayList<Vertex>(), true);
+    }
+
+    /**
+     * Snaps the start and target vertices to be outside of obstacles and generates
+     * the best path that passes through all waypoints.
+     * Defaults to PathfindSnapMode.SNAP_ALL
+     * 
+     * @param start  The starting pose
+     * @param target The target waypoints
+     * 
+     * @return A trajectory from the starting vertex passing through all waypoints
+     *         that does not intersect any obstacles
+     * 
+     * @throws ImpossiblePathException If no path can be found
+     */
+    public Path generatePath(Pose2d start, ArrayList<Pose2d> target)
+            throws ImpossiblePathException {
+        return generatePathInner(new Vertex(start), Vertex.fromPose2dArray(target), PathfindSnapMode.SNAP_ALL,
+                new ArrayList<Vertex>());
     }
 
     /**
