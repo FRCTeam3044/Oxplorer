@@ -35,7 +35,7 @@ public abstract class ObstacleModifier {
         /**
          * Obstacle is active during endgame (last 20 seconds)
          */
-        ACTIVE_ENGAME,
+        ACTIVE_ENDGAME,
         /**
          * Obstacle is active during autonomous (first 15 seconds)
          */
@@ -75,12 +75,12 @@ public abstract class ObstacleModifier {
         switch (type) {
             case ALWAYS_ACTIVE:
                 return new AlwaysActiveModifier();
-            case ACTIVE_ENGAME:
-                break;
+            case ACTIVE_ENDGAME:
+                return new ActiveEndgameModifier();
             case ACTIVE_AUTO:
-                break;
+                return new ActiveAutoModifier();
             case ACTIVE_TELE:
-                break;
+                return new ActiveTeleModifier();
             case ACTIVE_MY_ALLIANCE:
                 return new ActiveMyAllianceModifier(collection);
             case ACTIVE_OTHER_ALLIANCE:

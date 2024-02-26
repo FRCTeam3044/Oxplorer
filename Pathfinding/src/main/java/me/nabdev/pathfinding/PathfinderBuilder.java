@@ -24,6 +24,7 @@ public class PathfinderBuilder {
     private double robotLength = 0.7;
     private double cornerCutDist = 0.01;
     private boolean profiling = false;
+    private double endgameTime = 25;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -189,6 +190,23 @@ public class PathfinderBuilder {
     }
 
     /**
+     * Sets the endgame time (time in seconds when the robot should start to
+     * consider endgame obstacles). Note that this uses
+     * DriverStation.getMatchTime(), so it is not perfectly accurate, and does not
+     * work properly when teleop/auto is manually enabled from the driver station
+     * (practice mode works fine)
+     * 
+     * It is recommended to set this to 0 when testing in teleop.
+     * 
+     * @param endgameTime The endgame time, default 25 (seconds)
+     * @return The builder
+     */
+    public PathfinderBuilder setEndgameTime(double endgameTime) {
+        this.endgameTime = endgameTime;
+        return this;
+    }
+
+    /**
      * Builds the {@link Pathfinder}
      * 
      * @return The {@link Pathfinder}
@@ -208,6 +226,6 @@ public class PathfinderBuilder {
         // clearance is the circumcircle radius of the robot
         double clearance = Math.sqrt(Math.pow(robotWidth, 2) + Math.pow(robotLength, 2)) / 2;
         return new Pathfinder(loadedField, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
-                injectPoints, normalizeCorners, searchAlgorithmType, profiling);
+                injectPoints, normalizeCorners, searchAlgorithmType, profiling, endgameTime);
     }
 }

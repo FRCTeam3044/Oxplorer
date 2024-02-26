@@ -60,9 +60,9 @@ public class Obstacle {
     /**
      * Creates a new obstacle with the always active modifier.
      * 
-     * @param vertices  All vertices on the map.
-     * @param edges     The edges that make up the obstacle.
-     * @param id        The id of the obstacle.
+     * @param vertices All vertices on the map.
+     * @param edges    The edges that make up the obstacle.
+     * @param id       The id of the obstacle.
      */
     public Obstacle(ArrayList<Vertex> vertices, ArrayList<Edge> edges, String id) {
         this.edges = edges;
@@ -258,7 +258,9 @@ public class Obstacle {
     }
 
     /**
-     * Get all vertices this obstacle knows about. (The entire field, if it is a field obstacle)
+     * Get all vertices this obstacle knows about. (The entire field, if it is a
+     * field obstacle)
+     * 
      * @return The master list of vertices.
      */
     public ArrayList<Vertex> getMasterVertices() {
@@ -267,6 +269,7 @@ public class Obstacle {
 
     /**
      * Get all vertices in this obstacle.
+     * 
      * @return The list of vertices.
      */
     public ArrayList<Vertex> getVertices() {
@@ -275,7 +278,8 @@ public class Obstacle {
 
     /**
      * Get all edges in this obstacle.
-     * @return
+     * 
+     * @return The list of edges.
      */
     public ArrayList<Edge> getEdges() {
         return edges;

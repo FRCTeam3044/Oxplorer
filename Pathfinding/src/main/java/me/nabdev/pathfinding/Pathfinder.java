@@ -59,6 +59,14 @@ public class Pathfinder {
     private double cornerSplitPercent;
 
     /**
+     * Time in seconds when the robot should start to consider
+     * endgame obstacles. Note that this uses DriverStation.getMatchTime(), so it
+     * is not perfectly accurate, and does not work properly when teleop/auto is
+     * manually enabled from the driver station (practice mode works fine)
+     */
+    private static double endgameTime;
+
+    /**
      * Whether or not to profile the pathfinding process
      */
     private boolean profiling;
@@ -93,10 +101,12 @@ public class Pathfinder {
      *                            corner points
      * @param searchAlgorithmType The search algorithm to use
      * @param profiling           Whether or not to profile the pathfinding process
+     * @param endgameTime         The time in seconds when the robot should start to
+     *                            consider endgame obstacles
      */
     public Pathfinder(FieldData field, double pointSpacing, double cornerPointSpacing, double cornerDist,
             double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners,
-            SearchAlgorithmType searchAlgorithmType, boolean profiling) {
+            SearchAlgorithmType searchAlgorithmType, boolean profiling, double endgameTime) {
         this.pointSpacing = pointSpacing;
         this.cornerPointSpacing = cornerPointSpacing;
         this.cornerDist = cornerDist;
@@ -106,6 +116,7 @@ public class Pathfinder {
         this.normalizeCorners = normalizeCorners;
         this.searchAlgorithmType = searchAlgorithmType;
         this.profiling = profiling;
+        Pathfinder.endgameTime = endgameTime;
 
         // This is essentially a vertex and edge table, with some extra information.
         // Vertices are stored as an array [x, y]
@@ -134,6 +145,7 @@ public class Pathfinder {
 
         for (Obstacle obs : obstacles) {
             obs.initialize(map.getPathVerticesStatic());
+            obs.modifiers.invalidateCache();
         }
     }
 
@@ -190,8 +202,6 @@ public class Pathfinder {
         return generatePathInner(new Vertex(start), new Vertex(target), PathfindSnapMode.SNAP_ALL,
                 new ArrayList<Vertex>(), true);
     }
-
-    
 
     /**
      * Snaps the start and target vertices according to the snap mode and generates
@@ -372,6 +382,11 @@ public class Pathfinder {
     private Path generatePathInner(Vertex start, Vertex target, PathfindSnapMode snapMode,
             ArrayList<Vertex> dynamicVertices, boolean processPath) throws ImpossiblePathException {
         long startTime = System.nanoTime();
+        // TODO: Handle obstacle cache invalidation better, only invalidating when
+        // necessary (on match phase transitions)
+        for (Obstacle obs : obstacles) {
+            obs.modifiers.invalidateCache();
+        }
         // Snapping is done because the center of the robot can be inside of the
         // inflated obstacle edges
         // In the case where this happened the start needs to be snapped outside
@@ -669,6 +684,15 @@ public class Pathfinder {
     };
 
     /**
+     * Time in seconds when the robot should start to consider endgame obstacles.
+     * 
+     * @return The time in seconds when the robot should start to consider endgame
+     */
+    public static double getEndgameTime() {
+        return endgameTime;
+    }
+
+    /**
      * Space between injected points on straightaways in the path (meters)
      * 
      * @param newPointSpacing The new space between injected points on straightaways
@@ -752,4 +776,14 @@ public class Pathfinder {
     public void setProfiling(boolean newProfiling) {
         profiling = newProfiling;
     };
+
+    /**
+     * Time in seconds when the robot should start to consider endgame obstacles.
+     * 
+     * @param newEndgameTime The new time in seconds when the robot should start to
+     *                       consider endgame obstacles
+     */
+    public static void setEndgameTime(double newEndgameTime) {
+        endgameTime = newEndgameTime;
+    }
 }
