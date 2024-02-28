@@ -62,7 +62,12 @@
     },
     {
       "id": "Left Auto Barrier",
-      "modifiers": ["ACTIVE_OTHER_ALLIANCE", "BLUE_ALLIANCE", "ACTIVE_AUTO"],
+      "modifiers": [
+        "ACTIVE_OTHER_ALLIANCE",
+        "BLUE_ALLIANCE",
+        "ACTIVE_AUTO",
+        "ZONE_MODIFIER"
+      ],
       "vertices": [
         [0, 8.21],
         [8.275, 8.21],
@@ -129,7 +134,12 @@
     },
     {
       "id": "Right Auto Barrier",
-      "modifiers": ["ACTIVE_OTHER_ALLIANCE", "RED_ALLIANCE", "ACTIVE_AUTO"],
+      "modifiers": [
+        "ACTIVE_OTHER_ALLIANCE",
+        "RED_ALLIANCE",
+        "ACTIVE_AUo",
+        "ZONE_MODIFIER"
+      ],
       "vertices": [
         [8.275, 8.21],
         [16.55, 8.21],

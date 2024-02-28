@@ -3,6 +3,7 @@ package me.nabdev.pathfinding;
 import me.nabdev.pathfinding.algorithms.Astar;
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm;
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
+import me.nabdev.pathfinding.modifiers.ObstacleModifier.ObstacleModifierTypes;
 import me.nabdev.pathfinding.structures.Edge;
 import me.nabdev.pathfinding.structures.ImpossiblePathException;
 import me.nabdev.pathfinding.structures.Map;
@@ -490,6 +491,7 @@ public class Pathfinder {
      */
     private Vertex snap(Vertex point) throws ImpossiblePathException {
         ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point);
+        targetObs.removeIf(obs -> obs.modifiers.hasModifier(ObstacleModifierTypes.ZONE_MODIFIER));
         Vertex tempNearestVertex = point;
         int i = 0;
         while (targetObs.size() > 0) {

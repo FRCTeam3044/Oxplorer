@@ -122,7 +122,7 @@ public class Map {
         for (Vertex v : pathVerticesStatic) {
             if (v.x < originx || v.x > fieldx || v.y < originy || v.y > fieldy) {
                 v.validVisiblity = false;
-            } else if (Obstacle.isRobotInObstacle(obstacles, v).size() > 0) {
+            } else if (Obstacle.isRobotInObstacle(obstacles, v, true).size() > 0) {
                 v.validVisiblity = false;
             }
         }

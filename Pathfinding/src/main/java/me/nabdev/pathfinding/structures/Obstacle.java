@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 
 import me.nabdev.pathfinding.modifiers.ModifierCollection;
+import me.nabdev.pathfinding.modifiers.ObstacleModifier.ObstacleModifierTypes;
 
 /**
  * Represents an obstacle on the map. An obstacle is a collection of vertices
@@ -99,8 +100,22 @@ public class Obstacle {
      * @return The list of obstacles that the vertex is inside, empty if none.
      */
     public static ArrayList<Obstacle> isRobotInObstacle(ArrayList<Obstacle> obstacles, Vertex vertex) {
+        return isRobotInObstacle(obstacles, vertex, false);
+    }
+
+    /**
+     * Detect if a vertex is inside any obstacle in the list.
+     * 
+     * @param obstacles The list of obstacles to check.
+     * @param vertex    The vertex to check.
+     * @param notZone   If true, ignores obstacles with the zone modifier.
+     * @return The list of obstacles that the vertex is inside, empty if none.
+     */
+    public static ArrayList<Obstacle> isRobotInObstacle(ArrayList<Obstacle> obstacles, Vertex vertex, boolean notZone) {
         ArrayList<Obstacle> inside = new ArrayList<Obstacle>();
         for (Obstacle obs : obstacles) {
+            if (notZone && obs.modifiers.hasModifier(ObstacleModifierTypes.ZONE_MODIFIER))
+                continue;
             if (obs.isInside(vertex)) {
                 inside.add(obs);
             }
