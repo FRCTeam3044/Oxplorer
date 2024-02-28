@@ -180,7 +180,6 @@ public class Pathfinder {
         if (shouldInvalidate) {
             for (Obstacle obs : obstacles) {
                 obs.modifiers.invalidateCache();
-                obs.iHateProgramming();
             }
             map.calculateStaticNeighbors();
         }
@@ -419,6 +418,7 @@ public class Pathfinder {
     private Path generatePathInner(Vertex start, Vertex target, PathfindSnapMode snapMode,
             ArrayList<Vertex> dynamicVertices, boolean processPath) throws ImpossiblePathException {
         long startTime = System.nanoTime();
+        periodic();
         // Snapping is done because the center of the robot can be inside of the
         // inflated obstacle edges
         // In the case where this happened the start needs to be snapped outside
@@ -492,8 +492,7 @@ public class Pathfinder {
      * @return
      */
     private Vertex snap(Vertex point) throws ImpossiblePathException {
-        ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point);
-        targetObs.removeIf(obs -> obs.modifiers.hasModifier(ObstacleModifierTypes.ZONE_MODIFIER));
+        ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point, true);
         Vertex tempNearestVertex = point;
         int i = 0;
         while (targetObs.size() > 0) {
@@ -503,7 +502,7 @@ public class Pathfinder {
             for (Obstacle obs : targetObs) {
                 tempNearestVertex = obs.calculateNearestPointFromInside(tempNearestVertex);
             }
-            targetObs = Obstacle.isRobotInObstacle(obstacles, tempNearestVertex);
+            targetObs = Obstacle.isRobotInObstacle(obstacles, tempNearestVertex, true);
             i++;
         }
         return tempNearestVertex;
