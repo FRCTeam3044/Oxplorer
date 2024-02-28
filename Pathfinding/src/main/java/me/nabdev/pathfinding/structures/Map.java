@@ -219,11 +219,19 @@ public class Map {
         return inflatedPlusEps;
     }
 
-    private void calculateStaticNeighbors() {
+    /**
+     * Calculates the neighbors of the static path vertices (regenerates cached
+     * visibility graph)
+     */
+    public void calculateStaticNeighbors() {
+        neighborsStatic.clear();
         for (int cur = 0; cur < pathVerticesStatic.size(); cur++) {
             for (int i = cur; i < pathVerticesStatic.size(); i++) {
                 lineOfSight(cur, i, neighborsStatic, pathVerticesStatic);
             }
+        }
+        for (Vertex v : pathVerticesStatic) {
+            v.staticNeighbors.clear();
         }
         for (Edge e : neighborsStatic) {
             Vertex v1 = e.getVertexOne(pathVerticesStatic);

@@ -178,6 +178,7 @@ public class Pathfinder {
             shouldInvalidate = true;
         }
         if (shouldInvalidate) {
+            map.calculateStaticNeighbors();
             for (Obstacle obs : obstacles) {
                 obs.modifiers.invalidateCache();
             }
