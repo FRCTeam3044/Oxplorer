@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import me.nabdev.pathfinding.modifiers.ModifierCollection;
 import me.nabdev.pathfinding.modifiers.ObstacleModifier.ObstacleModifierTypes;
 
@@ -298,5 +299,12 @@ public class Obstacle {
      */
     public ArrayList<Edge> getEdges() {
         return edges;
+    }
+
+    public void iHateProgramming() {
+        if (id.contains("Barrier")) {
+            System.out.println("I hate programming");
+            SmartDashboard.putBoolean(id, modifiers.isActive());
+        }
     }
 }
