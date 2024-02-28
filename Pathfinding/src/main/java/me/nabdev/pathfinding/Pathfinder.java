@@ -3,7 +3,6 @@ package me.nabdev.pathfinding;
 import me.nabdev.pathfinding.algorithms.Astar;
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm;
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
-import me.nabdev.pathfinding.modifiers.ObstacleModifier.ObstacleModifierTypes;
 import me.nabdev.pathfinding.structures.Edge;
 import me.nabdev.pathfinding.structures.ImpossiblePathException;
 import me.nabdev.pathfinding.structures.Map;
