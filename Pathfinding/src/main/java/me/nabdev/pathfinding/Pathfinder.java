@@ -180,6 +180,7 @@ public class Pathfinder {
             for (Obstacle obs : obstacles) {
                 obs.modifiers.invalidateCache();
             }
+            map.checkPathVertices();
             map.calculateStaticNeighbors();
         }
     }

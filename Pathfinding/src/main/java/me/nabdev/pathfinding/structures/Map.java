@@ -118,12 +118,14 @@ public class Map {
      * inside of another obstacle, in which case, mark them to be skipped during
      * visibility graph generation.
      */
-    private void checkPathVertices() {
+    public void checkPathVertices() {
         for (Vertex v : pathVerticesStatic) {
             if (v.x < originx || v.x > fieldx || v.y < originy || v.y > fieldy) {
-                v.validVisiblity = false;
-            } else if (Obstacle.isRobotInObstacle(obstacles, v, true).size() > 0) {
-                v.validVisiblity = false;
+                v.validVisibility = false;
+            } else if (Obstacle.isRobotInObstacle(obstacles, v).size() > 0) {
+                v.validVisibility = false;
+            } else {
+                v.validVisibility = true;
             }
         }
     }
@@ -133,7 +135,7 @@ public class Map {
      * bounds, and if they aren't add them to the validObstacleEdges list.
      * This currently only covers some cases, but is good enough for now.
      */
-    private void checkObstacleEdges() {
+    public void checkObstacleEdges() {
         for (Edge e : obstacleEdges) {
             Vertex v1 = obstacleVertices.get(e.getVertexOne());
             Vertex v2 = obstacleVertices.get(e.getVertexTwo());
@@ -285,7 +287,7 @@ public class Map {
         Vertex curVertex = pathVerticesArray.get(cur);
         Vertex iVertex = pathVerticesArray.get(i);
 
-        if (!curVertex.validVisiblity || !iVertex.validVisiblity)
+        if (!curVertex.validVisibility || !iVertex.validVisibility)
             return;
 
         boolean intersect = false;
