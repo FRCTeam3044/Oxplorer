@@ -13,9 +13,13 @@ import me.nabdev.pathfinding.utilities.FieldLoader.FieldData;
 import me.nabdev.pathfinding.utilities.FieldLoader.ObstacleData;
 
 import java.util.ArrayList;
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -75,6 +79,9 @@ public class Pathfinder {
      */
     private SearchAlgorithmType searchAlgorithmType;
 
+    private double lastMatchTime = DriverStation.getMatchTime();
+    private Optional<Alliance> lastAlliance = DriverStation.getAlliance();
+    private boolean lastIsAuto = DriverStation.isAutonomous();
     // Every obstacle vertex (ORDER IS IMPORTANT)
     ArrayList<Vertex> obstacleVertices = new ArrayList<>();
     ArrayList<Vertex> uninflatedObstacleVertices = new ArrayList<>();
@@ -146,6 +153,35 @@ public class Pathfinder {
         for (Obstacle obs : obstacles) {
             obs.initialize(map.getPathVerticesStatic());
             obs.modifiers.invalidateCache();
+        }
+    }
+
+    /**
+     * Updates the modifier cache based on data from the driver station and wpilib.
+     * Should be called in robotPeriodic.
+     */
+    public void periodic() {
+        boolean shouldInvalidate = false;
+        if (DriverStation.getMatchTime() < endgameTime && !(lastMatchTime < endgameTime)) {
+            shouldInvalidate = true;
+        }
+        lastMatchTime = DriverStation.getMatchTime();
+        Optional<Alliance> alliance = DriverStation.getAlliance();
+        if (!alliance.equals(lastAlliance)) {
+            lastAlliance = alliance;
+            shouldInvalidate = true;
+        }
+        boolean isAuto = DriverStation.isAutonomous();
+        if (isAuto != lastIsAuto) {
+            lastIsAuto = isAuto;
+            shouldInvalidate = true;
+        }
+        if (shouldInvalidate) {
+            for (Obstacle obs : obstacles) {
+                obs.modifiers.invalidateCache();
+            }
+            map.checkPathVertices();
+            map.calculateStaticNeighbors();
         }
     }
 
@@ -382,11 +418,7 @@ public class Pathfinder {
     private Path generatePathInner(Vertex start, Vertex target, PathfindSnapMode snapMode,
             ArrayList<Vertex> dynamicVertices, boolean processPath) throws ImpossiblePathException {
         long startTime = System.nanoTime();
-        // TODO: Handle obstacle cache invalidation better, only invalidating when
-        // necessary (on match phase transitions)
-        for (Obstacle obs : obstacles) {
-            obs.modifiers.invalidateCache();
-        }
+        periodic();
         // Snapping is done because the center of the robot can be inside of the
         // inflated obstacle edges
         // In the case where this happened the start needs to be snapped outside
@@ -460,7 +492,7 @@ public class Pathfinder {
      * @return
      */
     private Vertex snap(Vertex point) throws ImpossiblePathException {
-        ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point);
+        ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point, true);
         Vertex tempNearestVertex = point;
         int i = 0;
         while (targetObs.size() > 0) {
@@ -470,7 +502,7 @@ public class Pathfinder {
             for (Obstacle obs : targetObs) {
                 tempNearestVertex = obs.calculateNearestPointFromInside(tempNearestVertex);
             }
-            targetObs = Obstacle.isRobotInObstacle(obstacles, tempNearestVertex);
+            targetObs = Obstacle.isRobotInObstacle(obstacles, tempNearestVertex, true);
             i++;
         }
         return tempNearestVertex;

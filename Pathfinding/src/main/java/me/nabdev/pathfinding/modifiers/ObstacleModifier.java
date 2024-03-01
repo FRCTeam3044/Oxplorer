@@ -61,7 +61,12 @@ public abstract class ObstacleModifier {
          * Marks the obstacle as the red alliance's, does not affect if it is active
          * unless ACTIVE_MY_ALLIANCE/ACTIVE_OTHER_ALLIANCE is also applied
          */
-        RED_ALLIANCE
+        RED_ALLIANCE,
+        /**
+         * Marks the obstacle as a zone. This means it will not invalidate obstacle
+         * points and start points will not snap outside of it.
+         */
+        ZONE_MODIFIER
     }
 
     /**
@@ -89,6 +94,8 @@ public abstract class ObstacleModifier {
                 return new BlueAllianceModifier();
             case RED_ALLIANCE:
                 return new RedAllianceModifier();
+            case ZONE_MODIFIER:
+                return new ZoneModifier();
         }
         throw new UnsupportedOperationException("TODO");
     }

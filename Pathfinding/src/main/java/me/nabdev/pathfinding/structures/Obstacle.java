@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 
 import me.nabdev.pathfinding.modifiers.ModifierCollection;
+import me.nabdev.pathfinding.modifiers.ObstacleModifier.ObstacleModifierTypes;
 
 /**
  * Represents an obstacle on the map. An obstacle is a collection of vertices
@@ -31,6 +32,7 @@ public class Obstacle {
 
     // ALL VERTICES FOR THE ENTIRE MAP! NOT JUST THE OBSTACLE!
     private ArrayList<Vertex> vertices;
+    private ArrayList<Vertex> uninflatedVertices;
     // Vectors along the edges of the obstacle
     private ArrayList<Vector> vectors = new ArrayList<Vector>();
 
@@ -50,6 +52,7 @@ public class Obstacle {
     public Obstacle(ArrayList<Vertex> vertices, ArrayList<Edge> edges, String id, ModifierCollection modifiers) {
         this.edges = edges;
         this.vertices = vertices;
+        this.uninflatedVertices = vertices;
         this.id = id;
         this.modifiers = modifiers;
         for (Edge edge : edges) {
@@ -67,6 +70,7 @@ public class Obstacle {
     public Obstacle(ArrayList<Vertex> vertices, ArrayList<Edge> edges, String id) {
         this.edges = edges;
         this.vertices = vertices;
+        this.uninflatedVertices = vertices;
         this.id = id;
         JSONArray modifiersArr = new JSONArray();
         modifiersArr.put("ALWAYS_ACTIVE");
@@ -99,8 +103,24 @@ public class Obstacle {
      * @return The list of obstacles that the vertex is inside, empty if none.
      */
     public static ArrayList<Obstacle> isRobotInObstacle(ArrayList<Obstacle> obstacles, Vertex vertex) {
+        return isRobotInObstacle(obstacles, vertex, false);
+    }
+
+    /**
+     * Detect if a vertex is inside any obstacle in the list.
+     * 
+     * @param obstacles The list of obstacles to check.
+     * @param vertex    The vertex to check.
+     * @param notZone   If true, ignores obstacles with the zone modifier.
+     * @return The list of obstacles that the vertex is inside, empty if none.
+     */
+    public static ArrayList<Obstacle> isRobotInObstacle(ArrayList<Obstacle> obstacles, Vertex vertex, boolean notZone) {
         ArrayList<Obstacle> inside = new ArrayList<Obstacle>();
         for (Obstacle obs : obstacles) {
+            if (!obs.modifiers.isActive())
+                continue;
+            if (notZone && obs.modifiers.hasModifier(ObstacleModifierTypes.ZONE_MODIFIER))
+                continue;
             if (obs.isInside(vertex)) {
                 inside.add(obs);
             }
@@ -119,8 +139,8 @@ public class Obstacle {
         int n = edges.size();
 
         for (int i = 0; i < n; i++) {
-            Vertex v1 = vertices.get(edges.get(i).getVertexOne());
-            Vertex v2 = vertices.get(edges.get(i).getVertexTwo());
+            Vertex v1 = uninflatedVertices.get(edges.get(i).getVertexOne());
+            Vertex v2 = uninflatedVertices.get(edges.get(i).getVertexTwo());
 
             if (v1.y <= pos.y) {
                 if (v2.y > pos.y && isLeft(v1, v2, pos) > 0) {

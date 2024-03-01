@@ -63,7 +63,7 @@ public class Vertex implements Comparable<Vertex> {
      * This will be set to false if the point is inside of an obstacle or outside of
      * the field bounds, since the robot could never be there.
      */
-    public boolean validVisiblity = true;
+    public boolean validVisibility = true;
 
     /**
      * Creates a new Vertex from a Pose2d
