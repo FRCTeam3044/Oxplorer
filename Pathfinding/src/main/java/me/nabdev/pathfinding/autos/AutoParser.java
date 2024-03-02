@@ -26,13 +26,16 @@ public class AutoParser {
         registerGroupType("deadline", new DeadlineGroup());
         registerGroupType("race", new RaceGroup());
         registerGroupType("parallel", new ParallelGroup());
+        registerGroupType("sequence", new SequenceGroup());
     }
 
     /**
      * Register a command which can be used in the autos.
      * 
-     * @param id The id of the command, which will be used in the auto json file
-     * @param command A function that takes in a JSONObject of parameters and returns a Command.
+     * @param id      The id of the command, which will be used in the auto json
+     *                file
+     * @param command A function that takes in a JSONObject of parameters and
+     *                returns a Command.
      */
     public static void registerCommand(String id, Function<JSONObject, Command> command) {
         commands.put(id, command);
@@ -41,10 +44,10 @@ public class AutoParser {
     /**
      * Add a group type to use in autos.
      * 
-     * @param id The id of the group, which will be used in the auto json file
+     * @param id    The id of the group, which will be used in the auto json file
      * @param group The autogroup instance to use
      */
-    public static void registerGroupType(String id, AutoGroup group){
+    public static void registerGroupType(String id, AutoGroup group) {
         groups.put(id, group);
     }
 
@@ -82,7 +85,7 @@ public class AutoParser {
      * @return The auto command
      */
     public static Command parseAuto(JSONArray auto) {
-        if(auto.length() < 1){
+        if (auto.length() < 1) {
             throw new IllegalArgumentException("Given Empty Autonomous!");
         }
         ArrayList<Command> steps = new ArrayList<Command>();
@@ -97,7 +100,7 @@ public class AutoParser {
     /**
      * Parses one step of the auto (recursive)
      * 
-     * @param step The step to parse 
+     * @param step The step to parse
      */
     static Command parseStep(JSONObject step) {
         String type = step.getString("type");
@@ -110,13 +113,13 @@ public class AutoParser {
             for (int i = 0; i < children.length(); i++) {
                 parsedChildren.add(parseStep(children.getJSONObject(i)));
             }
-            if(!groups.containsKey(id)){
+            if (!groups.containsKey(id)) {
                 throw new IllegalArgumentException("Invalid auto group id: " + id + ". Did you forget to register it?");
             }
             AutoGroup group = groups.get(id);
             return group.getCommand(parsedChildren);
-        } else if(type.equalsIgnoreCase("command")){
-            if(!commands.containsKey(id)){
+        } else if (type.equalsIgnoreCase("command")) {
+            if (!commands.containsKey(id)) {
                 throw new IllegalArgumentException("Invalid command id: " + id + ". Did you forget to register it?");
             }
             JSONObject parameters = step.getJSONObject("parameters");
