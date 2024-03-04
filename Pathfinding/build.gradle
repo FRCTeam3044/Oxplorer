@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'me.nabdev.pathfinding'
-version '0.9.25'
+version '0.11.1-SNAPSHOT2'
 
 java {
     withSourcesJar()
@@ -25,7 +25,6 @@ dependencies {
     implementation wpi.java.vendor.java()
 
     implementation 'org.json:json:20231013' 
-    implementation 'com.github.jknack:handlebars:4.3.1'
 }
 
 publishing {
