@@ -88,6 +88,13 @@ public class AutoParser {
         }
     }
 
+    /**
+     * Register a boolean to use in autos.
+     * 
+     * @param id   The id of the boolean, which will be used in the auto json file
+     * @param bool A function that takes in a JSONObject of parameters and returns
+     *             an AutoBoolean
+     */
     public static void registerBoolean(String id, Function<JSONObject, AutoBoolean> bool) {
         booleans.put(id, bool);
     }
@@ -182,7 +189,8 @@ public class AutoParser {
             String macro = macros.get(id);
             JSONObject parameters = step.getJSONObject("parameters");
             for (String key : parameters.keySet()) {
-                macro = macro.replace("\"{{ " + key + " }}\"", parameters.getString(key));
+                Object value = parameters.get(key);
+                macro = macro.replace("{{ " + key + " }}", value.toString());
             }
             JSONArray filledInArray = new JSONArray(macro);
             return parseAuto(filledInArray);
@@ -203,7 +211,7 @@ public class AutoParser {
         }
     }
 
-    private static BooleanSupplier parseBoolean(JSONObject bool) {
+    public static BooleanSupplier parseBoolean(JSONObject bool) {
         String id = bool.getString("id");
         if (!booleans.containsKey(id)) {
             throw new IllegalArgumentException("Invalid boolean id: " + id + ". Did you forget to register it?");

@@ -4,6 +4,9 @@ import java.util.function.BooleanSupplier;
 
 import me.nabdev.pathfinding.autos.AutoBoolean;
 
+/**
+ * An auto boolean that returns true if its child is false
+ */
 public class NotBoolean implements AutoBoolean {
 
     @Override

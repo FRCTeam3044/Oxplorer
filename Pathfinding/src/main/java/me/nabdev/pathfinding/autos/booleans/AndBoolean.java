@@ -4,8 +4,10 @@ import java.util.function.BooleanSupplier;
 
 import me.nabdev.pathfinding.autos.AutoBoolean;
 
+/**
+ * An auto boolean that returns true if all of its children are true
+ */
 public class AndBoolean implements AutoBoolean {
-
     @Override
     public BooleanSupplier getSupplier(BooleanSupplier... children) {
         if (children.length == 0) {
