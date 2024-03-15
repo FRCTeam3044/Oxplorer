@@ -15,7 +15,7 @@ public class OrBoolean implements AutoBoolean {
         }
         return () -> {
             for (BooleanSupplier child : children) {
-                if (!child.getAsBoolean()) {
+                if (child.getAsBoolean()) {
                     return true;
                 }
             }
