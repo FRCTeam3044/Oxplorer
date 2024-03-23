@@ -24,6 +24,7 @@ public class FieldLoader {
          * The 2024 field (Crescendo)
          */
         CRESCENDO_2024,
+
         /**
          * The 2023 field (Charged Up)
          */
@@ -37,7 +38,8 @@ public class FieldLoader {
         /**
          * A field with no obstacles
          */
-        EMPTY_FIELD
+        EMPTY_FIELD,
+        CRESCENDO_2024_NOTE_OBSTACLES,
     }
 
     /**
