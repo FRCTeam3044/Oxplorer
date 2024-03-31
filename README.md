@@ -1,4 +1,5 @@
-# ![AdvantageScope-3044](/assets/banner-light.png)
+![Oxplorer](/assets/banner-light.png)
+## The on-the-fly path planner for FRC
 
 [![Gradle Package](https://github.com/FRCTeam3044/Oxplorer/actions/workflows/build-release.yml/badge.svg)](https://github.com/FRCTeam3044/Oxplorer/actions/workflows/build-release.yml)
 
@@ -6,7 +7,7 @@
 
 Oxplorer is a realtime, dynamic, on-the-fly path generator designed for use with FRC robots. It can avoid any obstacles on a given field map and generate the optimal path in an instant.
 
-Oxplorer is not finished, and will continue to be updated (For those worried it is too slow, I have major optimiziations implemented that just need some polishing before a merge). You may have to play with the path settings a little to get them to look right. If there is a feature you want, please feel free to let me know!
+Oxplorer is not finished, and will continue to be updated (For those worried it is too slow, I have several optimiziations implemented that just need some polishing and bug-fixing before a merge). You may have to play with the path settings a little to get them to look right. If there is a feature you want, please feel free to let me know!
 
 For more info, you can read the [wiki](https://github.com/FRCTeam3044/Oxplorer/wiki) and you can explore the [javadoc](https://frcteam3044.github.io/Oxplorer/)!
 
