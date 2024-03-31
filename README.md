@@ -1,4 +1,6 @@
-# Oxplorer - The on-the-fly pathfinder for FRC!
+# ![AdvantageScope-3044](/assets/banner-light.png)
+
+[![Gradle Package](https://github.com/FRCTeam3044/Oxplorer/actions/workflows/build-release.yml/badge.svg)](https://github.com/FRCTeam3044/Oxplorer/actions/workflows/build-release.yml)
 
 **Read the [FAQ](https://github.com/FRCTeam3044/Oxplorer/wiki/FAQ) and join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support, discussion, and more!**
 
@@ -8,7 +10,7 @@ Oxplorer is not finished, and will continue to be updated (For those worried it 
 
 For more info, you can read the [wiki](https://github.com/FRCTeam3044/Oxplorer/wiki) and you can explore the [javadoc](https://frcteam3044.github.io/Oxplorer/)!
 
-Take a look at the [Roadmap](https://trello.com/b/DJ243CXC/oxplorer) for and idea of whats to come.
+Take a look at the [Roadmap](https://trello.com/b/DJ243CXC/oxplorer) for an idea of whats to come.
 
 ## Installation
 
@@ -25,6 +27,7 @@ maven {
 ```
 
 Then add this line to the dependencies section:
+
 ```gradle
 implementation 'me.nabdev.pathfinding:oxplorer:0.9.10'
 ```
@@ -55,6 +58,7 @@ Questions, Concerns, Suggestions, Bug reports, or anything of the sort? Feel fre
 Or open a github issue/pr if that's more suitable.
 
 ## Links
+
 - Developer: [nab138](https://github.com/nab138)
 - [JSON-java](https://github.com/stleary/JSON-java)
 - [allwpilib](https://github.com/wpilibsuite/allwpilib)
