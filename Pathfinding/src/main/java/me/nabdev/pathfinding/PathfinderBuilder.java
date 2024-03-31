@@ -22,7 +22,7 @@ public class PathfinderBuilder {
     private SearchAlgorithmType searchAlgorithmType = SearchAlgorithmType.ASTAR;
     private double robotWidth = 0.7;
     private double robotLength = 0.7;
-    private double cornerCutDist = 0.01;
+    private double cornerCutDist = 0.0001;
     private boolean profiling = false;
     private double endgameTime = 25;
 
@@ -167,9 +167,15 @@ public class PathfinderBuilder {
     }
 
     /**
-     * Sets the corner cut distance
+     * Sets the distance from mapped vertices along uninflated obstacles to create
+     * more points. This is done to better approximate a true minkowski sum of the
+     * obstacles with the robot circumcircle with minimal field points. As this
+     * distance approaches 0, the cut corners approach the tangent line of the
+     * rounded corner on the minkowski sum.
      * 
-     * @param cornerCutDist The corner cut distance, default 0.01 (meters)
+     * Set to 0 to disable.
+     * 
+     * @param cornerCutDist The corner cut distance, default 0.0001 (meters)
      * @return The builder
      */
     public PathfinderBuilder setCornerCutDist(double cornerCutDist) {
