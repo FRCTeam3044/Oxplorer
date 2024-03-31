@@ -1,5 +1,5 @@
 ![Oxplorer](/assets/banner-light.png)
-## The on-the-fly path planner for FRC
+***The on-the-fly path planner for FRC***
 
 [![Gradle Package](https://github.com/FRCTeam3044/Oxplorer/actions/workflows/build-release.yml/badge.svg)](https://github.com/FRCTeam3044/Oxplorer/actions/workflows/build-release.yml)
 
