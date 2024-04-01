@@ -17,6 +17,11 @@ import me.nabdev.pathfinding.structures.Vertex;
  */
 public class FieldLoader {
     /**
+     * The distance to cut corners by for the line corner cutting mode
+     */
+    private static final double CORNER_CUT_DIST = 0.00001;
+
+    /**
      * The fields that can be loaded
      */
     public enum Field {
@@ -38,6 +43,31 @@ public class FieldLoader {
          * A field with no obstacles
          */
         EMPTY_FIELD
+    }
+
+    /**
+     * 
+     */
+    public enum CornerCutting {
+        /**
+         * Do not cut corners. The most performant, but the robot will take corners too
+         * wide (ESPECIALLY on acute angles)
+         */
+        NONE,
+        /**
+         * Draw one line that cuts the corner. Performance middle ground, and the corner
+         * behavior becomes a lot more consistent (but not perfect)
+         * 
+         * This better approximates a true minkowski sum of the
+         * obstacles with the robot circumcircle with minimal field points. However, its
+         * important to note that this line will never truly be tangent to the corner,
+         * and will always cut the corner.
+         */
+        LINE,
+        /**
+         * Bezier curve that cuts the corner. The most accurate, but also the slowest.
+         */
+        CURVE
     }
 
     /**
@@ -118,29 +148,29 @@ public class FieldLoader {
      * Load a field from the resources folder
      * 
      * @param field         The field to load
-     * @param cornerCutDist The distance to cut corners by
+     * @param cornerCutMode The corner cutting mode to use
      * @return The field JSON
      */
-    public static FieldData loadField(Field field, double cornerCutDist) {
+    public static FieldData loadField(Field field, CornerCutting cornerCutMode) {
         JSONTokener tokener = new JSONTokener(
                 FieldLoader.class.getClassLoader().getResourceAsStream(field.name().toLowerCase() + ".json"));
-        return processField(new JSONObject(tokener), cornerCutDist);
+        return processField(new JSONObject(tokener), cornerCutMode);
     }
 
     /**
      * Load a field from a file
      * 
      * @param fieldPath     The path to the field JSON file
-     * @param cornerCutDist The distance to cut corners by
+     * @param cornerCutMode The corner cutting mode to use
      * @return The field JSON
      * @throws FileNotFoundException If the file does not exist
      */
-    public static FieldData loadField(String fieldPath, double cornerCutDist) throws FileNotFoundException {
+    public static FieldData loadField(String fieldPath, CornerCutting cornerCutMode) throws FileNotFoundException {
         // Load like a normal file, not a resource
         JSONTokener tokener;
         FileInputStream input = new FileInputStream(fieldPath);
         tokener = new JSONTokener(input);
-        return processField(new JSONObject(tokener), cornerCutDist);
+        return processField(new JSONObject(tokener), cornerCutMode);
     }
 
     /**
@@ -149,18 +179,19 @@ public class FieldLoader {
      * edge table.
      * 
      * @param rawField      The raw field JSON
-     * @param cornerCutDist The distance to cut corners by
+     * @param cornerCutMode The corner cutting mode to use
      * @return The processed field
      */
-    private static FieldData processField(JSONObject rawField, double cornerCutDist) {
+    private static FieldData processField(JSONObject rawField, CornerCutting cornerCutMode) {
         if (!rawField.has("formatVersion")) {
-            throw new IllegalArgumentException("Field does not have formatVersion");
+            throw new IllegalArgumentException(
+                    "Field JSON does not have formatVersion. If this is a custom field, add \"formatVersion\": 2 to the field JSON.");
         }
         if (rawField.getInt("formatVersion") != 2) {
             throw new IllegalArgumentException("This version of Oxplorer only supports field format version 2.");
         }
         if (!rawField.has("obstacles")) {
-            throw new IllegalArgumentException("Field does not have obstacles");
+            throw new IllegalArgumentException("Field JSON does not have obstacles.");
         }
 
         /*
@@ -169,7 +200,7 @@ public class FieldLoader {
          * connect one after the other and the last vertex connects to the first vertex.
          * Example as stored in json:
          * {
-         * "id": "1",
+         * "id": "myId",
          * "vertices": [
          * [0.3, 8],
          * [0.3, 5.45],
@@ -188,50 +219,23 @@ public class FieldLoader {
 
         for (int i = 0; i < rawObstacles.length(); i++) {
             JSONObject rawObstacle = rawObstacles.getJSONObject(i);
-            ArrayList<Integer[]> edges = new ArrayList<>();
-
-            // This creates the edge table, treating the vertices as a circular array
             JSONArray rawVerticies = rawObstacle.getJSONArray("vertices");
+
+            ArrayList<Integer[]> edges = new ArrayList<>();
             ArrayList<Double[]> myVertices = new ArrayList<Double[]>();
-            ArrayList<Double[]> myProcessedVertices = new ArrayList<Double[]>();
+
+            // Convert each JSON [x, y] to a Double[]
             for (int j = 0; j < rawVerticies.length(); j++) {
                 JSONArray rawVertex = rawVerticies.getJSONArray(j);
                 Double[] vertex = new Double[] { rawVertex.getDouble(0), rawVertex.getDouble(1) };
                 myVertices.add(vertex);
             }
-            for (int j = 0; j < myVertices.size(); j++) {
-                boolean cutCorners = false;
-                if (rawObstacle.has("cutCorners") && (cornerCutDist > 0)) {
-                    cutCorners = rawObstacle.getBoolean("cutCorners");
-                }
-                if (cutCorners) {
-                    Vertex prevVertex;
-                    Vertex nextVertex;
-                    if (j > 0) {
-                        prevVertex = new Vertex(myVertices.get(j - 1)[0], myVertices.get(j - 1)[1]);
-                    } else {
-                        prevVertex = new Vertex(myVertices.get(myVertices.size() - 1)[0],
-                                myVertices.get(myVertices.size() - 1)[1]);
-                    }
-                    if (j < myVertices.size() - 1) {
-                        nextVertex = new Vertex(myVertices.get(j + 1)[0], myVertices.get(j + 1)[1]);
-                    } else {
-                        nextVertex = new Vertex(myVertices.get(0)[0], myVertices.get(0)[1]);
-                    }
-                    Vertex thisVertex = new Vertex(myVertices.get(j)[0], myVertices.get(j)[1]);
+            // If corner cut dist is 0, there is no need to cut corners, and doing so will
+            // just make it unnecessarily slow
+            ArrayList<Double[]> myProcessedVertices = cornerCutMode == CornerCutting.NONE ? myVertices
+                    : cutCornersLine(myVertices);
 
-                    Vector toPrev = thisVertex.createVectorTo(prevVertex).normalize().scale(cornerCutDist);
-                    Vector toNext = thisVertex.createVectorTo(nextVertex).normalize().scale(cornerCutDist);
-
-                    Vertex newPrev = thisVertex.moveByVector(toPrev);
-                    Vertex newNext = thisVertex.moveByVector(toNext);
-
-                    myProcessedVertices.add(new Double[] { newPrev.x, newPrev.y });
-                    myProcessedVertices.add(new Double[] { newNext.x, newNext.y });
-                } else {
-                    myProcessedVertices.add(myVertices.get(j));
-                }
-            }
+            // Wind around the vertices, creating edges between each consecutive pair
             for (int j = 0; j < myProcessedVertices.size(); j++) {
                 Double[] vertex = myProcessedVertices.get(j);
                 vertices.add(vertex);
@@ -243,6 +247,12 @@ public class FieldLoader {
                 }
             }
 
+            /*
+             * Create an instance of each modifier listed in the JSON.
+             * Modifiers are used to give objects special properties, such as only being
+             * active during autonomous, only being active if the robot is on the blue
+             * alliance, etc.
+             */
             JSONArray modifiersArr;
             if (rawObstacle.has("modifiers")) {
                 modifiersArr = rawObstacle.getJSONArray("modifiers");
@@ -257,5 +267,45 @@ public class FieldLoader {
         double fieldX = rawField.getDouble("fieldX");
         double fieldY = rawField.getDouble("fieldY");
         return new FieldData(vertices, obstacles, fieldX, fieldY);
+    }
+
+    /**
+     * Cuts corners of the field. This is done to better approximate a true
+     * minkowski sum of the obstacles with the robot circumcircle with minimal field
+     * points.
+     * 
+     * @param myVertices    The vertices of the field
+     * @param cornerCutDist The distance to cut corners by
+     * 
+     * @return The processed vertices
+     */
+    private static ArrayList<Double[]> cutCornersLine(ArrayList<Double[]> myVertices) {
+        ArrayList<Double[]> processed = new ArrayList<Double[]>();
+        for (int j = 0; j < myVertices.size(); j++) {
+            Vertex prevVertex;
+            Vertex nextVertex;
+            if (j > 0) {
+                prevVertex = new Vertex(myVertices.get(j - 1)[0], myVertices.get(j - 1)[1]);
+            } else {
+                prevVertex = new Vertex(myVertices.get(myVertices.size() - 1)[0],
+                        myVertices.get(myVertices.size() - 1)[1]);
+            }
+            if (j < myVertices.size() - 1) {
+                nextVertex = new Vertex(myVertices.get(j + 1)[0], myVertices.get(j + 1)[1]);
+            } else {
+                nextVertex = new Vertex(myVertices.get(0)[0], myVertices.get(0)[1]);
+            }
+            Vertex thisVertex = new Vertex(myVertices.get(j)[0], myVertices.get(j)[1]);
+
+            Vector toPrev = thisVertex.createVectorTo(prevVertex).normalize().scale(CORNER_CUT_DIST);
+            Vector toNext = thisVertex.createVectorTo(nextVertex).normalize().scale(CORNER_CUT_DIST);
+
+            Vertex newPrev = thisVertex.moveByVector(toPrev);
+            Vertex newNext = thisVertex.moveByVector(toNext);
+
+            processed.add(new Double[] { newPrev.x, newPrev.y });
+            processed.add(new Double[] { newNext.x, newNext.y });
+        }
+        return processed;
     }
 }
