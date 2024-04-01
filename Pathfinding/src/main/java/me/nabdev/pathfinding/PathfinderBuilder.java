@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
 import me.nabdev.pathfinding.utilities.FieldLoader;
+import me.nabdev.pathfinding.utilities.FieldLoader.CornerCutting;
 import me.nabdev.pathfinding.utilities.FieldLoader.Field;
 import me.nabdev.pathfinding.utilities.FieldLoader.FieldData;
 
@@ -22,7 +23,7 @@ public class PathfinderBuilder {
     private SearchAlgorithmType searchAlgorithmType = SearchAlgorithmType.ASTAR;
     private double robotWidth = 0.7;
     private double robotLength = 0.7;
-    private double cornerCutDist = 0.0001;
+    private CornerCutting cornerCutting = CornerCutting.LINE;
     private boolean profiling = false;
     private double endgameTime = 25;
 
@@ -162,24 +163,24 @@ public class PathfinderBuilder {
      * @return The builder
      */
     public PathfinderBuilder setSearchAlgorithmType(SearchAlgorithmType searchAlgorithmType) {
+        if (searchAlgorithmType == null)
+            throw new IllegalArgumentException("Search algorithm type cannot be null");
         this.searchAlgorithmType = searchAlgorithmType;
         return this;
     }
 
     /**
-     * Sets the distance from mapped vertices along uninflated obstacles to create
-     * more points. This is done to better approximate a true minkowski sum of the
-     * obstacles with the robot circumcircle with minimal field points. As this
-     * distance approaches 0, the cut corners approach the tangent line of the
-     * rounded corner on the minkowski sum.
+     * Sets the corner cutting type to use (See {@link CornerCutting} for more info)
      * 
-     * Set to 0 to disable.
-     * 
-     * @param cornerCutDist The corner cut distance, default 0.0001 (meters)
+     * @param cornerCutting The corner cutting type, default LINE
      * @return The builder
      */
-    public PathfinderBuilder setCornerCutDist(double cornerCutDist) {
-        this.cornerCutDist = cornerCutDist;
+    public PathfinderBuilder setCornerCuttingType(CornerCutting cornerCutting) {
+        if (cornerCutting == null)
+            throw new IllegalArgumentException("Corner cutting type cannot be null");
+        if (cornerCutting == CornerCutting.CURVE)
+            throw new UnsupportedOperationException("Curve corner cutting is not yet implemented");
+        this.cornerCutting = cornerCutting;
         return this;
     }
 
@@ -220,10 +221,10 @@ public class PathfinderBuilder {
     public Pathfinder build() {
         FieldData loadedField;
         if (field != null) {
-            loadedField = FieldLoader.loadField(field, cornerCutDist);
+            loadedField = FieldLoader.loadField(field, cornerCutting);
         } else {
             try {
-                loadedField = FieldLoader.loadField(customFieldPath, cornerCutDist);
+                loadedField = FieldLoader.loadField(customFieldPath, cornerCutting);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException("Failed to load field from path " + customFieldPath);
             }

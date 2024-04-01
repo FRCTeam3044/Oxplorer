@@ -211,6 +211,12 @@ public class AutoParser {
         }
     }
 
+    /**
+     * Parse a BooleanSupplier from a JSONObject that represents an AutoBoolean
+     * 
+     * @param bool The JSONObject to parse
+     * @return The parsed BooleanSupplier
+     */
     public static BooleanSupplier parseBoolean(JSONObject bool) {
         String id = bool.getString("id");
         if (!booleans.containsKey(id)) {

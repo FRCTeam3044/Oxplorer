@@ -17,6 +17,11 @@ import me.nabdev.pathfinding.structures.Vertex;
  */
 public class FieldLoader {
     /**
+     * The distance to cut corners by for the line corner cutting mode
+     */
+    private static final double CORNER_CUT_DIST = 0.00001;
+
+    /**
      * The fields that can be loaded
      */
     public enum Field {
@@ -38,6 +43,31 @@ public class FieldLoader {
          * A field with no obstacles
          */
         EMPTY_FIELD
+    }
+
+    /**
+     * 
+     */
+    public enum CornerCutting {
+        /**
+         * Do not cut corners. The most performant, but the robot will take corners too
+         * wide (ESPECIALLY on acute angles)
+         */
+        NONE,
+        /**
+         * Draw one line that cuts the corner. Performance middle ground, and the corner
+         * behavior becomes a lot more consistent (but not perfect)
+         * 
+         * This better approximates a true minkowski sum of the
+         * obstacles with the robot circumcircle with minimal field points. However, its
+         * important to note that this line will never truly be tangent to the corner,
+         * and will always cut the corner.
+         */
+        LINE,
+        /**
+         * Bezier curve that cuts the corner. The most accurate, but also the slowest.
+         */
+        CURVE
     }
 
     /**
@@ -118,31 +148,29 @@ public class FieldLoader {
      * Load a field from the resources folder
      * 
      * @param field         The field to load
-     * @param cornerCutDist The distance to cut corners by (0 to disable corner
-     *                      cutting)
+     * @param cornerCutMode The corner cutting mode to use
      * @return The field JSON
      */
-    public static FieldData loadField(Field field, double cornerCutDist) {
+    public static FieldData loadField(Field field, CornerCutting cornerCutMode) {
         JSONTokener tokener = new JSONTokener(
                 FieldLoader.class.getClassLoader().getResourceAsStream(field.name().toLowerCase() + ".json"));
-        return processField(new JSONObject(tokener), cornerCutDist);
+        return processField(new JSONObject(tokener), cornerCutMode);
     }
 
     /**
      * Load a field from a file
      * 
      * @param fieldPath     The path to the field JSON file
-     * @param cornerCutDist The distance to cut corners by (0 to disable corner
-     *                      cutting)
+     * @param cornerCutMode The corner cutting mode to use
      * @return The field JSON
      * @throws FileNotFoundException If the file does not exist
      */
-    public static FieldData loadField(String fieldPath, double cornerCutDist) throws FileNotFoundException {
+    public static FieldData loadField(String fieldPath, CornerCutting cornerCutMode) throws FileNotFoundException {
         // Load like a normal file, not a resource
         JSONTokener tokener;
         FileInputStream input = new FileInputStream(fieldPath);
         tokener = new JSONTokener(input);
-        return processField(new JSONObject(tokener), cornerCutDist);
+        return processField(new JSONObject(tokener), cornerCutMode);
     }
 
     /**
@@ -151,11 +179,10 @@ public class FieldLoader {
      * edge table.
      * 
      * @param rawField      The raw field JSON
-     * @param cornerCutDist The distance to cut corners by (0 to disable corner
-     *                      cutting)
+     * @param cornerCutMode The corner cutting mode to use
      * @return The processed field
      */
-    private static FieldData processField(JSONObject rawField, double cornerCutDist) {
+    private static FieldData processField(JSONObject rawField, CornerCutting cornerCutMode) {
         if (!rawField.has("formatVersion")) {
             throw new IllegalArgumentException(
                     "Field JSON does not have formatVersion. If this is a custom field, add \"formatVersion\": 2 to the field JSON.");
@@ -205,8 +232,8 @@ public class FieldLoader {
             }
             // If corner cut dist is 0, there is no need to cut corners, and doing so will
             // just make it unnecessarily slow
-            ArrayList<Double[]> myProcessedVertices = cornerCutDist > 0 ? cutCorners(myVertices, cornerCutDist)
-                    : myVertices;
+            ArrayList<Double[]> myProcessedVertices = cornerCutMode == CornerCutting.NONE ? myVertices
+                    : cutCornersLine(myVertices);
 
             // Wind around the vertices, creating edges between each consecutive pair
             for (int j = 0; j < myProcessedVertices.size(); j++) {
@@ -252,8 +279,8 @@ public class FieldLoader {
      * 
      * @return The processed vertices
      */
-    private static ArrayList<Double[]> cutCorners(ArrayList<Double[]> myVertices, double cornerCutDist) {
-        ArrayList<Double[]> myProcessedVertices = new ArrayList<Double[]>();
+    private static ArrayList<Double[]> cutCornersLine(ArrayList<Double[]> myVertices) {
+        ArrayList<Double[]> processed = new ArrayList<Double[]>();
         for (int j = 0; j < myVertices.size(); j++) {
             Vertex prevVertex;
             Vertex nextVertex;
@@ -270,15 +297,15 @@ public class FieldLoader {
             }
             Vertex thisVertex = new Vertex(myVertices.get(j)[0], myVertices.get(j)[1]);
 
-            Vector toPrev = thisVertex.createVectorTo(prevVertex).normalize().scale(cornerCutDist);
-            Vector toNext = thisVertex.createVectorTo(nextVertex).normalize().scale(cornerCutDist);
+            Vector toPrev = thisVertex.createVectorTo(prevVertex).normalize().scale(CORNER_CUT_DIST);
+            Vector toNext = thisVertex.createVectorTo(nextVertex).normalize().scale(CORNER_CUT_DIST);
 
             Vertex newPrev = thisVertex.moveByVector(toPrev);
             Vertex newNext = thisVertex.moveByVector(toNext);
 
-            myProcessedVertices.add(new Double[] { newPrev.x, newPrev.y });
-            myProcessedVertices.add(new Double[] { newNext.x, newNext.y });
+            processed.add(new Double[] { newPrev.x, newPrev.y });
+            processed.add(new Double[] { newNext.x, newNext.y });
         }
-        return myProcessedVertices;
+        return processed;
     }
 }
