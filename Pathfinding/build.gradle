@@ -1,12 +1,12 @@
 plugins {
     id 'java-library'
-    id "edu.wpi.first.GradleRIO" version "2024.2.1"
-    // id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id "edu.wpi.first.GradleRIO" version "2024.3.1"
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'maven-publish'
 }
 
 group 'me.nabdev.pathfinding'
-version '0.12.0'
+version '0.12.0-SNAPSHOT-WITHJNI2'
 
 java {
     withSourcesJar()
@@ -23,6 +23,11 @@ repositories {
 dependencies {
     implementation wpi.java.deps.wpilib()
     implementation wpi.java.vendor.java()
+
+
+    nativeRelease wpi.java.deps.wpilibJniRelease(wpi.platforms.desktop)
+    nativeRelease wpi.java.vendor.jniRelease(wpi.platforms.desktop)
+    simulationRelease wpi.sim.enableRelease()
 
     implementation 'org.json:json:20231013' 
 }
