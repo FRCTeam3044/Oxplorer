@@ -1,7 +1,7 @@
 package me.nabdev.pathfinding.modifiers;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import me.nabdev.pathfinding.Pathfinder;
+import me.nabdev.pathfinding.utilities.DriverStationWrapper;
 
 /**
  * A modifier that keeps the obstacle active during the teleop period, not
@@ -10,8 +10,8 @@ import me.nabdev.pathfinding.Pathfinder;
 public class ActiveTeleModifier extends ObstacleModifier {
     @Override
     public boolean isActive() {
-        if (DriverStation.isTeleop()) {
-            double matchTime = DriverStation.getMatchTime();
+        if (DriverStationWrapper.isTeleop()) {
+            double matchTime = DriverStationWrapper.getMatchTime();
             if (matchTime <= Pathfinder.getEndgameTime()) {
                 return false;
             }
