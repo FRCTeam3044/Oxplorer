@@ -2,8 +2,8 @@ package me.nabdev.pathfinding.modifiers;
 
 import java.util.Optional;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import me.nabdev.pathfinding.utilities.DriverStationWrapper;
 
 /**
  * A modifier that keeps the obstacle active if it is the same alliance as the
@@ -23,10 +23,10 @@ public class ActiveMyAllianceModifier extends ObstacleModifier {
 
     @Override
     public boolean isActive() {
-        Optional<Alliance> alliance = DriverStation.getAlliance();
+        Optional<Alliance> alliance = DriverStationWrapper.getAlliance();
         if (!alliance.isPresent())
             return false;
-        if (alliance.get() == DriverStation.Alliance.Blue) {
+        if (alliance.get() == Alliance.Blue) {
             return myCollection.hasModifier(ObstacleModifierTypes.BLUE_ALLIANCE);
         } else {
             return myCollection.hasModifier(ObstacleModifierTypes.RED_ALLIANCE);

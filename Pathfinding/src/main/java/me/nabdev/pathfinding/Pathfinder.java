@@ -9,6 +9,7 @@ import me.nabdev.pathfinding.structures.Map;
 import me.nabdev.pathfinding.structures.Obstacle;
 import me.nabdev.pathfinding.structures.Path;
 import me.nabdev.pathfinding.structures.Vertex;
+import me.nabdev.pathfinding.utilities.DriverStationWrapper;
 import me.nabdev.pathfinding.utilities.FieldLoader.FieldData;
 import me.nabdev.pathfinding.utilities.FieldLoader.ObstacleData;
 
@@ -18,7 +19,6 @@ import java.util.Optional;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -79,9 +79,9 @@ public class Pathfinder {
      */
     private SearchAlgorithmType searchAlgorithmType;
 
-    private double lastMatchTime = DriverStation.getMatchTime();
-    private Optional<Alliance> lastAlliance = DriverStation.getAlliance();
-    private boolean lastIsAuto = DriverStation.isAutonomous();
+    private double lastMatchTime = DriverStationWrapper.getMatchTime();
+    private Optional<Alliance> lastAlliance = DriverStationWrapper.getAlliance();
+    private boolean lastIsAuto = DriverStationWrapper.isAutonomous();
     // Every obstacle vertex (ORDER IS IMPORTANT)
     ArrayList<Vertex> obstacleVertices = new ArrayList<>();
     ArrayList<Vertex> uninflatedObstacleVertices = new ArrayList<>();
@@ -162,16 +162,16 @@ public class Pathfinder {
      */
     public void periodic() {
         boolean shouldInvalidate = false;
-        if (DriverStation.getMatchTime() < endgameTime && !(lastMatchTime < endgameTime)) {
+        if (DriverStationWrapper.getMatchTime() < endgameTime && !(lastMatchTime < endgameTime)) {
             shouldInvalidate = true;
         }
-        lastMatchTime = DriverStation.getMatchTime();
-        Optional<Alliance> alliance = DriverStation.getAlliance();
+        lastMatchTime = DriverStationWrapper.getMatchTime();
+        Optional<Alliance> alliance = DriverStationWrapper.getAlliance();
         if (!alliance.equals(lastAlliance)) {
             lastAlliance = alliance;
             shouldInvalidate = true;
         }
-        boolean isAuto = DriverStation.isAutonomous();
+        boolean isAuto = DriverStationWrapper.isAutonomous();
         if (isAuto != lastIsAuto) {
             lastIsAuto = isAuto;
             shouldInvalidate = true;

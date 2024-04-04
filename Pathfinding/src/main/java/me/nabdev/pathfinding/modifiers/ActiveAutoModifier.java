@@ -1,6 +1,6 @@
 package me.nabdev.pathfinding.modifiers;
 
-import edu.wpi.first.wpilibj.DriverStation;
+import me.nabdev.pathfinding.utilities.DriverStationWrapper;
 
 /**
  * A modifier that keeps the obstacle active during the autonomous period
@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 public class ActiveAutoModifier extends ObstacleModifier {
     @Override
     public boolean isActive() {
-        return DriverStation.isAutonomous();
+        return DriverStationWrapper.isAutonomous();
     }
 
     @Override
