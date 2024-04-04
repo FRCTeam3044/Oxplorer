@@ -46,12 +46,6 @@ jobs:
           arguments: build
           build-root-directory: Pathfinding
 
-      - name: Run tests
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: test
-          build-root-directory: Pathfinding
-
       # Yes, this is intentionally run on all pushes, not just releases
       # This makes it easier to make changes to oxplorer during build season
       - name: Publish Oxplorer Publication to GitHub Packages
