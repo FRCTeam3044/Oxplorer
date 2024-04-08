@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 
 import me.nabdev.pathfinding.algorithms.SearchAlgorithm.SearchAlgorithmType;
 import me.nabdev.pathfinding.utilities.FieldLoader;
+import me.nabdev.pathfinding.utilities.FieldLoader.CornerCutting;
 import me.nabdev.pathfinding.utilities.FieldLoader.Field;
 import me.nabdev.pathfinding.utilities.FieldLoader.FieldData;
 
@@ -24,9 +25,10 @@ public class PathfinderBuilder {
     private int precomputeGridY = 4;
     private double robotWidth = 0.7;
     private double robotLength = 0.7;
-    private double cornerCutDist = 0.01;
+    private CornerCutting cornerCutting = CornerCutting.LINE;
     private boolean profiling = false;
     private boolean snapInField = true;
+    private double endgameTime = 25;
 
     /**
      * Creates a new PathfinderBuilder with the given {@link Field}
@@ -164,6 +166,8 @@ public class PathfinderBuilder {
      * @return The builder
      */
     public PathfinderBuilder setSearchAlgorithmType(SearchAlgorithmType searchAlgorithmType) {
+        if (searchAlgorithmType == null)
+            throw new IllegalArgumentException("Search algorithm type cannot be null");
         this.searchAlgorithmType = searchAlgorithmType;
         return this;
     }
@@ -192,12 +196,17 @@ public class PathfinderBuilder {
 
     /**
      * Sets the corner cut distance
+     * Sets the corner cutting type to use (See {@link CornerCutting} for more info)
      * 
-     * @param cornerCutDist The corner cut distance, default 0.01 (meters)
+     * @param cornerCutting The corner cutting type, default LINE
      * @return The builder
      */
-    public PathfinderBuilder setCornerCutDist(double cornerCutDist) {
-        this.cornerCutDist = cornerCutDist;
+    public PathfinderBuilder setCornerCuttingType(CornerCutting cornerCutting) {
+        if (cornerCutting == null)
+            throw new IllegalArgumentException("Corner cutting type cannot be null");
+        if (cornerCutting == CornerCutting.CURVE)
+            throw new UnsupportedOperationException("Curve corner cutting is not yet implemented");
+        this.cornerCutting = cornerCutting;
         return this;
     }
 
@@ -226,6 +235,23 @@ public class PathfinderBuilder {
     }
 
     /**
+     * Sets the endgame time (time in seconds when the robot should start to
+     * consider endgame obstacles). Note that this uses
+     * DriverStation.getMatchTime(), so it is not perfectly accurate, and does not
+     * work properly when teleop/auto is manually enabled from the driver station
+     * (practice mode works fine)
+     * 
+     * It is recommended to set this to 0 when testing in teleop.
+     * 
+     * @param endgameTime The endgame time, default 25 (seconds)
+     * @return The builder
+     */
+    public PathfinderBuilder setEndgameTime(double endgameTime) {
+        this.endgameTime = endgameTime;
+        return this;
+    }
+
+    /**
      * Builds the {@link Pathfinder}
      * 
      * @return The {@link Pathfinder}
@@ -233,10 +259,10 @@ public class PathfinderBuilder {
     public Pathfinder build() {
         FieldData loadedField;
         if (field != null) {
-            loadedField = FieldLoader.loadField(field, cornerCutDist);
+            loadedField = FieldLoader.loadField(field, cornerCutting);
         } else {
             try {
-                loadedField = FieldLoader.loadField(customFieldPath, cornerCutDist);
+                loadedField = FieldLoader.loadField(customFieldPath, cornerCutting);
             } catch (FileNotFoundException e) {
                 throw new RuntimeException("Failed to load field from path " + customFieldPath);
             }
@@ -246,6 +272,6 @@ public class PathfinderBuilder {
         double clearance = Math.sqrt(Math.pow(robotWidth, 2) + Math.pow(robotLength, 2)) / 2;
         return new Pathfinder(loadedField, pointSpacing, cornerPointSpacing, cornerDist, clearance, cornerSplitPercent,
                 injectPoints, normalizeCorners, searchAlgorithmType, precomputeGridX, precomputeGridY, snapInField,
-                profiling);
+                profiling, endgameTime);
     }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * Represents a point in 2D space
@@ -74,7 +75,7 @@ public class Vertex implements Comparable<Vertex> {
      * This will be set to false if the point is inside of an obstacle or outside of
      * the field bounds, since the robot could never be there.
      */
-    public boolean validVisiblity = true;
+    public boolean validVisibility = true;
 
     /**
      * Creates a new Vertex from a Pose2d
@@ -85,6 +86,41 @@ public class Vertex implements Comparable<Vertex> {
         x = pose.getX();
         y = pose.getY();
         rotation = pose.getRotation();
+    }
+
+    /**
+     * Creates a new Vertex from a Translation2d with a rotation of 0
+     * 
+     * @param translation The Translation2d to create the Vertex from
+     */
+    public Vertex(Translation2d translation) {
+        x = translation.getX();
+        y = translation.getY();
+        rotation = new Rotation2d(0);
+    }
+
+    /**
+     * Creates a new Vertex from a Translation2d with a rotation of 0
+     * 
+     * @param translation The Translation2d to create the Vertex from
+     * @param rot         The rotation of the vertex, in degrees
+     */
+    public Vertex(Translation2d translation, double rot) {
+        x = translation.getX();
+        y = translation.getY();
+        rotation = Rotation2d.fromDegrees(rot);
+    }
+
+    /**
+     * Creates a new Vertex from a Translation2d with a rotation of 0
+     * 
+     * @param translation The Translation2d to create the Vertex from
+     * @param rot         The rotation of the vertex
+     */
+    public Vertex(Translation2d translation, Rotation2d rot) {
+        x = translation.getX();
+        y = translation.getY();
+        rotation = rot;
     }
 
     /**

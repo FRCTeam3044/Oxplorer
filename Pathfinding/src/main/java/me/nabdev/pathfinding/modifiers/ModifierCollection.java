@@ -85,7 +85,7 @@ public class ModifierCollection {
             boolean hasRequired = true;
             for (ObstacleModifier mod : requiredModifiers) {
                 if (!mod.isActive())
-                    isActive = false;
+                    hasRequired = false;
             }
             boolean hasOptional = false;
             for (ObstacleModifier mod : optionalModifiers) {

@@ -1,14 +1,17 @@
-# Oxplorer - The on-the-fly pathfinder for FRC!
+![Oxplorer](/assets/banner-light.png)
+***The on-the-fly path planner for FRC***
+
+[![Gradle Package](https://github.com/FRCTeam3044/Oxplorer/actions/workflows/build-release.yml/badge.svg)](https://github.com/FRCTeam3044/Oxplorer/actions/workflows/build-release.yml)
 
 **Read the [FAQ](https://github.com/FRCTeam3044/Oxplorer/wiki/FAQ) and join the [3044 Packages Discord](https://discord.gg/ypRWZGnW66) for updates, support, discussion, and more!**
 
 Oxplorer is a realtime, dynamic, on-the-fly path generator designed for use with FRC robots. It can avoid any obstacles on a given field map and generate the optimal path in an instant.
 
-Oxplorer is not finished, and will continue to be updated (For those worried it is too slow, I have major optimiziations implemented that just need some polishing before a merge). You may have to play with the path settings a little to get them to look right. If there is a feature you want, please feel free to let me know!
+Oxplorer is not finished, and will continue to be updated (For those worried it is too slow, I have several optimiziations implemented that just need some polishing and bug-fixing before a merge). You may have to play with the path settings a little to get them to look right. If there is a feature you want, please feel free to let me know!
 
 For more info, you can read the [wiki](https://github.com/FRCTeam3044/Oxplorer/wiki) and you can explore the [javadoc](https://frcteam3044.github.io/Oxplorer/)!
 
-Take a look at the [Roadmap](https://trello.com/b/DJ243CXC/oxplorer) for and idea of whats to come.
+Take a look at the [Roadmap](https://trello.com/b/DJ243CXC/oxplorer) for an idea of whats to come.
 
 ## Installation
 
@@ -25,8 +28,9 @@ maven {
 ```
 
 Then add this line to the dependencies section:
+
 ```gradle
-implementation 'me.nabdev.pathfinding:oxplorer:0.9.8'
+implementation 'me.nabdev.pathfinding:oxplorer:0.12.2'
 ```
 
 ## Usage
@@ -55,6 +59,7 @@ Questions, Concerns, Suggestions, Bug reports, or anything of the sort? Feel fre
 Or open a github issue/pr if that's more suitable.
 
 ## Links
+
 - Developer: [nab138](https://github.com/nab138)
 - [JSON-java](https://github.com/stleary/JSON-java)
 - [allwpilib](https://github.com/wpilibsuite/allwpilib)

@@ -9,13 +9,17 @@ import me.nabdev.pathfinding.structures.Map;
 import me.nabdev.pathfinding.structures.Obstacle;
 import me.nabdev.pathfinding.structures.Path;
 import me.nabdev.pathfinding.structures.Vertex;
+import me.nabdev.pathfinding.utilities.DriverStationWrapper;
 import me.nabdev.pathfinding.utilities.FieldLoader.FieldData;
 import me.nabdev.pathfinding.utilities.FieldLoader.ObstacleData;
 
 import java.util.ArrayList;
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -59,6 +63,14 @@ public class Pathfinder {
     private double cornerSplitPercent;
 
     /**
+     * Time in seconds when the robot should start to consider
+     * endgame obstacles. Note that this uses DriverStation.getMatchTime(), so it
+     * is not perfectly accurate, and does not work properly when teleop/auto is
+     * manually enabled from the driver station (practice mode works fine)
+     */
+    private static double endgameTime;
+
+    /**
      * Whether or not to profile the pathfinding process
      */
     private boolean profiling;
@@ -83,6 +95,9 @@ public class Pathfinder {
      */
     private boolean snapInGrid;
 
+    private double lastMatchTime = DriverStationWrapper.getMatchTime();
+    private Optional<Alliance> lastAlliance = DriverStationWrapper.getAlliance();
+    private boolean lastIsAuto = DriverStationWrapper.isAutonomous();
     // Every obstacle vertex (ORDER IS IMPORTANT)
     ArrayList<Vertex> obstacleVertices = new ArrayList<>();
     ArrayList<Vertex> uninflatedObstacleVertices = new ArrayList<>();
@@ -116,11 +131,13 @@ public class Pathfinder {
      *                            visibility graph
      * @param snapInField         Whether or not to snap to the field
      * @param profiling           Whether or not to profile the pathfinding process
+     * @param endgameTime         The time in seconds when the robot should start to
+     *                            consider endgame obstacles
      */
     public Pathfinder(FieldData field, double pointSpacing, double cornerPointSpacing, double cornerDist,
             double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners,
             SearchAlgorithmType searchAlgorithmType, int precomputeGridX, int precomputeGridY, boolean snapInField,
-            boolean profiling) {
+            boolean profiling, double endgameTime) {
         this.pointSpacing = pointSpacing;
         this.cornerPointSpacing = cornerPointSpacing;
         this.cornerDist = cornerDist;
@@ -133,6 +150,7 @@ public class Pathfinder {
         this.precomputeGridY = precomputeGridY;
         this.snapInGrid = snapInField;
         this.profiling = profiling;
+        Pathfinder.endgameTime = endgameTime;
 
         // This is essentially a vertex and edge table, with some extra information.
         // Vertices are stored as an array [x, y]
@@ -162,6 +180,36 @@ public class Pathfinder {
 
         for (Obstacle obs : obstacles) {
             obs.initialize(map.getPathVerticesStatic());
+            obs.modifiers.invalidateCache();
+        }
+    }
+
+    /**
+     * Updates the modifier cache based on data from the driver station and wpilib.
+     * Should be called in robotPeriodic.
+     */
+    public void periodic() {
+        boolean shouldInvalidate = false;
+        if (DriverStationWrapper.getMatchTime() < endgameTime && !(lastMatchTime < endgameTime)) {
+            shouldInvalidate = true;
+        }
+        lastMatchTime = DriverStationWrapper.getMatchTime();
+        Optional<Alliance> alliance = DriverStationWrapper.getAlliance();
+        if (!alliance.equals(lastAlliance)) {
+            lastAlliance = alliance;
+            shouldInvalidate = true;
+        }
+        boolean isAuto = DriverStationWrapper.isAutonomous();
+        if (isAuto != lastIsAuto) {
+            lastIsAuto = isAuto;
+            shouldInvalidate = true;
+        }
+        if (shouldInvalidate) {
+            for (Obstacle obs : obstacles) {
+                obs.modifiers.invalidateCache();
+            }
+            map.checkPathVertices();
+            map.calculateStaticNeighbors();
         }
     }
 
@@ -251,6 +299,25 @@ public class Pathfinder {
      */
     public Path generatePath(Pose2d start, Pose2d target, PathfindSnapMode snapMode) throws ImpossiblePathException {
         return generatePathInner(new Vertex(start), new Vertex(target), snapMode, new ArrayList<Vertex>(), true);
+    }
+
+    /**
+     * Snaps the start and target vertices to be outside of obstacles and generates
+     * the best path that passes through all waypoints.
+     * Defaults to PathfindSnapMode.SNAP_ALL
+     * 
+     * @param start  The starting pose
+     * @param target The target waypoints
+     * 
+     * @return A trajectory from the starting vertex passing through all waypoints
+     *         that does not intersect any obstacles
+     * 
+     * @throws ImpossiblePathException If no path can be found
+     */
+    public Path generatePath(Pose2d start, ArrayList<Pose2d> target)
+            throws ImpossiblePathException {
+        return generatePathInner(new Vertex(start), Vertex.fromPose2dArray(target), PathfindSnapMode.SNAP_ALL,
+                new ArrayList<Vertex>());
     }
 
     /**
@@ -379,6 +446,7 @@ public class Pathfinder {
     private Path generatePathInner(Vertex start, Vertex target, PathfindSnapMode snapMode,
             ArrayList<Vertex> dynamicVertices, boolean processPath) throws ImpossiblePathException {
         long startTime = System.nanoTime();
+        periodic();
         // Snapping is done because the center of the robot can be inside of the
         // inflated obstacle edges
         // In the case where this happened the start needs to be snapped outside
@@ -453,7 +521,7 @@ public class Pathfinder {
      * @return
      */
     private Vertex snap(Vertex point) throws ImpossiblePathException {
-        ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point);
+        ArrayList<Obstacle> targetObs = Obstacle.isRobotInObstacle(obstacles, point, true);
         Vertex tempNearestVertex = point;
         int i = 0;
         while (targetObs.size() > 0) {
@@ -461,9 +529,9 @@ public class Pathfinder {
                 throw new ImpossiblePathException("Failed to snap point " + point);
             }
             for (Obstacle obs : targetObs) {
-                tempNearestVertex = obs.calculateNearestPoint(tempNearestVertex);
+                tempNearestVertex = obs.calculateNearestPointFromInside(tempNearestVertex);
             }
-            targetObs = Obstacle.isRobotInObstacle(obstacles, tempNearestVertex);
+            targetObs = Obstacle.isRobotInObstacle(obstacles, tempNearestVertex, true);
             i++;
         }
         return tempNearestVertex;
@@ -677,6 +745,7 @@ public class Pathfinder {
     };
 
     /**
+     * <<<<<<< HEAD
      * Whether or not to snap to the grid
      * 
      * @return Whether or not to snap to the grid
@@ -684,6 +753,26 @@ public class Pathfinder {
     public boolean getSnapInGrid() {
         return snapInGrid;
     };
+
+    /**
+     * 
+     * Time in
+     * seconds when
+     * the robot
+     * should start
+     * to consider
+     * endgame obstacles.**@return
+     * The time
+     * in seconds
+     * when the
+     * robot should
+     * start to
+     * consider endgame
+     */
+
+    public static double getEndgameTime() {
+        return endgameTime;
+    }
 
     /**
      * Space between injected points on straightaways in the path (meters)
@@ -778,4 +867,14 @@ public class Pathfinder {
     public void setSnapInGrid(boolean newSnapInGrid) {
         snapInGrid = newSnapInGrid;
     };
+
+    /**
+     * Time in seconds when the robot should start to consider endgame obstacles.
+     * 
+     * @param newEndgameTime The new time in seconds when the robot should start to
+     *                       consider endgame obstacles
+     */
+    public static void setEndgameTime(double newEndgameTime) {
+        endgameTime = newEndgameTime;
+    }
 }

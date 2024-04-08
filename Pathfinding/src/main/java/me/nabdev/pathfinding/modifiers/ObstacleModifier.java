@@ -35,7 +35,7 @@ public abstract class ObstacleModifier {
         /**
          * Obstacle is active during endgame (last 20 seconds)
          */
-        ACTIVE_ENGAME,
+        ACTIVE_ENDGAME,
         /**
          * Obstacle is active during autonomous (first 15 seconds)
          */
@@ -61,7 +61,12 @@ public abstract class ObstacleModifier {
          * Marks the obstacle as the red alliance's, does not affect if it is active
          * unless ACTIVE_MY_ALLIANCE/ACTIVE_OTHER_ALLIANCE is also applied
          */
-        RED_ALLIANCE
+        RED_ALLIANCE,
+        /**
+         * Marks the obstacle as a zone. This means it will not invalidate obstacle
+         * points and start points will not snap outside of it.
+         */
+        ZONE_MODIFIER
     }
 
     /**
@@ -75,12 +80,12 @@ public abstract class ObstacleModifier {
         switch (type) {
             case ALWAYS_ACTIVE:
                 return new AlwaysActiveModifier();
-            case ACTIVE_ENGAME:
-                break;
+            case ACTIVE_ENDGAME:
+                return new ActiveEndgameModifier();
             case ACTIVE_AUTO:
-                break;
+                return new ActiveAutoModifier();
             case ACTIVE_TELE:
-                break;
+                return new ActiveTeleModifier();
             case ACTIVE_MY_ALLIANCE:
                 return new ActiveMyAllianceModifier(collection);
             case ACTIVE_OTHER_ALLIANCE:
@@ -89,6 +94,8 @@ public abstract class ObstacleModifier {
                 return new BlueAllianceModifier();
             case RED_ALLIANCE:
                 return new RedAllianceModifier();
+            case ZONE_MODIFIER:
+                return new ZoneModifier();
         }
         throw new UnsupportedOperationException("TODO");
     }

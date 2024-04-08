@@ -47,6 +47,10 @@ public class Map {
     ArrayList<Edge> obstacleEdges;
 
     /**
+     * The edges of obstacles that are inside of the field bounds.
+     */
+    ArrayList<Edge> validObstacleEdges = new ArrayList<>();
+    /**
      * The obstacles themselves.
      */
     ArrayList<Obstacle> obstacles;
@@ -112,8 +116,8 @@ public class Map {
         // offset by the clearance parameter.
         pathVerticesStatic = calculateStaticPathVertices(clearance);
         checkPathVertices();
-        ArrayList<Edge> validEdges = validObstacleEdges();
-        precomputeGrid = new Grid(precomputeGridX, precomputeGridY, validEdges, obstacleVertices,
+        checkObstacleEdges();
+        precomputeGrid = new Grid(precomputeGridX, precomputeGridY, validObstacleEdges, obstacleVertices,
                 fieldx, fieldy, snapInField);
         for (Vertex v : pathVerticesStatic) {
             v.gridX = (int) Math.floor(v.x / GridCell.xSize);
@@ -129,12 +133,14 @@ public class Map {
      * inside of another obstacle, in which case, mark them to be skipped during
      * visibility graph generation.
      */
-    private void checkPathVertices() {
+    public void checkPathVertices() {
         for (Vertex v : pathVerticesStatic) {
             if (v.x < originx || v.x > fieldx || v.y < originy || v.y > fieldy) {
-                v.validVisiblity = false;
+                v.validVisibility = false;
             } else if (Obstacle.isRobotInObstacle(obstacles, v).size() > 0) {
-                v.validVisiblity = false;
+                v.validVisibility = false;
+            } else {
+                v.validVisibility = true;
             }
         }
     }
@@ -144,19 +150,15 @@ public class Map {
      * bounds, and if they aren't add them to the validObstacleEdges list.
      * This currently only covers some cases, but is good enough for now.
      */
-    private ArrayList<Edge> validObstacleEdges() {
-        // We remove edges that are completely outside of the field bounds.
-        ArrayList<Edge> validObstacleEdges = new ArrayList<>();
+    public void checkObstacleEdges() {
         for (Edge e : obstacleEdges) {
-            Vertex v1 = e.getVertexOne(obstacleVertices);
-            Vertex v2 = e.getVertexTwo(obstacleVertices);
+            Vertex v1 = obstacleVertices.get(e.getVertexOne());
+            Vertex v2 = obstacleVertices.get(e.getVertexTwo());
             if (!((v1.x < originx && v2.x < originx) || (v1.x > fieldx && v2.x > fieldx)
                     || (v1.y < originy && v2.y < originy) || (v1.y > fieldy && v2.y > fieldy))) {
                 validObstacleEdges.add(e);
             }
         }
-        return validObstacleEdges;
-
     }
 
     /**
@@ -177,19 +179,19 @@ public class Map {
             // Calculate the center of the obstacle.
             double avgX = 0;
             double avgY = 0;
-            for (Vertex v : obs.myVertices) {
+            for (Vertex v : obs.getVertices()) {
                 avgX += v.x;
                 avgY += v.y;
             }
-            avgX /= obs.myVertices.size();
-            avgY /= obs.myVertices.size();
+            avgX /= obs.getVertices().size();
+            avgY /= obs.getVertices().size();
             Vertex center = new Vertex(avgX, avgY);
 
-            for (Vertex v : obs.myVertices) {
+            for (Vertex v : obs.getVertices()) {
                 // Get the two vertices connected to the current vertex.
                 Vertex connection1 = null;
                 Vertex connection2 = null;
-                for (Edge e : obs.edges) {
+                for (Edge e : obs.getEdges()) {
                     int contains = e.containsVertex(v, obstacleVertices);
                     if (contains != -1) {
                         if (connection1 == null) {
@@ -234,7 +236,12 @@ public class Map {
         return inflatedPlusEps;
     }
 
-    private void calculateStaticNeighbors() {
+    /**
+     * Calculates the neighbors of the static path vertices (regenerates cached
+     * visibility graph)
+     */
+    public void calculateStaticNeighbors() {
+        neighborsStatic.clear();
         for (int cur = 0; cur < pathVerticesStatic.size(); cur++) {
             for (int i = cur; i < pathVerticesStatic.size(); i++) {
                 try {
@@ -243,6 +250,9 @@ public class Map {
                     e.printStackTrace();
                 }
             }
+        }
+        for (Vertex v : pathVerticesStatic) {
+            v.staticNeighbors.clear();
         }
         for (Edge e : neighborsStatic) {
             Vertex v1 = e.getVertexOne(pathVerticesStatic);
@@ -300,7 +310,7 @@ public class Map {
         Vertex curVertex = pathVerticesArray.get(cur);
         Vertex iVertex = pathVerticesArray.get(i);
 
-        if (!curVertex.validVisiblity || !iVertex.validVisiblity)
+        if (!curVertex.validVisibility || !iVertex.validVisibility)
             return;
 
         boolean intersect = false;
@@ -312,7 +322,9 @@ public class Map {
                 continue;
             if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
                     e.getVertexTwo(obstacleVertices))) {
-                SmartDashboard.putNumberArray("intersect edge", new Double[]{e.getVertexOne(obstacleVertices).x, e.getVertexOne(obstacleVertices).y, 0.0, e.getVertexTwo(obstacleVertices).x, e.getVertexTwo(obstacleVertices).y, 0.0});
+                SmartDashboard.putNumberArray("intersect edge",
+                        new Double[] { e.getVertexOne(obstacleVertices).x, e.getVertexOne(obstacleVertices).y, 0.0,
+                                e.getVertexTwo(obstacleVertices).x, e.getVertexTwo(obstacleVertices).y, 0.0 });
                 intersect = true;
                 break;
             }
