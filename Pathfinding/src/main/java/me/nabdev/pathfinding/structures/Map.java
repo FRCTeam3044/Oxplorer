@@ -106,20 +106,29 @@ public class Map {
         // Uses vectors to make a list of points around the vertices of obstacles,
         // offset by the clearance parameter.
         pathVerticesStatic = calculateStaticPathVertices(clearance);
-        checkPathVertices();
-        checkObstacleEdges();
-        // Calculate the edges between these path vertices, so that the robot can't
-        // phase through obstacles.
-        calculateStaticNeighbors();
+        validObstacleEdges = getValidObstacleEdges(obstacleEdges, obstacleVertices);
+        regenerateVisibilityGraph();
+    }
+
+    /**
+     * Regenerates the visibility graph with the current path vertices and
+     * obstacles.
+     */
+    public void regenerateVisibilityGraph() {
+        checkPathVertices(pathVerticesStatic, obstacles);
+        neighborsStatic = calculateStaticNeighbors(pathVerticesStatic, validObstacleEdges, obstacleVertices);
     }
 
     /**
      * Check all obstacle vertices to see if they are outside of field bounds or
      * inside of another obstacle, in which case, mark them to be skipped during
      * visibility graph generation.
+     * 
+     * @param vertices  The vertices to check.
+     * @param obstacles The obstacles to check against.
      */
-    public void checkPathVertices() {
-        for (Vertex v : pathVerticesStatic) {
+    public void checkPathVertices(ArrayList<Vertex> vertices, ArrayList<Obstacle> obstacles) {
+        for (Vertex v : vertices) {
             if (v.x < originx || v.x > fieldx || v.y < originy || v.y > fieldy) {
                 v.validVisibility = false;
             } else if (Obstacle.isRobotInObstacle(obstacles, v).size() > 0) {
@@ -134,16 +143,23 @@ public class Map {
      * Check all obstacle edges to see if they are completely outside of field
      * bounds, and if they aren't add them to the validObstacleEdges list.
      * This currently only covers some cases, but is good enough for now.
+     * 
+     * @param obstacleEdges    The edges of the obstacles.
+     * @param obstacleVertices The vertices of the obstacles.
+     * 
+     * @return The edges that are inside of the field bounds.
      */
-    public void checkObstacleEdges() {
+    public ArrayList<Edge> getValidObstacleEdges(ArrayList<Edge> obstacleEdges, ArrayList<Vertex> obstacleVertices) {
+        ArrayList<Edge> validObstacleEdges = new ArrayList<Edge>();
         for (Edge e : obstacleEdges) {
-            Vertex v1 = obstacleVertices.get(e.getVertexOne());
-            Vertex v2 = obstacleVertices.get(e.getVertexTwo());
+            Vertex v1 = e.getVertexOne(obstacleVertices);
+            Vertex v2 = e.getVertexTwo(obstacleVertices);
             if (!((v1.x < originx && v2.x < originx) || (v1.x > fieldx && v2.x > fieldx)
                     || (v1.y < originy && v2.y < originy) || (v1.y > fieldy && v2.y > fieldy))) {
                 validObstacleEdges.add(e);
             }
         }
+        return validObstacleEdges;
     }
 
     /**
@@ -224,23 +240,38 @@ public class Map {
     /**
      * Calculates the neighbors of the static path vertices (regenerates cached
      * visibility graph)
+     * 
+     * Will save the neighbors to the vertices themselves.
+     * 
+     * @param vertices    The vertices to calculate the neighbors of.
+     * @param obsEdges    The edges of the obstacles.
+     * @param obsVertices The vertices of the obstacles.
+     * 
+     * @return The neighbors of the vertices.
      */
-    public void calculateStaticNeighbors() {
-        neighborsStatic.clear();
-        for (int cur = 0; cur < pathVerticesStatic.size(); cur++) {
-            for (int i = cur; i < pathVerticesStatic.size(); i++) {
-                lineOfSight(cur, i, neighborsStatic, pathVerticesStatic);
+    public ArrayList<Edge> calculateStaticNeighbors(ArrayList<Vertex> vertices, ArrayList<Edge> obsEdges,
+            ArrayList<Vertex> obsVertices) {
+        ArrayList<Edge> newNeighbors = new ArrayList<>();
+        for (int i = 0; i < vertices.size(); i++) {
+            for (int j = i + 1; j < vertices.size(); j++) {
+                Vertex v1 = vertices.get(i);
+                Vertex v2 = vertices.get(j);
+                boolean visible = lineOfSight(v1, v2, obsEdges, obsVertices);
+                if (visible) {
+                    newNeighbors.add(new Edge(i, j));
+                }
             }
         }
         for (Vertex v : pathVerticesStatic) {
             v.staticNeighbors.clear();
         }
-        for (Edge e : neighborsStatic) {
+        for (Edge e : newNeighbors) {
             Vertex v1 = e.getVertexOne(pathVerticesStatic);
             Vertex v2 = e.getVertexTwo(pathVerticesStatic);
             v1.staticNeighbors.add(v2);
             v2.staticNeighbors.add(v1);
         }
+        return newNeighbors;
     }
 
     /**
@@ -251,26 +282,19 @@ public class Map {
      *                           neighbors to their static values (For when
      *                           generating a new path)
      */
-    public void calculateDynamicNeighbors(ArrayList<Vertex> additionalVertices, boolean reset) {
+    public void calculateDynamicVisibilityGraph(ArrayList<Vertex> additionalVertices, boolean reset) {
         if (reset || pathVertices == null)
             pathVertices = new ArrayList<>(pathVerticesStatic);
         if (reset || neighbors == null)
             neighbors = new ArrayList<>(neighborsStatic);
-
-        ArrayList<Edge> dynamicNeighbors = new ArrayList<>();
         pathVertices.addAll(additionalVertices);
-
         if (reset) {
             for (Vertex v : pathVertices) {
                 v.dynamicNeighbors.clear();
             }
         }
-
-        for (int cur = pathVertices.size() - additionalVertices.size(); cur < pathVertices.size(); cur++) {
-            for (int i = 0; i < pathVertices.size(); i++) {
-                lineOfSight(cur, i, dynamicNeighbors, pathVertices);
-            }
-        }
+        ArrayList<Edge> dynamicNeighbors = calculateDynamicNeighbors(pathVertices, additionalVertices.size(),
+                validObstacleEdges, obstacleVertices);
         for (Edge e : dynamicNeighbors) {
             Vertex v1 = e.getVertexOne(pathVertices);
             Vertex v2 = e.getVertexTwo(pathVertices);
@@ -280,29 +304,57 @@ public class Map {
         neighbors.addAll(dynamicNeighbors);
     }
 
-    private void lineOfSight(int cur, int i, ArrayList<Edge> neighborArray, ArrayList<Vertex> pathVerticesArray) {
-        if (cur == i)
-            return;
+    /**
+     * Calculates the neighbors of the non-static path vertices.
+     * 
+     * @param additionalVertices The vertices to add to the path vertices.
+     * @param obsEdges           The edges of the obstacles.
+     * @param obsVertices        The vertices of the obstacles.
+     */
+    private ArrayList<Edge> calculateDynamicNeighbors(ArrayList<Vertex> vertices, int numAdditional,
+            ArrayList<Edge> obsEdges,
+            ArrayList<Vertex> obsVertices) {
+        ArrayList<Edge> dynamicNeighbors = new ArrayList<>();
 
-        Vertex curVertex = pathVerticesArray.get(cur);
-        Vertex iVertex = pathVerticesArray.get(i);
+        for (int i = vertices.size() - numAdditional; i < vertices.size(); i++) {
+            for (int j = 0; j < vertices.size(); j++) {
+                if (i == j)
+                    continue;
+                Vertex v1 = vertices.get(i);
+                Vertex v2 = vertices.get(j);
+                boolean visible = lineOfSight(v1, v2, obsEdges, obsVertices);
+                if (visible) {
+                    dynamicNeighbors.add(new Edge(i, j));
+                }
+            }
+        }
+        return dynamicNeighbors;
+    }
 
-        if (!curVertex.validVisibility || !iVertex.validVisibility)
-            return;
+    /**
+     * Checks if there is a line of sight between two vertices.
+     * 
+     * @param v1          The first vertex.
+     * @param v2          The second vertex.
+     * @param obsEdges    The edges of the obstacles.
+     * @param obsVertices The vertices of the obstacles.
+     * @return Whether there is a line of sight between the two vertices.
+     */
+    private boolean lineOfSight(Vertex v1, Vertex v2, ArrayList<Edge> obsEdges, ArrayList<Vertex> obsVertices) {
+        if (!v1.validVisibility || !v2.validVisibility)
+            return false;
 
         boolean intersect = false;
 
-        for (Edge e : validObstacleEdges) {
+        for (Edge e : obsEdges) {
             if (!e.isActive())
                 continue;
-            if (Vector.dotIntersectFast(curVertex, iVertex, e.getVertexOne(obstacleVertices),
-                    e.getVertexTwo(obstacleVertices))) {
+            if (Vector.dotIntersectFast(v1, v2, e.getVertexOne(obsVertices), e.getVertexTwo(obsVertices))) {
                 intersect = true;
                 break;
             }
         }
-        if (!intersect)
-            neighborArray.add(new Edge(cur, i));
+        return !intersect;
     }
 
     /**
