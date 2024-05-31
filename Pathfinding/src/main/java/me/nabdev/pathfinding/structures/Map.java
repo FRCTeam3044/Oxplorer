@@ -349,4 +349,13 @@ public class Map {
     public ArrayList<Obstacle> getObstacles() {
         return obstacles;
     }
+
+    /**
+     * Get all obstacle edges which could actually obstruct the robot
+     *
+     * @return all obstacle edges that could obstruct the robot
+     */
+    public ArrayList<Edge> getValidObstacleEdges() {
+        return validObstacleEdges;
+    }
 }
