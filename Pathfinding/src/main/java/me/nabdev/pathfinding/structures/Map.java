@@ -340,4 +340,13 @@ public class Map {
     public ArrayList<Edge> getNeighborsStatic() {
         return neighborsStatic;
     }
+
+    /**
+     * Get the obstacles for the current map
+     *
+     * @return the obstacles of the current map
+     */
+    public ArrayList<Obstacle> getObstacles() {
+        return obstacles;
+    }
 }
