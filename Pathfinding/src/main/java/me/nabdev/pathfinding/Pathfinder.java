@@ -187,8 +187,10 @@ public class Pathfinder {
     /**
      * Updates the modifier cache based on data from the driver station and wpilib.
      * Should be called in robotPeriodic.
+     * 
+     * @throws ImpossiblePathException If no path can be found
      */
-    public void periodic() {
+    public void periodic() throws ImpossiblePathException {
         boolean shouldInvalidate = false;
         if (DriverStationWrapper.getMatchTime() < endgameTime && !(lastMatchTime < endgameTime)) {
             shouldInvalidate = true;
@@ -208,8 +210,7 @@ public class Pathfinder {
             for (Obstacle obs : obstacles) {
                 obs.modifiers.invalidateCache();
             }
-            map.checkPathVertices();
-            map.calculateStaticNeighbors();
+            map.regenerateVisibilityGraph();
         }
     }
 
@@ -469,7 +470,7 @@ public class Pathfinder {
         additionalVertexs.add(start);
         additionalVertexs.add(target);
         additionalVertexs.addAll(dynamicVertices);
-        map.calculateDynamicNeighbors(additionalVertexs, true);
+        map.calculateDynamicVisibilityGraph(additionalVertexs, true);
 
         // long visibilityEndTime = System.nanoTime();
 
