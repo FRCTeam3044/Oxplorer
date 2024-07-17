@@ -20,32 +20,32 @@ public class Edge {
     /**
      * The obstacle this edge is a part of.
      */
-    private ModifierCollection myModifiers;
+    private ModifierCollection modifiers;
 
     /**
      * Constructor for the Edge class.
      * 
-     * @param _x        The index of the first vertex in the obstacleVertices array.
-     * @param _y        The index of the second vertex in the obstacleVertices
+     * @param vertexOne The index of the first vertex in the obstacleVertices array.
+     * @param vertexTwo The index of the second vertex in the obstacleVertices
      *                  array.
      * @param modifiers The modifiers on this edge.
      */
-    public Edge(int _x, int _y, ModifierCollection modifiers) {
-        vertexOne = _x;
-        vertexTwo = _y;
-        myModifiers = modifiers;
+    public Edge(int vertexOne, int vertexTwo, ModifierCollection modifiers) {
+        this.vertexOne = vertexOne;
+        this.vertexTwo = vertexTwo;
+        this.modifiers = modifiers;
     }
 
     /**
      * Constructor for the Edge class.
      * 
-     * @param _x The index of the first vertex in the obstacleVertices array.
-     * @param _y The index of the second vertex in the obstacleVertices
-     *           array.
+     * @param vertexOne The index of the first vertex in the obstacleVertices array.
+     * @param vertexTwo The index of the second vertex in the obstacleVertices
+     *                  array.
      */
-    public Edge(int _x, int _y) {
-        vertexOne = _x;
-        vertexTwo = _y;
+    public Edge(int vertexOne, int vertexTwo) {
+        this.vertexOne = vertexOne;
+        this.vertexTwo = vertexTwo;
     }
 
     // Allows use of .contains on an arraylist, as usually it checks for the given
@@ -143,8 +143,8 @@ public class Edge {
      * @return true if the edge is active (or has no modifiers)
      */
     public boolean isActive() {
-        if (myModifiers == null)
+        if (modifiers == null)
             return true;
-        return myModifiers.isActive();
+        return modifiers.isActive();
     }
 }

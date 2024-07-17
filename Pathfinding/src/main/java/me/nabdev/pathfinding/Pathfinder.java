@@ -180,8 +180,7 @@ public class Pathfinder {
             for (Obstacle obs : obstacles) {
                 obs.modifiers.invalidateCache();
             }
-            map.checkPathVertices();
-            map.calculateStaticNeighbors();
+            map.regenerateVisibilityGraph();
         }
     }
 
@@ -441,7 +440,7 @@ public class Pathfinder {
         additionalVertexs.add(start);
         additionalVertexs.add(target);
         additionalVertexs.addAll(dynamicVertices);
-        map.calculateDynamicNeighbors(additionalVertexs, true);
+        map.calculateDynamicVisibilityGraph(additionalVertexs, true);
 
         // long visibilityEndTime = System.nanoTime();
 
