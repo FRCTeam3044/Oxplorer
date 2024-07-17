@@ -115,6 +115,11 @@ public class Map {
         // Uses vectors to make a list of points around the vertices of obstacles,
         // offset by the clearance parameter.
         pathVerticesStatic = calculateStaticPathVertices(clearance);
+
+        // Remove edges of obstacles that are completely outside of the field bounds.
+        validObstacleEdges = getValidObstacleEdges(obstacleEdges, obstacleVertices);
+
+        // Create a grid to speed up the visibility graph generation.
         precomputeGrid = new Grid(precomputeGridX, precomputeGridY, validObstacleEdges, obstacleVertices,
                 fieldx, fieldy, snapInField);
         for (Vertex v : pathVerticesStatic) {
@@ -123,7 +128,6 @@ public class Map {
         }
         // Calculate the edges between these path vertices, so that the robot can't
         // phase through obstacles.
-        validObstacleEdges = getValidObstacleEdges(obstacleEdges, obstacleVertices);
         try {
             regenerateVisibilityGraph();
         } catch (ImpossiblePathException e) {
@@ -386,9 +390,11 @@ public class Map {
             if (!e.isActive())
                 continue;
             if (Vector.dotIntersectFast(v1, v2, e.getVertexOne(obsVertices), e.getVertexTwo(obsVertices))) {
-                SmartDashboard.putNumberArray("intersect edge",
-                        new Double[] { e.getVertexOne(obstacleVertices).x, e.getVertexOne(obstacleVertices).y, 0.0,
-                                e.getVertexTwo(obstacleVertices).x, e.getVertexTwo(obstacleVertices).y, 0.0 });
+                // SmartDashboard.putNumberArray("intersect edge",
+                // new Double[] { e.getVertexOne(obstacleVertices).x,
+                // e.getVertexOne(obstacleVertices).y, 0.0,
+                // e.getVertexTwo(obstacleVertices).x, e.getVertexTwo(obstacleVertices).y, 0.0
+                // });
                 intersect = true;
                 break;
             }

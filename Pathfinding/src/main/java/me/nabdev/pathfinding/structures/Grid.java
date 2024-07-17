@@ -111,8 +111,8 @@ public class Grid {
             y2 = (int) Math.floor(b.y * GridCell.ySizeDividend);
             int clampedX2 = MathUtil.clamp(x2, 0, cells.length - 1);
             int clampedY2 = MathUtil.clamp(y2, 0, cells[0].length - 1);
-            if ((!snapInField && !forceSnapInField) && clampedX2 != x || clampedY2 != y) {
-                throw new ImpossiblePathException("Vertex " + a + " is not in the field");
+            if ((!snapInField && !forceSnapInField) && clampedX2 != x2 || clampedY2 != y2) {
+                throw new ImpossiblePathException("Vertex " + b + " is not in the field");
             }
             x2 = clampedX2;
             y2 = clampedY2;
