@@ -746,7 +746,6 @@ public class Pathfinder {
     };
 
     /**
-     * <<<<<<< HEAD
      * Whether or not to snap to the grid
      * 
      * @return Whether or not to snap to the grid
@@ -756,19 +755,9 @@ public class Pathfinder {
     };
 
     /**
+     * Time in seconds when the robot should start to consider endgame
      * 
-     * Time in
-     * seconds when
-     * the robot
-     * should start
-     * to consider
-     * endgame obstacles.**@return
-     * The time
-     * in seconds
-     * when the
-     * robot should
-     * start to
-     * consider endgame
+     * @return The time in seconds when the robot should start to consider endgame
      */
 
     public static double getEndgameTime() {
