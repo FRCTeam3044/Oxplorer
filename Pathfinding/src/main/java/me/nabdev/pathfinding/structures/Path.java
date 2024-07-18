@@ -96,8 +96,8 @@ public class Path extends ArrayList<Vertex> {
      * @param path The path to add.
      */
     public void addPath(Path path) {
-        this.addAll(path);
         this.add(target);
+        this.addAll(path);
         createFullPath();
         setUnsnappedTarget(path.getUnsnappedTarget());
         this.target = path.getTarget();
@@ -383,8 +383,8 @@ public class Path extends ArrayList<Vertex> {
      */
     public Trajectory asTrajectory(TrajectoryConfig config) throws ImpossiblePathException {
         try {
-        return TrajectoryGenerator.generateTrajectory(asPose2dList(), config);
-        } catch (TrajectoryGenerationException e){
+            return TrajectoryGenerator.generateTrajectory(asPose2dList(), config);
+        } catch (TrajectoryGenerationException e) {
             throw new ImpossiblePathException("Failed to generate trajectory for path. Error: " + e.getMessage());
         }
     }
