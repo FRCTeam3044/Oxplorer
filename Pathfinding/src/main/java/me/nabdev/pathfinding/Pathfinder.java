@@ -79,6 +79,22 @@ public class Pathfinder {
      */
     private SearchAlgorithmType searchAlgorithmType;
 
+    /**
+     * How many cells to use on the x axis of the grid when precomputing the edges
+     * for the dynamic visibility graph
+     */
+    public final int precomputeGridX;
+    /**
+     * How many cells to use on the y axis of the grid when precomputing the edges
+     * for the dynamic visibility graph
+     */
+    public final int precomputeGridY;
+
+    /**
+     * Whether or not to snap to the grid
+     */
+    private boolean snapInGrid;
+
     private double lastMatchTime = DriverStationWrapper.getMatchTime();
     private Optional<Alliance> lastAlliance = DriverStationWrapper.getAlliance();
     private boolean lastIsAuto = DriverStationWrapper.isAutonomous();
@@ -107,13 +123,21 @@ public class Pathfinder {
      * @param normalizeCorners    Whether or not to normalize distance between
      *                            corner points
      * @param searchAlgorithmType The search algorithm to use
+     * @param precomputeGridX     How many cells to use on the x axis of the grid
+     *                            when precomputing the edges for the dynamic
+     *                            visibility graph
+     * @param precomputeGridY     How many cells to use on the y axis of the grid
+     *                            when precomputing the edges for the dynamic
+     *                            visibility graph
+     * @param snapInField         Whether or not to snap to the field
      * @param profiling           Whether or not to profile the pathfinding process
      * @param endgameTime         The time in seconds when the robot should start to
      *                            consider endgame obstacles
      */
     public Pathfinder(FieldData field, double pointSpacing, double cornerPointSpacing, double cornerDist,
             double clearance, double cornerSplitPercent, boolean injectPoints, boolean normalizeCorners,
-            SearchAlgorithmType searchAlgorithmType, boolean profiling, double endgameTime) {
+            SearchAlgorithmType searchAlgorithmType, int precomputeGridX, int precomputeGridY, boolean snapInField,
+            boolean profiling, double endgameTime) {
         this.pointSpacing = pointSpacing;
         this.cornerPointSpacing = cornerPointSpacing;
         this.cornerDist = cornerDist;
@@ -122,6 +146,9 @@ public class Pathfinder {
         this.injectPoints = injectPoints;
         this.normalizeCorners = normalizeCorners;
         this.searchAlgorithmType = searchAlgorithmType;
+        this.precomputeGridX = precomputeGridX;
+        this.precomputeGridY = precomputeGridY;
+        this.snapInGrid = snapInField;
         this.profiling = profiling;
         Pathfinder.endgameTime = endgameTime;
 
@@ -148,7 +175,8 @@ public class Pathfinder {
         }
 
         // Create the map object
-        map = new Map(obstacles, obstacleVertices, edges, clearance, field.fieldX, field.fieldY);
+        map = new Map(obstacles, obstacleVertices, edges, clearance, field.fieldX, field.fieldY, precomputeGridX,
+                precomputeGridY, snapInField);
 
         for (Obstacle obs : obstacles) {
             obs.initialize(map.getPathVerticesStatic());
@@ -159,8 +187,10 @@ public class Pathfinder {
     /**
      * Updates the modifier cache based on data from the driver station and wpilib.
      * Should be called in robotPeriodic.
+     * 
+     * @throws ImpossiblePathException If no path can be found
      */
-    public void periodic() {
+    public void periodic() throws ImpossiblePathException {
         boolean shouldInvalidate = false;
         if (DriverStationWrapper.getMatchTime() < endgameTime && !(lastMatchTime < endgameTime)) {
             shouldInvalidate = true;
@@ -456,6 +486,7 @@ public class Pathfinder {
         // long searchEndTime = System.nanoTime();
 
         path.setUnsnappedTarget(unsnappedTarget);
+
         if (processPath)
             path.processPath(snapMode);
         if (profiling) {
@@ -715,10 +746,20 @@ public class Pathfinder {
     };
 
     /**
-     * Time in seconds when the robot should start to consider endgame obstacles.
+     * Whether or not to snap to the grid
+     * 
+     * @return Whether or not to snap to the grid
+     */
+    public boolean getSnapInGrid() {
+        return snapInGrid;
+    };
+
+    /**
+     * Time in seconds when the robot should start to consider endgame
      * 
      * @return The time in seconds when the robot should start to consider endgame
      */
+
     public static double getEndgameTime() {
         return endgameTime;
     }
@@ -806,6 +847,15 @@ public class Pathfinder {
      */
     public void setProfiling(boolean newProfiling) {
         profiling = newProfiling;
+    };
+
+    /**
+     * Whether or not to snap to the grid
+     * 
+     * @param newSnapInGrid Whether or not to snap to the grid
+     */
+    public void setSnapInGrid(boolean newSnapInGrid) {
+        snapInGrid = newSnapInGrid;
     };
 
     /**

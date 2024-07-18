@@ -44,6 +44,18 @@ public class Vertex implements Comparable<Vertex> {
     }
 
     /**
+     * Used with the grid optimizations, just caching the grid x coordinate of the
+     * vertex
+     */
+    public int gridX = -1;
+
+    /**
+     * Used with the grid optimizations, just caching the grid y coordinate of the
+     * vertex
+     */
+    public int gridY = -1;
+
+    /**
      * Used with A*. The previous vertex in the path, saved so that the path can be
      * traced backwards after reaching the target.
      */
@@ -309,7 +321,7 @@ public class Vertex implements Comparable<Vertex> {
             return false;
         Vertex compare = (Vertex) o;
 
-        return compare.x == this.x && compare.y == this.y;
+        return Double.compare(compare.x, this.x) == 0 && Double.compare(compare.y, this.y) == 0;
     }
 
     /**
@@ -335,4 +347,19 @@ public class Vertex implements Comparable<Vertex> {
         else
             return 0;
     }
+
+    // @Override
+    // public int hashCode() {
+    // // Choose prime numbers to ensure diverse distribution
+    // final int prime = 31;
+    // int result = 1;
+
+    // long xBits = Double.doubleToLongBits(x);
+    // long yBits = Double.doubleToLongBits(y);
+
+    // result = prime * result + (int) (xBits ^ (xBits >>> 32));
+    // result = prime * result + (int) (yBits ^ (yBits >>> 32));
+
+    // return result;
+    // }
 }

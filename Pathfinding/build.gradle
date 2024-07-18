@@ -1,12 +1,12 @@
 plugins {
     id 'java-library'
-    id "edu.wpi.first.GradleRIO" version "2024.3.1"
+    id "edu.wpi.first.GradleRIO" version "2024.3.2"
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'maven-publish'
 }
 
 group 'me.nabdev.pathfinding'
-version '0.12.5-SNAPSHOT'
+version '0.12.5-SNAPSHOT-OPTIMIZED3'
 
 java {
     withSourcesJar()

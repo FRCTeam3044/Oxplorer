@@ -2,6 +2,8 @@ package me.nabdev.pathfinding.structures;
 
 import java.util.ArrayList;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 /**
  * Represents all the obstacles on the map as well as the visibility graph that
  * the robot can use to navigate.
@@ -79,18 +81,25 @@ public class Map {
      */
     ArrayList<Edge> neighbors;
 
+    Grid precomputeGrid;
+
     /**
      * Create a new map with the given obstacles, vertices, and clearance parameter.
      * 
-     * @param obs        The obstacles.
-     * @param obVertices The vertices of the obstacles.
-     * @param obEdges    The edges of the obstacles.
-     * @param clearance  The clearance parameter to inflate the obstacles by.
-     * @param fieldx     The x dimension of the field (meters)
-     * @param fieldy     The y dimension of the field (meters)
+     * @param obs             The obstacles.
+     * @param obVertices      The vertices of the obstacles.
+     * @param obEdges         The edges of the obstacles.
+     * @param clearance       The clearance parameter to inflate the obstacles by.
+     * @param fieldx          The x dimension of the field (meters)
+     * @param fieldy          The y dimension of the field (meters)
+     * @param precomputeGridX The number of cells on the x axis for the precompute
+     *                        grid
+     * @param precomputeGridY The number of cells on the y axis for the precompute
+     *                        grid
+     * @param snapInField     Whether or not to snap the grid to the field bounds
      */
     public Map(ArrayList<Obstacle> obs, ArrayList<Vertex> obVertices, ArrayList<Edge> obEdges, double clearance,
-            double fieldx, double fieldy) {
+            double fieldx, double fieldy, int precomputeGridX, int precomputeGridY, boolean snapInField) {
         obstacleEdges = obEdges;
         obstacleVertices = obVertices;
         obstacles = obs;
@@ -106,15 +115,35 @@ public class Map {
         // Uses vectors to make a list of points around the vertices of obstacles,
         // offset by the clearance parameter.
         pathVerticesStatic = calculateStaticPathVertices(clearance);
+
+        // Remove edges of obstacles that are completely outside of the field bounds.
         validObstacleEdges = getValidObstacleEdges(obstacleEdges, obstacleVertices);
-        regenerateVisibilityGraph();
+
+        // Create a grid to speed up the visibility graph generation.
+        precomputeGrid = new Grid(precomputeGridX, precomputeGridY, validObstacleEdges, obstacleVertices,
+                fieldx, fieldy, snapInField);
+        for (Vertex v : pathVerticesStatic) {
+            v.gridX = (int) Math.floor(v.x / GridCell.xSize);
+            v.gridY = (int) Math.floor(v.y / GridCell.ySize);
+        }
+        // Calculate the edges between these path vertices, so that the robot can't
+        // phase through obstacles.
+        try {
+            regenerateVisibilityGraph();
+        } catch (ImpossiblePathException e) {
+            System.out.println(
+                    "Failed to generate the visibility graph on initialization: Please check the map file. If you are using a built in map, report the issue on github.");
+            e.printStackTrace();
+        }
     }
 
     /**
      * Regenerates the visibility graph with the current path vertices and
      * obstacles.
+     * 
+     * @throws ImpossiblePathException If the vertices are not in the field
      */
-    public void regenerateVisibilityGraph() {
+    public void regenerateVisibilityGraph() throws ImpossiblePathException {
         checkPathVertices(pathVerticesStatic, obstacles);
         neighborsStatic = calculateStaticNeighbors(pathVerticesStatic, validObstacleEdges, obstacleVertices);
     }
@@ -248,15 +277,18 @@ public class Map {
      * @param obsVertices The vertices of the obstacles.
      * 
      * @return The neighbors of the vertices.
+     * 
+     * @throws ImpossiblePathException If the vertices are not in the field
      */
+
     public ArrayList<Edge> calculateStaticNeighbors(ArrayList<Vertex> vertices, ArrayList<Edge> obsEdges,
-            ArrayList<Vertex> obsVertices) {
+            ArrayList<Vertex> obsVertices) throws ImpossiblePathException {
         ArrayList<Edge> newNeighbors = new ArrayList<>();
         for (int i = 0; i < vertices.size(); i++) {
             for (int j = i + 1; j < vertices.size(); j++) {
                 Vertex v1 = vertices.get(i);
                 Vertex v2 = vertices.get(j);
-                boolean visible = lineOfSight(v1, v2, obsEdges, obsVertices);
+                boolean visible = lineOfSight(v1, v2, obsEdges, obsVertices, true);
                 if (visible) {
                     newNeighbors.add(new Edge(i, j));
                 }
@@ -281,8 +313,11 @@ public class Map {
      * @param reset              Whether or not to reset the path vertices and
      *                           neighbors to their static values (For when
      *                           generating a new path)
+     * 
+     * @throws ImpossiblePathException If the vertices are not in the field
      */
-    public void calculateDynamicVisibilityGraph(ArrayList<Vertex> additionalVertices, boolean reset) {
+    public void calculateDynamicVisibilityGraph(ArrayList<Vertex> additionalVertices, boolean reset)
+            throws ImpossiblePathException {
         if (reset || pathVertices == null)
             pathVertices = new ArrayList<>(pathVerticesStatic);
         if (reset || neighbors == null)
@@ -310,10 +345,11 @@ public class Map {
      * @param additionalVertices The vertices to add to the path vertices.
      * @param obsEdges           The edges of the obstacles.
      * @param obsVertices        The vertices of the obstacles.
+     * 
+     * @throws ImpossiblePathException If the vertices are not in the field
      */
     private ArrayList<Edge> calculateDynamicNeighbors(ArrayList<Vertex> vertices, int numAdditional,
-            ArrayList<Edge> obsEdges,
-            ArrayList<Vertex> obsVertices) {
+            ArrayList<Edge> obsEdges, ArrayList<Vertex> obsVertices) throws ImpossiblePathException {
         ArrayList<Edge> dynamicNeighbors = new ArrayList<>();
 
         for (int i = vertices.size() - numAdditional; i < vertices.size(); i++) {
@@ -322,7 +358,7 @@ public class Map {
                     continue;
                 Vertex v1 = vertices.get(i);
                 Vertex v2 = vertices.get(j);
-                boolean visible = lineOfSight(v1, v2, obsEdges, obsVertices);
+                boolean visible = lineOfSight(v1, v2, obsEdges, obsVertices, false);
                 if (visible) {
                     dynamicNeighbors.add(new Edge(i, j));
                 }
@@ -339,17 +375,26 @@ public class Map {
      * @param obsEdges    The edges of the obstacles.
      * @param obsVertices The vertices of the obstacles.
      * @return Whether there is a line of sight between the two vertices.
+     * 
+     * @throws ImpossiblePathException If the vertices are not in the field
      */
-    private boolean lineOfSight(Vertex v1, Vertex v2, ArrayList<Edge> obsEdges, ArrayList<Vertex> obsVertices) {
+    private boolean lineOfSight(Vertex v1, Vertex v2, ArrayList<Edge> obsEdges, ArrayList<Vertex> obsVertices,
+            boolean forceSnapInField) throws ImpossiblePathException {
         if (!v1.validVisibility || !v2.validVisibility)
             return false;
 
         boolean intersect = false;
+        ArrayList<Edge> possibleEdges = precomputeGrid.getCellPairOf(v1, v2, forceSnapInField).possibleEdges;
 
-        for (Edge e : obsEdges) {
+        for (Edge e : possibleEdges) {
             if (!e.isActive())
                 continue;
             if (Vector.dotIntersectFast(v1, v2, e.getVertexOne(obsVertices), e.getVertexTwo(obsVertices))) {
+                // SmartDashboard.putNumberArray("intersect edge",
+                // new Double[] { e.getVertexOne(obstacleVertices).x,
+                // e.getVertexOne(obstacleVertices).y, 0.0,
+                // e.getVertexTwo(obstacleVertices).x, e.getVertexTwo(obstacleVertices).y, 0.0
+                // });
                 intersect = true;
                 break;
             }
