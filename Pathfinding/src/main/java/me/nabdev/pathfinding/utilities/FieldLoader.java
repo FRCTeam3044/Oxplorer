@@ -236,8 +236,9 @@ public class FieldLoader {
             }
             // If corner cut dist is 0, there is no need to cut corners, and doing so will
             // just make it unnecessarily slow
-            ArrayList<Double[]> myProcessedVertices = cornerCutMode == CornerCutting.NONE ? myVertices
-                    : cutCornersLine(myVertices);
+            boolean shouldCutCorners = cornerCutMode != CornerCutting.NONE && CORNER_CUT_DIST != 0
+                    && !(rawObstacle.has("skipCornerCutting") && rawObstacle.getBoolean("skipCornerCutting"));
+            ArrayList<Double[]> myProcessedVertices = shouldCutCorners ? cutCornersLine(myVertices) : myVertices;
 
             // Wind around the vertices, creating edges between each consecutive pair
             for (int j = 0; j < myProcessedVertices.size(); j++) {
