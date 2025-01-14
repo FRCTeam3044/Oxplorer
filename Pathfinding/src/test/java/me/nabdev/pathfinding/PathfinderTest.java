@@ -19,7 +19,7 @@ public class PathfinderTest {
 
     @BeforeEach
     void setUp() {
-        pathfinder = new PathfinderBuilder(Field.CRESCENDO_2024).build();
+        pathfinder = new PathfinderBuilder(Field.REEFSCAPE_2025).build();
     }
 
     @Test
