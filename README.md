@@ -30,7 +30,7 @@ maven {
 Then add this line to the dependencies section:
 
 ```gradle
-implementation 'me.nabdev.pathfinding:oxplorer:0.12.2'
+implementation 'me.nabdev.pathfinding:oxplorer:0.12.6'
 ```
 
 ## Usage
