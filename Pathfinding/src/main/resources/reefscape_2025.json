@@ -104,6 +104,35 @@
         [1.75755693, 8.0518]
       ],
       "skipCornerCutting": true
+    },
+    {
+      "id": "Barge Center",
+      "vertices": [
+        [8.46932467, 4.3307],
+        [9.07892467, 4.3307],
+        [9.07892467, 3.7211],
+        [8.46932467, 3.7211]
+      ]
+    },
+    {
+      "id": "Red Barge Zone",
+      "modifiers": ["ACTIVE_OTHER_ALLIANCE", "RED_ALLIANCE", "ALWAYS_ACTIVE"],
+      "vertices": [
+        [8.18992467, 3.7211],
+        [9.35832467, 3.7211],
+        [9.35832467, 0],
+        [8.18992467, 0]
+      ]
+    },
+    {
+      "id": "Blue Barge Zone",
+      "modifiers": ["ACTIVE_OTHER_ALLIANCE", "BLUE_ALLIANCE", "ALWAYS_ACTIVE"],
+      "vertices": [
+        [8.18992467, 8.0518],
+        [9.35832467, 8.0518],
+        [9.35832467, 4.3307],
+        [8.18992467, 4.3307]
+      ]
     }
   ]
 }
