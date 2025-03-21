@@ -30,6 +30,10 @@ public class FieldLoader {
          */
         REEFSCAPE_2025,
         /**
+         * The 2025 field (Reefscape)
+         */
+        REEFSCAPE_2025_NO_STATIONS,
+        /**
          * The 2024 field (Crescendo)
          */
         CRESCENDO_2024,
