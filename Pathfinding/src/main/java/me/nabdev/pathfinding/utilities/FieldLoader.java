@@ -43,6 +43,11 @@ public class FieldLoader {
         CHARGED_UP_2023,
 
         /**
+         * The 2022 field (Rapid React)
+         */
+        RAPID_REACT_2022,
+
+        /**
          * A debug field for testing
          */
         DEBUG_FIELD,

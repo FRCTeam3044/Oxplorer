@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'me.nabdev.pathfinding'
-version '0.12.8-beta'
+version '0.12.8-beta1'
 
 java {
     withSourcesJar()
