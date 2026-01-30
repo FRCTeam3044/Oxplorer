@@ -1,0 +1,208 @@
+{
+  "formatVersion": 2,
+  "fieldX": 16.5410515,
+  "fieldY": 8.0692625,
+  "obstacles": [
+    {
+      "id": "TopRedClimberPost",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+
+    {
+      "id": "BottomRedClimberPost",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopBlueClimberPost",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomBlueClimberPost",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "RedDepot",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BlueDepot",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "RedHub",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BlueHub",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopRedTrench",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomRedTrench",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopRedBump",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomRedBump",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopRedWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomRedWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopBlueTrench",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomBlueTrench",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopBlueBump",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomBlueBump",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopBlueWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomBlueWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+]
+}
