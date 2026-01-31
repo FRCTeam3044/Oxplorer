@@ -87,90 +87,90 @@
     {
       "id": "TopRedTrench",
       "vertices": [
-        [4.54942575, ],
-        [4.54942575, ],
-        [4.70182575, ],
-        [4.70182575, ]
+        [4.54942575, 6.79053125],
+        [4.54942575, 8.0692625],
+        [4.70182575, 8.0692625],
+        [4.70182575, 6.79053125]
       ],
       "skipCornerCutting": false
     },
     {
       "id": "BottomRedTrench",
       "vertices": [
-        [],
-        [],
-        [],
-        []
+        [4.57482575, 0],
+        [4.57482575, 1.27873125],
+        [4.67642575, 1.27873125],
+        [4.67642575, 0]
       ],
       "skipCornerCutting": false
     },
     {
       "id": "TopRedBump",
       "vertices": [
-        [],
-        [],
-        [],
-        []
+        [4.02872575, 4.63153125],
+        [4.02872575, 6.48573125],
+        [5.18944372, 6.48573125],
+        [5.18944372, 4.63153125]
       ],
       "skipCornerCutting": false
     },
     {
       "id": "BottomRedBump",
       "vertices": [
-        [],
-        [],
-        [],
-        []
+        [4.02872575, 1.58353125],
+        [4.02872575, 3.43773125],
+        [5.18944372, 3.43773125],
+        [5.18944372, 1.58353125]
       ],
       "skipCornerCutting": false
     },
     {
-      "id": "TopRedWall",
+      "id": "TopRedTrenchWall",
       "vertices": [
-        [],
-        [],
-        [],
-        []
+        [4.02872575, 6.48573125],
+        [4.02872575, 6.79053125],
+        [5.22252575, 6.79053125],
+        [5.22252575, 6.48573125]
       ],
       "skipCornerCutting": false
     },
     {
-      "id": "BottomRedWall",
+      "id": "BottomRedTrenchWall",
       "vertices": [
-        [],
-        [],
-        [],
-        []
+        [4.02872575, 1.27873125],
+        [4.02872575, 1.58353125],
+        [5.22252575, 1.58353125],
+        [5.22252575, 1.27873125]
       ],
       "skipCornerCutting": false
     },
     {
       "id": "TopBlueTrench",
       "vertices": [
-        [],
-        [],
-        [],
-        []
+        [11.83922575, 6.79053125],
+        [11.83922575, 8.0692625],
+        [11.99162575, 8.0692625],
+        [11.99162575, 6.79053125]
       ],
       "skipCornerCutting": false
     },
     {
       "id": "BottomBlueTrench",
       "vertices": [
-        [],
-        [],
-        [],
-        []
+        [11.86462575, 0],
+        [11.86462575,1.27873125],
+        [11.96622575, 1.27873125],
+        [11.96622575, 0]
       ],
       "skipCornerCutting": false
     },
     {
       "id": "TopBlueBump",
       "vertices": [
-        [],
-        [],
-        [],
-        []
+        [11.31852575, 4.63153125],
+        [11.31852575, 6.48573125],
+        [12.47924372, 6.48573125],
+        [12.47924372, 4.63153125]
       ],
       "skipCornerCutting": false
     },
@@ -185,7 +185,7 @@
       "skipCornerCutting": false
     },
     {
-      "id": "TopBlueWall",
+      "id": "TopBlueTrenchWall",
       "vertices": [
         [],
         [],
@@ -195,7 +195,67 @@
       "skipCornerCutting": false
     },
     {
-      "id": "BottomBlueWall",
+      "id": "BottomBlueTrenchWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "RedWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": true
+    },
+    {
+      "id": "BlueWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": true
+    },
+    {
+      "id": "TopWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": true
+    },
+    {
+      "id": "BottomWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": true
+    },
+    {
+      "id": "RedTrenchBlock",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BlueTrenchBlock",
       "vertices": [
         [],
         [],
