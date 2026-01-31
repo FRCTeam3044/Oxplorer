@@ -26,6 +26,10 @@ public class FieldLoader {
      */
     public enum Field {
         /**
+         * The 2026 field (Rebuilt)
+         */
+        REBUILT_2026,
+        /**
          * The 2025 field (Reefscape)
          */
         REEFSCAPE_2025,
