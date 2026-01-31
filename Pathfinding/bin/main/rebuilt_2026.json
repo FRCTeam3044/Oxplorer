@@ -1,0 +1,208 @@
+{
+  "formatVersion": 2,
+  "fieldX": 16.5410515,
+  "fieldY": 8.0692625,
+  "obstacles": [
+    {
+      "id": "TopRedClimberPost",
+      "vertices": [
+        [0.9794875, 4.12327725],
+        [0.9794875, 4.22538525],
+        [1.1445875 , 4.22538525],
+        [1.1445875 , 4.12327725]
+      ],
+      "skipCornerCutting": false
+    },
+
+    {
+      "id": "BottomRedClimberPost",
+      "vertices": [
+        [0.9794875, 3.26602725],
+        [0.9794875, 3.36813525],
+        [1.1445875 , 3.36813525],
+        [1.1445875 , 3.26602725]
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopBlueClimberPost",
+      "vertices": [
+        [15.396464, 4.70112725],
+        [15.396464, 4.80323525],
+        [15.561564, 4.80323525],
+        [15.561564, 4.70112725]
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomBlueClimberPost",
+      "vertices": [
+        [15.396464, 3.84387725],
+        [15.396464, 3.94598525],
+        [15.561564, 3.94598525],
+        [15.561564, 3.84387725]
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "RedDepot",
+      "vertices": [
+        [0, 5.43163125],
+        [0, 6.49843125],
+        [0.6858, 6.49843125],
+        [0.6858, 5.43163125]
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BlueDepot",
+      "vertices": [
+        [15.8552515, 1.57083125],
+        [15.8552515, 2.63763125],
+        [16.5410515, 2.63763125],
+        [16.5410515, 1.57083125]
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "RedHub",
+      "vertices": [
+        [4.02872575, 3.43773125],
+        [5.22252575, 4.63153125],
+        [5.22252575, 4.63153125],
+        [4.02872575, 3.43773125]
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BlueHub",
+      "vertices": [
+        [11.31852575, 3.43773125],
+        [12.51232575, 4.63153125],
+        [12.51232575, 4.63153125],
+        [11.31852575, 3.43773125]
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopRedTrench",
+      "vertices": [
+        [4.54942575, ],
+        [4.54942575, ],
+        [4.70182575, ],
+        [4.70182575, ]
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomRedTrench",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopRedBump",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomRedBump",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopRedWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomRedWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopBlueTrench",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomBlueTrench",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopBlueBump",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomBlueBump",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "TopBlueWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    },
+    {
+      "id": "BottomBlueWall",
+      "vertices": [
+        [],
+        [],
+        [],
+        []
+      ],
+      "skipCornerCutting": false
+    }
+]
+}
