@@ -136,7 +136,10 @@ public class FieldLoader {
          * The id of the obstacle
          */
         public String id;
-
+        /**
+         * Whether the obstacle is inflated or not
+         */
+        public boolean inflation;
         /**
          * The modifiers on this obstacle
          */
@@ -147,11 +150,13 @@ public class FieldLoader {
          * 
          * @param edges     The edges of the obstacle
          * @param id        The id of the obstacle
+         * @param inflation Whether the obstacle is inflated
          * @param modifiers The modifiers on this obstacle
          */
-        public ObstacleData(ArrayList<Integer[]> edges, String id, ModifierCollection modifiers) {
+        public ObstacleData(ArrayList<Integer[]> edges, String id, ModifierCollection modifiers, boolean inflation) {
             this.edges = edges;
             this.id = id;
+            this.inflation = inflation;
             this.modifiers = modifiers;
         }
     }
@@ -274,7 +279,8 @@ public class FieldLoader {
                 modifiersArr.put("ALWAYS_ACTIVE");
             }
             ModifierCollection modifiers = new ModifierCollection(modifiersArr);
-            ObstacleData obstacle = new ObstacleData(edges, rawObstacle.getString("id"), modifiers);
+            boolean skipInflation = (rawObstacle.has("skipInflation") && rawObstacle.getBoolean("skipInflation"));
+            ObstacleData obstacle = new ObstacleData(edges, rawObstacle.getString("id"), modifiers, skipInflation);
             obstacles.add(obstacle);
         }
         double fieldX = rawField.getDouble("fieldX");
