@@ -26,6 +26,10 @@ public class FieldLoader {
      */
     public enum Field {
         /**
+         * The 2026 field (Rebuilt) for robots that can go under the trench.
+         */
+        REBUILT_2026_TRENCH,
+        /**
          * The 2026 field (Rebuilt)
          */
         REBUILT_2026,
